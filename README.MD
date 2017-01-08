@@ -25,24 +25,24 @@ The linux and rpi3 ports currently run in fullscreen mode, doesn't support filte
 
 **Linux compilation**
 
-> mkdir cmake-build
-> cd cmake-build
-> cmake -DCMAKE_BUILD_TYPE=Release ..
-> make pfba.deps
-> make pfba
+>- mkdir cmake-build
+>- cd cmake-build
+>- cmake -DCMAKE_BUILD_TYPE=Release ..
+>- make pfba.deps
+>- make pfba
 
 **Ps Vita compilation**
 
-> mkdir cmake-build
-> cd cmake-build
-> cmake -DBUILD_PSP2=ON -DCMAKE_BUILD_TYPE=Release ..
-> make pfba.deps
-> make pfba.vpk
+>- mkdir cmake-build
+>- cd cmake-build
+>- cmake -DBUILD_PSP2=ON -DCMAKE_BUILD_TYPE=Release ..
+>- make pfba.deps
+>- make pfba.vpk
 
 **RPI3 compilation**
 
-> mkdir cmake-build
-> cd cmake-build
-> cmake -DBUILD_RPI=ON -DCMAKE_BUILD_TYPE=Release ..
-> make pfba.deps
-> make pfba
+>- mkdir cmake-build
+>- cd cmake-build
+>- cmake -DBUILD_RPI=ON -DCMAKE_BUILD_TYPE=Release ..
+>- make pfba.deps
+>- make pfba
