@@ -1,0 +1,975 @@
+//
+// Created by cpasjuste on 22/11/16.
+//
+#include <algorithm>
+#include "sdl_run.h"
+#include "sdl_input.h"
+#include "video.h"
+#include <skeleton/timer.h>
+
+#define BORDER_SIZE 16
+
+extern Video *video;
+
+extern INT32 MakeScreenShot(const char *dest);
+
+static int max_lines = 16;
+static int rom_index = 0;
+static int option_index = 0;
+
+struct SaveState {
+    char path[MAX_PATH];
+    char sshot[MAX_PATH];
+    Rect rect;
+    Texture *texture;
+    bool available = false;
+};
+
+int Gui::LoadTitle(RomList::Rom *rom) {
+
+    if (title != NULL) {
+        delete (title);
+        title = NULL;
+    }
+
+    char path[MAX_PATH];
+    sprintf(path, "%s/%s.png", szAppTitlePath, rom->zip);
+    if (utility->FileExist(path)) {
+        title = renderer->LoadTexture(path);
+        return title != NULL;
+    } else if (rom->parent) {
+        memset(path, 0, MAX_PATH);
+        sprintf(path, "%s/%s.png", szAppTitlePath, rom->parent);
+        if (utility->FileExist(path)) {
+            title = renderer->LoadTexture(path);
+            return title != NULL;
+        }
+    }
+    return 0;
+}
+
+void Gui::FilterRoms() {
+
+    roms.clear();
+
+    int showClone = config->GetGuiValue(Option::Index::GUI_SHOW_CLONES);
+    int showAll = config->GetGuiValue(Option::Index::GUI_SHOW_ALL);
+    int showHardwareCfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
+    int showHardware = romList->hardwares->at(showHardwareCfg).prefix;
+    //printf("hardware: %i\n", hardware);
+
+    remove_copy_if(romList->list.begin(), romList->list.end(), back_inserter(roms),
+                   [showAll, showClone, showHardware](const RomList::Rom r) {
+                       return !showAll && r.state != RomList::RomState::WORKING
+                              || !showClone && r.parent != NULL
+                              || showHardware > 0
+                                 && (((r.hardware | HARDWARE_PREFIX_CARTRIDGE) ^ HARDWARE_PREFIX_CARTRIDGE)
+                                     & 0xff000000) != showHardware;
+                   });
+
+    rom_index = 0;
+    if (title) {
+        delete (title);
+        title = NULL;
+    }
+    title_loaded = 0;
+}
+
+void Gui::DrawBg() {
+
+    //if (skin->tex_bg) {
+    //    renderer->DrawTexture(skin->tex_bg, 0, 0);
+    //} else {
+
+    Rect window{0, 0, renderer->GetWindowSize().w, renderer->GetWindowSize().h};
+    renderer->DrawRect(&window, &GRAY);
+    renderer->DrawBorder(&window, &ORANGE);
+
+    if (skin->tex_title) {
+        renderer->DrawTexture(skin->tex_title, &rectTitle, true);
+        //renderer->DrawBorder(&rectTitle, &ORANGE, false);
+    }
+
+    renderer->DrawRect(&rectRomList, &GRAY_LIGHT);
+    renderer->DrawBorder(&rectRomList, &ORANGE, false);
+
+    renderer->DrawRect(&rectRomInfo, &GRAY_LIGHT);
+    renderer->DrawBorder(&rectRomInfo, &GREEN, false);
+    //}
+}
+
+int Gui::DrawRomStates() {
+    // TODO
+    return 0;
+}
+
+void Gui::DrawRomInfo(RomList::Rom *rom) {
+
+    if (rom == NULL) {
+        return;
+    }
+
+    Rect r = rectRomInfo;
+    r.x += 16;
+    r.y += 16;
+    r.w -= 32;
+
+    int hw_cfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
+    RomList::Hardware hw = romList->hardwares->at((unsigned int) hw_cfg);
+    int show_clones = config->GetGuiValue(Option::Index::GUI_SHOW_CLONES);
+    int available = (int) roms.size();
+    if (config->GetGuiValue(Option::Index::GUI_SHOW_ALL)) {
+        available = show_clones ? hw.available_count : hw.available_count - hw.available_clone_count;
+    }
+
+    renderer->DrawFont(skin->font, &r, &WHITE, "ROMS: %i / %i", available, roms.size());
+    r.y += skin->font->size * 2;
+
+    renderer->DrawFont(skin->font, &r, &WHITE, "SYSTEM: %s", rom->system);
+    r.y += skin->font->size;
+
+    renderer->DrawFont(skin->font, &r, &WHITE, "MANUFACTURER: %s", rom->manufacturer);
+    r.y += skin->font->size;
+
+    if (rom->flags & BDF_ORIENTATION_VERTICAL) {
+        renderer->DrawFont(skin->font, r.x, r.y, "ORIENTATION: VERTICAL");
+        if (rom->flags & BDF_ORIENTATION_FLIPPED) {
+            renderer->DrawFont(skin->font, r.x + skin->font->GetWidth("ORIENTATION: VERTICAL"), r.y, " / FLIPPED");
+        }
+        r.y += skin->font->size;
+    }
+
+    renderer->DrawFont(skin->font, &r, &WHITE, "YEAR: %s", rom->year);
+    r.y += skin->font->size;
+
+    renderer->DrawFont(skin->font, &r, &WHITE, "ZIP: %s.ZIP", rom->zip);
+    r.y += skin->font->size;
+
+    if (rom->parent) {
+        renderer->DrawFont(skin->font, r.x, r.y, "PARENT: %s.ZIP", rom->parent);
+        r.y += skin->font->size;
+    }
+}
+
+void Gui::DrawRomList() {
+
+    int font_height = skin->font->size + 2;
+    max_lines = rectRomList.h / font_height;
+    int page = rom_index / max_lines;
+
+    if (romSelected != NULL) {
+        delete (romSelected);
+        romSelected = NULL;
+    }
+
+    Rect rectText = rectRomList;
+    rectText.x += 1;
+    rectText.w = rectRomList.w - 2;
+    rectText.h = font_height + 4;
+
+    for (int i = page * max_lines; i < page * max_lines + max_lines; i++) {
+
+        if (i >= roms.size())
+            break;
+
+        RomList::Rom rom = roms[i];
+
+        // set color
+        Color color = RED;
+        if (rom.state == RomList::RomState::NOT_WORKING) {
+            color = ORANGE;
+        } else if (rom.state == RomList::RomState::WORKING) {
+            color = rom.parent == NULL ? GREEN : YELLOW;
+        }
+        color.a = 200;
+
+        // set highlight
+        if (i == rom_index) {
+            Color c{0, 0, 0, 155};
+            color.a = 255;
+            renderer->DrawRect(&rectText, &c);
+            renderer->DrawBorder(&rectText, &color, false);
+            romSelected = new RomList::Rom(rom);
+            DrawRomInfo(romSelected);
+            if (title != NULL) {
+                Rect dst = renderer->DrawTexture(title, &rectRomPreview, true);
+                renderer->DrawBorder(&dst, &RED, false);
+            }
+        }
+
+        // draw rom name text
+        renderer->DrawFont(skin->font, &rectText, &color, false, true, rom.name);
+
+        rectText.y += font_height;
+    }
+}
+
+bool Gui::IsOptionHidden(Option *option) {
+
+    return option->index == Option::Index::ROM_ROTATION
+           && romSelected != NULL
+           && !(romSelected->flags & BDF_ORIENTATION_VERTICAL);
+
+}
+
+void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, int end) {
+
+    Rect rect{32, 32,
+              renderer->GetWindowSize().w - 64,
+              renderer->GetWindowSize().h - 64
+    };
+    Rect rect_start = rect;
+
+    // window
+    renderer->DrawRect(&rect, &GRAY);
+    renderer->DrawBorder(&rect, &GREEN);
+
+    for (int i = start; i < end; i++) {
+
+        if (i >= options->size()) {
+            break;
+        }
+
+        // draw menu types
+        Option *option = &options->at((unsigned long) i);
+
+        if (option->type == Option::Type::MENU) {
+            bool new_col = option->index == Option::Index::MENU_JOYPAD;
+            if (new_col) {
+                rect.x += rect.w / 2;
+                rect.y = rect_start.y;
+            }
+            if (i != start && !new_col) {
+                rect.y += 32;
+            }
+            skin->font->color = ORANGE;
+            renderer->DrawFont(skin->font, rect.x + 16, rect.y + 32, option->GetName());
+            renderer->DrawRect(true, rect.x + 16, rect.y + 46, rect.w / 3, 2,
+                               ORANGE.r, ORANGE.g, ORANGE.b, ORANGE.a);
+            skin->font->color = WHITE;
+            rect.y += 32;
+        } else {
+
+            // skip rotation option if not needed
+            // TODO: get rid of this non independent function
+            if (isRomCfg && IsOptionHidden(option)) {
+                continue;
+            }
+
+            // draw selection
+            if (i == option_index) {
+                Rect sel{rect.x + 190, rect.y + 24, 150, 30};
+                renderer->DrawRect(&sel, &GRAY_LIGHT);
+                renderer->DrawBorder(&sel, &GREEN);
+            }
+
+            renderer->DrawFont(skin->font, rect.x + 16, rect.y + 32, option->GetName());
+            Rect sel{rect.x + 196, rect.y + 25, 140, 30};
+            if (option->type == Option::Type::INPUT)
+                renderer->DrawFont(skin->font, &sel, &WHITE, false, true, "%i", option->value);
+            else
+                renderer->DrawFont(skin->font, &sel, &WHITE, false, true, option->GetValue());
+
+            rect.y += skin->font->size;
+        }
+    }
+}
+
+int Gui::MessageBox(const char *message, const char *choice1, const char *choice2) {
+
+    int first = 1;
+    int index = 0;
+    int max_choice = choice2 == NULL ? 1 : 2;
+
+    Rect win{
+            renderer->GetWindowSize().w / 4,
+            renderer->GetWindowSize().h / 4,
+            renderer->GetWindowSize().w / 2,
+            renderer->GetWindowSize().h / 2
+    };
+
+    Rect buttons[2]{
+            {win.x + 16,               win.y + win.h - 64, (win.w / 2) - 32, 32},
+            {win.x + (win.w / 2) + 16, win.y + win.h - 64, (win.w / 2) - 32, 32}
+    };
+
+    sdl2_input_clear();
+
+    while (true) {
+
+        int key = sdl2_input_read();
+        if (key || first) {
+
+            first = 0;
+
+            if (key & KEYPAD_UP) {
+            } else if (key & KEYPAD_DOWN) {
+            } else if (key & KEYPAD_LEFT) {
+                index--;
+                if (index < 0)
+                    index = max_choice;
+            } else if (key & KEYPAD_RIGHT) {
+                index++;
+                if (index > max_choice)
+                    index = 0;
+            } else if (key & KEYPAD_FIRE1) {
+                return index;
+            } else if (key & KEYPAD_FIRE2) {
+                return -1;
+            }
+
+            Clear();
+            // video should always be initialized here
+            video->Render();
+
+            renderer->DrawRect(&win, &GRAY);
+            renderer->DrawBorder(&win, &GREEN);
+
+            Rect r_msg = win;
+            r_msg.y -= skin->font->GetHeight(message);
+            renderer->DrawFont(skin->font, &r_msg, &WHITE, true, true, message);
+
+            renderer->DrawRect(&buttons[0], &GRAY_LIGHT);
+            renderer->DrawBorder(&buttons[0], &BLACK, false);
+            renderer->DrawFont(skin->font, &buttons[0], &WHITE, true, true, choice1);
+
+            if (max_choice > 1) {
+                renderer->DrawRect(&buttons[1], &GRAY_LIGHT);
+                renderer->DrawBorder(&buttons[1], &BLACK, false);
+                renderer->DrawFont(skin->font, &buttons[1], &WHITE, true, true, choice2);
+            }
+
+            renderer->DrawBorder(&buttons[index], &ORANGE);
+
+            Flip();
+            renderer->Delay(INPUT_DELAY);
+        }
+    }
+
+}
+
+void Gui::RunStatesMenu() {
+
+    int first = 1;
+    int save_index = 0;
+    const int save_max = 4;
+
+    SaveState saves[4];
+
+    // load states screenshot if any
+    for (int i = 0; i < 4; i++) {
+        memset(saves[i].path, 0, MAX_PATH);
+        memset(saves[i].sshot, 0, MAX_PATH);
+        sprintf(saves[i].path, "%s/%s%i.sav", szAppSavePath, romSelected->zip, i);
+        sprintf(saves[i].sshot, "%s/%s%i.png", szAppSavePath, romSelected->zip, i);
+        saves[i].available = utility->FileExist(saves[i].path);
+        saves[i].texture = NULL;
+        if (utility->FileExist(saves[i].sshot)) {
+            saves[i].texture = renderer->LoadTexture(saves[i].sshot);
+        }
+    }
+
+    /*
+    for (int i = 0; i < 3; i++) {
+        Clear();
+        Flip();
+    }
+    */
+
+    sdl2_input_clear();
+
+    if (pBurnDraw == NULL) {
+        printf("RunOptionMenu: force redraw: RunOneFrame\n");
+        // force a frame to be drawn to fba buffer
+        bPauseOn = false;
+        RunOneFrame(true, 0, 0);
+        bPauseOn = true;
+        if (pBurnDraw == NULL) {
+            printf("RunOptionMenu: pBurnDraw == NULL\n");
+        }
+    }
+
+    while (true) {
+
+        int key = sdl2_input_read();
+        if (key || first) {
+
+            first = 0;
+
+            if (key & KEYPAD_UP) {
+            } else if (key & KEYPAD_DOWN) {
+            } else if (key & KEYPAD_LEFT) {
+                save_index--;
+                if (save_index < 0)
+                    save_index = save_max - 1;
+            } else if (key & KEYPAD_RIGHT) {
+                save_index++;
+                if (save_index >= save_max)
+                    save_index = 0;
+            } else if (key & KEYPAD_FIRE1) {
+                if (saves[save_index].available) {
+                    int res = MessageBox("Press FIRE1 to confirm, FIRE2 to cancel",
+                                         "Load", "Save");
+                    if (res == 0) {
+                        printf("StateLoad: %s\n", saves[save_index].path);
+                        BurnStateLoad(saves[save_index].path, 1, &DrvInitCallback);
+                        break;
+                    } else if (res == 1) {
+                        printf("StateSave: %s\n", saves[save_index].path);
+                        BurnStateSave(saves[save_index].path, 1);
+                        res = MakeScreenShot(saves[save_index].sshot);
+                        if (res == 0) {
+                            if (saves[save_index].texture) {
+                                delete (saves[save_index].texture);
+                            }
+                            saves[save_index].texture = renderer->LoadTexture(saves[save_index].sshot);
+                        } else {
+                            printf("ERROR: MakeScreenShot = %i\n", res);
+                        }
+                        break;
+                    }
+                } else {
+                    printf("StateSave: %s\n", saves[save_index].path);
+                    BurnStateSave(saves[save_index].path, 1);
+                    int res = MakeScreenShot(saves[save_index].sshot);
+                    if (res == 0) {
+                        if (saves[save_index].texture) {
+                            delete (saves[save_index].texture);
+                        }
+                        saves[save_index].texture = renderer->LoadTexture(saves[save_index].sshot);
+                    } else {
+                        printf("ERROR: MakeScreenShot = %i\n", res);
+                    }
+                    break;
+                }
+            } else if (key & KEYPAD_FIRE2) {
+                break;
+            }
+
+            Clear();
+            video->Render();
+
+            Rect win = renderer->GetWindowSize();
+            int r_width = win.w / 4;
+
+            for (int i = 0; i < 4; i++) {
+                saves[i].rect.x = (r_width * i) + 16;
+                saves[i].rect.y = 16;
+                saves[i].rect.w = r_width - 32;
+                saves[i].rect.h = r_width - 32;
+                renderer->DrawRect(&saves[i].rect, &GRAY);
+                if (saves[i].available) {
+                    if (saves[i].texture) {
+                        renderer->DrawTexture(saves[i].texture, &saves[i].rect);
+                    } else {
+                        renderer->DrawFont(skin->font, &saves[i].rect, &WHITE, true, true, "NO IMAGE");
+                    }
+                    Rect r = saves[i].rect;
+                    r.y = saves[i].rect.y + saves[i].rect.h - skin->font->size;
+                    renderer->DrawFont(skin->font, &r, &ORANGE, true, false, "STATE %i", i);
+                } else {
+                    renderer->DrawFont(skin->font, &saves[i].rect, &WHITE, true, true, "FIRE1 TO SAVE");
+                }
+                if (i == save_index) {
+                    renderer->DrawBorder(&saves[i].rect, &GREEN);
+                    renderer->DrawBorder(&saves[i].rect, &ORANGE, false);
+                }
+            }
+
+            Flip();
+            renderer->Delay(INPUT_DELAY);
+        }
+    }
+
+    // delete states screenshots if any
+    for (int i = 0; i < 4; i++) {
+        if (saves[i].texture) {
+            delete (saves[i].texture);
+        }
+    }
+
+    for (int i = 0; i < 3; i++) {
+        Clear();
+        Flip();
+    }
+
+    sdl2_input_clear();
+}
+
+void Gui::RunOptionMenu(bool isRomConfig) {
+
+    int first = 1;
+    bool option_changed = false;
+    bool stop = false;
+    option_index = 1;
+
+    std::vector<Option> *options =
+            isRomConfig ? config->GetRomOptions() : config->GetGuiOptions();
+
+    sdl2_input_clear();
+
+    if (GameLooping) {
+
+        if (pBurnDraw == NULL) {
+            printf("RunOptionMenu: force redraw: RunOneFrame\n");
+            // force a frame to be drawn to fba buffer
+            bPauseOn = false;
+            RunOneFrame(true, 0, 0);
+            bPauseOn = true;
+            if (pBurnDraw == NULL) {
+                printf("RunOptionMenu: pBurnDraw == NULL\n");
+            }
+        }
+
+        options->insert(options->begin(), Option("EXIT", {"GO"}, 0, OPTION_EXIT));
+        options->insert(options->begin(), Option("STATES", {"GO"}, 0, OPTION_STATES));
+        options->insert(options->begin(), Option("RETURN", {"GO"}, 0, OPTION_RETURN));
+        options->insert(options->begin(),
+                        Option(romSelected->name, {romSelected->name}, 0, (Option::Index) 0, Option::Type::MENU));
+        /*
+        for (int i = 0; i < 3; i++) {
+            Clear();
+            Flip();
+        }
+        */
+    }
+
+    while (true) {
+
+        int key = sdl2_input_read();
+        if (key || first) {
+
+            first = 0;
+
+            if (key & KEYPAD_UP) {
+                option_index--;
+                if (option_index < 0)
+                    option_index = config->GetOptionPos(options, Option::Index::MENU_KEYBOARD - 1);
+                // skip menus and submenus
+                Option *option = &options->at((unsigned long) option_index);
+                while (option->type == Option::Type::MENU
+                       || (isRomConfig && IsOptionHidden(option))) {
+                    option_index--;
+                    if (option_index < 0)
+                        option_index = config->GetOptionPos(options, Option::Index::MENU_KEYBOARD - 1);
+                    option = &options->at((unsigned long) option_index);
+                }
+            } else if (key & KEYPAD_DOWN) {
+                option_index++;
+                if (option_index >= config->GetOptionPos(options, Option::Index::MENU_KEYBOARD))
+                    option_index = 0;
+                // skip menus and submenus
+                Option *option = &options->at((unsigned long) option_index);
+                while (option->type == Option::Type::MENU
+                       || (isRomConfig && IsOptionHidden(option))) {
+                    option_index++;
+                    if (option_index >= config->GetOptionPos(options, Option::Index::MENU_KEYBOARD))
+                        option_index = 0;
+                    option = &options->at((unsigned long) option_index);
+                }
+            } else if (key & KEYPAD_LEFT) {
+                option_changed = true;
+                Option *option = &options->at((unsigned long) option_index);
+                if (option->type == Option::Type::INTEGER) {
+                    option->Prev();
+                    switch (option->index) {
+
+                        case Option::Index::GUI_SHOW_CLONES:
+                        case Option::Index::GUI_SHOW_ALL:
+                        case Option::Index::GUI_SHOW_HARDWARE:
+                            FilterRoms();
+                            break;
+
+                        case Option::ROM_ROTATION:
+                        case Option::Index::ROM_SCALING:
+                            if (GameLooping && video) {
+                                video->Scale();
+                            }
+                            break;
+
+                        case Option::Index::ROM_FILTER:
+                            if (GameLooping && video) {
+                                video->screen->SetFiltering(option->value);
+                            }
+                            break;
+
+                        case Option::Index::ROM_SHADER:
+                            if (GameLooping) {
+                                renderer->SetShader(option->value);
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            } else if (key & KEYPAD_RIGHT) {
+                option_changed = true;
+                Option *option = &options->at((unsigned long) option_index);
+                if (option->type == Option::Type::INTEGER) {
+                    option->Next();
+                    switch (option->index) {
+
+                        case Option::Index::GUI_SHOW_CLONES:
+                        case Option::Index::GUI_SHOW_ALL:
+                        case Option::Index::GUI_SHOW_HARDWARE:
+                            FilterRoms();
+                            option_changed = true;
+                            break;
+
+                        case Option::ROM_ROTATION:
+                        case Option::Index::ROM_SCALING:
+                            if (GameLooping && video) {
+                                video->Scale();
+                            }
+                            break;
+
+                        case Option::Index::ROM_FILTER:
+                            if (GameLooping && video) {
+                                video->screen->SetFiltering(option->value);
+                            }
+                            break;
+
+                        case Option::Index::ROM_SHADER:
+                            if (GameLooping) {
+                                renderer->SetShader(option->value);
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            } else if (key & KEYPAD_FIRE1) {
+                Option *option = &options->at((unsigned long) option_index);
+                if (option->type == Option::Type::INPUT) {
+                    int btn = GetInputButton();
+                    if (btn >= 0) {
+                        option->value = btn;
+                    }
+                } else if (option->index == OPTION_EXIT) {
+                    stop = true;
+                    break;
+                } else if (option->index == OPTION_RETURN) {
+                    break;
+                } else if (option->index == OPTION_STATES) {
+                    RunStatesMenu();
+                }
+            } else if (key & KEYPAD_FIRE2
+                       || (key & KEYPAD_START && !isRomConfig)
+                       || (key & KEYPAD_COIN && isRomConfig)) {
+                break;
+            }
+
+            Clear();
+            if (GameLooping) {
+                video->Render();
+            } else {
+                DrawBg();
+                DrawRomList();
+            }
+
+            int end = config->GetOptionPos(options, Option::Index::MENU_KEYBOARD);
+            DrawOptions(isRomConfig, options, 0, end);
+
+            Flip();
+            renderer->Delay(INPUT_DELAY);
+        }
+    }
+
+    if (GameLooping) {
+        options->erase(options->begin(), options->begin() + 4);
+        for (int i = 0; i < 3; i++) {
+            Clear();
+            Flip();
+        }
+    }
+
+    if (option_changed) {
+        if (isRomConfig) {
+            config->Save(romSelected);
+        } else {
+            config->Save();
+        }
+    }
+
+    if (stop) {
+        GameLooping = false;
+    }
+
+    sdl2_input_clear();
+}
+
+void Gui::Clear() {
+    renderer->ClearScreen();
+}
+
+void Gui::Flip() {
+    renderer->FlipScreen();
+}
+
+void Gui::RunRom(RomList::Rom *rom) {
+
+    if (rom == NULL) {
+        return;
+    }
+
+    char path[MAX_PATH];
+    for (int i = 0; i < DIRS_MAX; i++) {
+        if (strlen(config->GetRomPath(i)) > 0) {
+            sprintf(path, "%s%s.zip", config->GetRomPath(i), rom->zip);
+            printf("%s\n", path);
+            if (utility->FileExist(path))
+                break;
+        }
+    }
+
+    if (!utility->FileExist(path)) {
+        printf("RunRom: rom not found: `%s`\n", rom->zip);
+        return;
+    }
+
+    printf("RunRom: %s\n", path);
+    for (nBurnDrvSelect[0] = 0; nBurnDrvSelect[0] < nBurnDrvCount; nBurnDrvSelect[0]++) {
+        nBurnDrvActive = nBurnDrvSelect[0];
+        if (strcasecmp(rom->zip, BurnDrvGetTextA(DRV_NAME)) == 0)
+            break;
+    }
+
+    if (nBurnDrvActive >= nBurnDrvCount) {
+        printf("RunRom: driver not found\n");
+        return;
+    }
+
+    // load rom settings
+    printf("RunRom: config->LoadRom(%s)\n", rom->zip);
+    config->Load(rom);
+
+    printf("RunRom: RunEmulator: start\n");
+    RunEmulator(this, nBurnDrvActive);
+
+    printf("RunRom: RunEmulator: return\n");
+    mode = List;
+}
+
+int Gui::GetInput() {
+
+    int key = sdl2_input_read();
+
+    if (key & KEYPAD_UP) {
+        rom_index--;
+        if (rom_index < 0)
+            rom_index = (int) (roms.size() - 1);
+        if (title) {
+            delete (title);
+            title = NULL;
+        }
+        title_loaded = 0;
+        return key;
+    } else if (key & KEYPAD_DOWN) {
+        rom_index++;
+        if (rom_index >= roms.size())
+            rom_index = 0;
+        if (title) {
+            delete (title);
+            title = NULL;
+        }
+        title_loaded = 0;
+        return key;
+    } else if (key & KEYPAD_RIGHT) {
+        rom_index += max_lines;
+        if (rom_index >= roms.size())
+            rom_index = (int) (roms.size() - 1);
+        if (title) {
+            delete (title);
+            title = NULL;
+        }
+        title_loaded = 0;
+        return key;
+    } else if (key & KEYPAD_LEFT) {
+        rom_index -= max_lines;
+        if (rom_index < 0)
+            rom_index = 0;
+        if (title) {
+            delete (title);
+            title = NULL;
+        }
+        title_loaded = 0;
+        return key;
+    } else if (key & KEYPAD_FIRE1) {
+        if (romSelected != NULL
+            && romSelected->state != RomList::RomState::MISSING) {
+            RunRom(romSelected);
+        }
+        return key;
+    } else if (key & KEYPAD_START) {
+        RunOptionMenu();
+        if (title != NULL) {
+            DrawBg();
+            DrawRomList();
+            renderer->DrawTexture(title, &rectRomPreview, true);
+            Flip();
+        }
+    } else if (key & KEYPAD_COIN) {
+        if (romSelected != NULL) {
+            config->Load(romSelected);
+            RunOptionMenu(true);
+            if (title != NULL) {
+                DrawBg();
+                DrawRomList();
+                renderer->DrawTexture(title, &rectRomPreview, true);
+                Flip();
+            }
+        }
+    } else if (key & KEYPAD_QUIT) {
+        quit = true;
+    }
+
+    return key;
+}
+
+void Gui::Run() {
+
+    Clear();
+    DrawBg();
+    DrawRomList();
+    Flip();
+
+    Timer *timer_input = new Timer();
+    Timer *timer_load = new Timer();
+
+    while (!quit) {
+
+        int key = GetInput();
+        if (key > 0) {
+
+            Clear();
+            DrawBg();
+            DrawRomList();
+            Flip();
+
+            if (timer_input->GetSeconds() > 6) {
+                renderer->Delay(INPUT_DELAY / 5);
+            } else if (timer_input->GetSeconds() > 2) {
+                renderer->Delay(INPUT_DELAY / 2);
+            } else {
+                renderer->Delay(INPUT_DELAY);
+            }
+            timer_load->Reset();
+        } else {
+            if (romSelected != NULL && !title_loaded
+                && timer_load->GetMillis() >= title_delay) {
+                if (LoadTitle(romSelected)) {
+                    DrawBg();
+                    DrawRomList();
+                    Flip();
+                }
+                title_loaded = 1;
+                timer_load->Reset();
+            }
+            timer_input->Reset();
+        }
+    }
+
+    delete (timer_input);
+    delete (timer_load);
+}
+
+Gui::Gui(Renderer *rdr, Utility *util, RomList *rList, Config *cfg) {
+
+    renderer = rdr;
+    utility = util;
+    romList = rList;
+    config = cfg;
+
+    // create skin
+    skin = new Skin(szAppSkinPath, renderer);
+    skin->font->color = WHITE;
+
+    // set drawing rects
+    Rect size = renderer->GetWindowSize();
+
+    // title rect
+    rectTitle.x = BORDER_SIZE;
+    rectTitle.y = BORDER_SIZE;
+    rectTitle.w = size.w / 2;
+    rectTitle.w -= BORDER_SIZE + BORDER_SIZE / 2;
+    rectTitle.h = size.h / 4;
+    // rom list rect
+    rectRomList.x = BORDER_SIZE;
+    rectRomList.y = size.h / 4;
+    rectRomList.y += BORDER_SIZE;
+    rectRomList.w = size.w / 2;
+    rectRomList.w -= BORDER_SIZE + BORDER_SIZE / 2;
+    rectRomList.h = (size.h / 4) * 3;
+    rectRomList.h -= BORDER_SIZE * 2;
+    // rom preview image rect
+    rectRomPreview.x = (size.w / 2);
+    rectRomPreview.x += BORDER_SIZE / 2;
+    rectRomPreview.y = BORDER_SIZE;
+    rectRomPreview.w = (size.w / 2);
+    rectRomPreview.w -= BORDER_SIZE + BORDER_SIZE / 2;
+    rectRomPreview.h = (size.h / 2);
+    rectRomPreview.h -= BORDER_SIZE + BORDER_SIZE / 2;
+    // rom information rect
+    rectRomInfo.x = (size.w / 2);
+    rectRomInfo.x += BORDER_SIZE / 2;
+    rectRomInfo.y = (size.h / 2) + BORDER_SIZE / 2;
+    rectRomInfo.w = (size.w / 2);
+    rectRomInfo.w -= BORDER_SIZE + BORDER_SIZE / 2;
+    rectRomInfo.h = (size.h / 2);
+    rectRomInfo.h -= BORDER_SIZE + BORDER_SIZE / 2;
+
+    // filter roms
+    FilterRoms();
+
+    // init input
+    sdl_input_init();
+}
+
+Renderer *Gui::GetRenderer() {
+    return renderer;
+}
+
+Skin *Gui::GetSkin() {
+    return skin;
+}
+
+Config *Gui::GetConfig() {
+    return config;
+}
+
+void Gui::SetTitleLoadDelay(int delay) {
+    title_delay = delay;
+}
+
+int Gui::GetInputButton() {
+
+    Rect window{
+            renderer->GetWindowSize().w / 4,
+            renderer->GetWindowSize().h / 4,
+            renderer->GetWindowSize().w / 2,
+            renderer->GetWindowSize().h / 2
+    };
+
+    Timer *timer = new Timer();
+
+    sdl2_input_clear();
+
+    while (true) {
+
+        int key = sdl2_input_wait_button();
+        if (key || timer->GetSeconds() >= 3) {
+            return key;
+        }
+
+        renderer->DrawRect(&window, &GRAY);
+        renderer->DrawBorder(&window, &GREEN);
+        renderer->DrawFont(skin->font, &window, &WHITE, true, true, "PRESS A BUTTON");
+        Flip();
+    }
+}
+
+Gui::~Gui() {
+    delete (skin);
+}

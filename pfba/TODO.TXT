@@ -1,0 +1,56 @@
+# COMMON
+========
+
+fix crash with non working roms (cps2 wrong set)
+add savestates support
+add help screen
+
+# NEXT RELEASE
+DONE // fix some multiple cpu arm m68k games (cylone)
+DONE // fix arm m68k savestates (cyclone)
+DONE // add savestates support (SELECT + L)
+DONE // enable custom input configuration in gui
+DONE // fix input direction when rom rotation is off
+DONE // add joystick deadzone in config menu
+DONE // set asm core enabled by default
+# OLD RELEASES
+DONE // add texture filtering option
+DONE // PSP2/RPI: enable cyclone ASM m68k core by default for CPS1/2/3, NEOGEO, CAVE, IGS
+DONE // GUI: add rom filtering by HARDWARE in general options (START)
+DONE // GUI: show roms available/count per hardware
+DONE // GUI: add message if no rom found (show non available roms by default)
+DONE // GUI: improve config file
+DONE // GUI: add libconfig ?
+DONE // EMU: add rotation option
+DONE // EMU: add disable audio option
+DONE // GUI: hide rotation option if not needed
+DONE // GUI: fix screenshot dismiss on gui option return
+
+# PSP2
+=======
+GUI: FIX "cv_*.png" loading
+
+# NEXT RELEASE
+DONE // EMU: fix filters not applied ?
+# OLD RELEASES
+DONE // - remove slow shaders : CRT_EASY, GTU, XBR2X/FAST, BUCUBIC,
+DONE // - EMU: allow vertical gameplay
+
+
+=====================
+# RPI (raspbian jessy)
+=====================
+download toolchain: https://github.com/raspberrypi/tools
+copy toolchain (tools) to /usr/local/rpi-tools
+device:
+    sudo apt-get install libfreeimage-dev libopenal-dev libpango1.0-dev libsndfile1-dev libudev-dev libasound2-dev libjpeg-dev libtiff5-dev libwebp-dev automake
+    compile libz
+    compile libpng
+    compile freetype: ./configure --with-sysroot=/usr/local --with-harfbuzz=no
+    compile libSDL2 :
+    compile libSDL2_image :
+    compile libSDL2_ttf :
+
+copy "/usr/local" (device) to "/usr/local/rpi-tools/sysroot" (computer)
+copy "/opt/vc/lib" (device) to "/usr/local/rpi-tools/sysroot" (computer)
+SDL2: add "usermod -a -G video cpasjuste" to use sdl2 as normal user in terminal
