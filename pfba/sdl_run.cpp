@@ -98,7 +98,7 @@ void RunEmulator(Gui *g, int drvnum) {
     // set gui pointer
     gui = g;
 
-#ifdef __PSP2__
+#if defined(__PSP2__) || defined(__RPI__)
     printf("nSekCpuCore '%i'\n", gui->GetConfig()->GetRomValue(Option::Index::ROM_M68K));
     nSekCpuCore = gui->GetConfig()->GetRomValue(Option::Index::ROM_M68K);
 #endif
@@ -109,8 +109,31 @@ void RunEmulator(Gui *g, int drvnum) {
 
     // audio needs to be inited before rom driver...
     printf("Creating audio device\n");
-    int freq_index = gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO_FREQ);
-    audio = (Audio*)new SDL2Audio(freq_index);
+
+    int frequency = 44100;
+    switch (gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO_FREQ)) {
+        case 0:
+            frequency = 0;
+            break;
+        case 1:
+            frequency = 11025;
+            break;
+        case 2:
+            frequency = 22050;
+            break;
+        case 4:
+            frequency = 48000;
+            break;
+        default:
+            break;
+    }
+
+    audio = (Audio *) new SDL2Audio(frequency, nBurnFPS);
+    if(audio->available) {
+        nBurnSoundRate = audio->frequency;
+        nBurnSoundLen = audio->buffer_len;
+        pBurnSoundOut = audio->buffer;
+    }
 
     printf("Initialize rom driver\n");
     if (DrvInit(drvnum, false) != 0) {
@@ -120,7 +143,7 @@ void RunEmulator(Gui *g, int drvnum) {
                        "- Memory error\n\n");
         DrvExit();
         InpExit();
-        delete(audio);
+        delete (audio);
         return;
     }
 
@@ -140,9 +163,8 @@ void RunEmulator(Gui *g, int drvnum) {
 
     while (GameLooping) {
 
-        // audio lag when not using frameskip, force frameskip when audio enabled
-        //int frameSkip = gui->GetConfig()->GetRomValue(Option::Index::ROM_FRAMESKIP);
-        int frameSkip = freq_index;
+        // audio lag when waiting for audio, force "frameskip" when audio enabled
+        int frameSkip = frequency;
         int showFps = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHOW_FPS);
 
         if (frameSkip) {
@@ -184,6 +206,6 @@ void RunEmulator(Gui *g, int drvnum) {
     InpExit();
     delete (video);
     video = NULL;
-    delete(audio);
+    delete (audio);
     audio = NULL;
 }

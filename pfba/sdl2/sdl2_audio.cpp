@@ -2,9 +2,8 @@
 // Created by cpasjuste on 12/12/16.
 //
 
-#include <SDL2/SDL.h>
-#include <burner.h>
 #include <malloc.h>
+#include <SDL2/SDL.h>
 #include "sdl2_audio.h"
 
 static bool use_mutex = true;
@@ -17,13 +16,6 @@ static int buffered_bytes = 0;
 
 static SDL_mutex *sound_mutex;
 static SDL_cond *sound_cv;
-
-static inline int calc_samples() {
-    int s;
-    // Find the value which is slighly bigger than nBurnSoundLen*2
-    for (s = 512; s < (nBurnSoundLen * 2); s <<= 1);
-    return s;
-}
 
 static void write_buffer(unsigned char *data, int len) {
 
@@ -77,16 +69,17 @@ static void read_buffer(void *unused, unsigned char *data, int len) {
     }
 }
 
-SDL2Audio::SDL2Audio(int freq_id) : Audio(freq_id) {
+SDL2Audio::SDL2Audio(int freq, int fps) : Audio(freq, fps) {
 
-    if (!enabled) {
+    if (!available) {
         return;
     }
 
     int sample_size;
     SDL_AudioSpec aspec, obtained;
 
-    sample_size = calc_samples();
+    // Find the value which is slighly bigger than nBurnSoundLen*2
+    for (sample_size = 512; sample_size < (buffer_len * 2); sample_size <<= 1);
     buf_size = sample_size * channels * 2 * 8;
     buffer_sdl = (unsigned char *) malloc((size_t) buf_size);
 
@@ -95,7 +88,7 @@ SDL2Audio::SDL2Audio(int freq_id) : Audio(freq_id) {
     buf_write_pos = 0;
 
     aspec.format = AUDIO_S16;
-    aspec.freq = nBurnSoundRate;
+    aspec.freq = freq;
     aspec.channels = (Uint8) channels;
     aspec.samples = (Uint16) sample_size;
     aspec.callback = read_buffer;
@@ -103,17 +96,11 @@ SDL2Audio::SDL2Audio(int freq_id) : Audio(freq_id) {
 
     if (SDL_InitSubSystem(SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE)) {
         printf("SDL2Audio: Initialize failed: %s.\n", SDL_GetError());
-        pBurnSoundOut = NULL;
-        nBurnSoundRate = 0;
-        nBurnSoundLen = 0;
         return;
     }
 
     if (SDL_OpenAudio(&aspec, &obtained) < 0) {
         printf("SDL2Audio: Unable to open audio: %s\n", SDL_GetError());
-        pBurnSoundOut = NULL;
-        nBurnSoundRate = 0;
-        nBurnSoundLen = 0;
         return;
     }
 
@@ -132,7 +119,7 @@ SDL2Audio::SDL2Audio(int freq_id) : Audio(freq_id) {
 
 SDL2Audio::~SDL2Audio() {
 
-    if (!enabled) {
+    if (!available) {
         return;
     }
     SDL_PauseAudio(1);
@@ -158,16 +145,16 @@ SDL2Audio::~SDL2Audio() {
 
 void SDL2Audio::Play() {
 
-    if (!enabled) {
+    if (!available) {
         return;
     }
 
-    write_buffer((unsigned char *) buffer_fba, size);
+    write_buffer((unsigned char *) buffer, buffer_size);
 }
 
 void SDL2Audio::Pause(int pause) {
 
-    if (!enabled) {
+    if (!available) {
         return;
     }
 

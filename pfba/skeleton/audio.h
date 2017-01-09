@@ -11,18 +11,19 @@ class Audio {
 
 public:
 
-    Audio(int freq_id);
+    Audio(int freq, int fps = 60);
     virtual ~Audio();
 
     virtual void Play() {};
     virtual void Pause(int pause);
 
-    int rate[5] = {0, 11025, 22050, 44100, 48000};             // Sample rate
-    int channels = 2;                                       // Always stereo
-    int size = 0;                                           // Seg size in bytes (calculated from Rate/Fps)
+    int frequency = 44100;
+    int channels = 2;
+    short *buffer = NULL;
+    int buffer_size = 0;
+    int buffer_len = 0;
     int paused = 0;
-    short *buffer_fba = NULL;                               // Buffer where Burn driver will write snd data
-    int enabled = 0;
+    int available = 0;
 };
 
 #endif //_AUDIO_H_

@@ -2,32 +2,24 @@
 // Created by cpasjuste on 12/12/16.
 //
 
-#include <burner.h>
 #include <malloc.h>
 #include "audio.h"
 
-Audio::Audio(int freq_id) {
+Audio::Audio(int freq, int fps) {
 
-    if (freq_id == 0) {
-        pBurnSoundOut = NULL;
-        nBurnSoundRate = 0;
-        nBurnSoundLen = 0;
+    frequency = freq;
+
+    if (frequency <= 0) {
         return;
     }
 
-    if (freq_id > 4) {
-        freq_id = 4;
-    }
+    buffer_len = ((freq * 100) / fps);
+    buffer_size = buffer_len * channels * 2;
+    buffer = (short *) malloc((size_t) buffer_size);
+    memset(buffer, 0, (size_t) buffer_size);
+    available = true;
 
-    nBurnSoundRate = rate[freq_id];
-    nBurnSoundLen = ((nBurnSoundRate * 100) / nBurnFPS);
-    size = nBurnSoundLen * channels * 2;
-    buffer_fba = (short *) malloc((size_t) size);
-    memset(buffer_fba, 0, (size_t) size);
-    pBurnSoundOut = buffer_fba;
-    enabled = true;
-
-    printf("Audio: rate=%i, buffer=%i\n", nBurnSoundRate, size);
+    printf("Audio: rate = %i, buffer size = %i\n", freq, buffer_size);
 }
 
 void Audio::Pause(int pause) {
@@ -35,13 +27,10 @@ void Audio::Pause(int pause) {
 }
 
 Audio::~Audio() {
-    if (enabled) {
-        if (buffer_fba != NULL) {
-            free(buffer_fba);
-            buffer_fba = NULL;
+    if (available) {
+        if (buffer != NULL) {
+            free(buffer);
+            buffer = NULL;
         }
-        pBurnSoundOut = NULL;
-        nBurnSoundRate = 0;
-        nBurnSoundLen = 0;
     }
 }

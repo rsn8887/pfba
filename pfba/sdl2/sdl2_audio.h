@@ -10,7 +10,7 @@
 class SDL2Audio : Audio {
 
 public:
-    SDL2Audio(int freq_id);
+    SDL2Audio(int freq, int fps = 60);
     virtual ~SDL2Audio();
 
     virtual void Play();
