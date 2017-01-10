@@ -31,8 +31,6 @@ public:
     void RunOptionMenu(bool isRomConfig = false);
     void RunStatesMenu();
     int GetInputButton();
-    //int DrawRomConfig();
-    int DrawRomStates();
     int LoadTitle(RomList::Rom *rom);
     void SetTitleLoadDelay(int delay);
 

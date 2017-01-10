@@ -77,30 +77,24 @@ void Gui::FilterRoms() {
 
 void Gui::DrawBg() {
 
-    //if (skin->tex_bg) {
-    //    renderer->DrawTexture(skin->tex_bg, 0, 0);
-    //} else {
+    if (skin->tex_bg) {
+        renderer->DrawTexture(skin->tex_bg, 0, 0);
+    } else {
 
-    Rect window{0, 0, renderer->GetWindowSize().w, renderer->GetWindowSize().h};
-    renderer->DrawRect(&window, &GRAY);
-    renderer->DrawBorder(&window, &ORANGE);
+        Rect window{0, 0, renderer->GetWindowSize().w, renderer->GetWindowSize().h};
+        renderer->DrawRect(&window, &GRAY);
+        renderer->DrawBorder(&window, &ORANGE);
 
-    if (skin->tex_title) {
-        renderer->DrawTexture(skin->tex_title, &rectTitle, true);
-        //renderer->DrawBorder(&rectTitle, &ORANGE, false);
+        if (skin->tex_title) {
+            renderer->DrawTexture(skin->tex_title, &rectTitle, true);
+        }
+
+        renderer->DrawRect(&rectRomList, &GRAY_LIGHT);
+        renderer->DrawBorder(&rectRomList, &ORANGE, false);
+
+        renderer->DrawRect(&rectRomInfo, &GRAY_LIGHT);
+        renderer->DrawBorder(&rectRomInfo, &GREEN, false);
     }
-
-    renderer->DrawRect(&rectRomList, &GRAY_LIGHT);
-    renderer->DrawBorder(&rectRomList, &ORANGE, false);
-
-    renderer->DrawRect(&rectRomInfo, &GRAY_LIGHT);
-    renderer->DrawBorder(&rectRomInfo, &GREEN, false);
-    //}
-}
-
-int Gui::DrawRomStates() {
-    // TODO
-    return 0;
 }
 
 void Gui::DrawRomInfo(RomList::Rom *rom) {
@@ -242,10 +236,13 @@ void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, in
             if (i != start && !new_col) {
                 rect.y += 32;
             }
-            Rect r = rect; r.x+= 16; r.y += 16; r.w = rect.w/3;
+            Rect r = rect;
+            r.x += 16;
+            r.y += 16;
+            r.w = rect.w / 3;
             renderer->DrawFont(skin->font, &r, &ORANGE, option->GetName());
             renderer->color = ORANGE;
-            renderer->DrawLine(r.x, r.y + skin->font->size, r.x+r.w, r.y + skin->font->size);
+            renderer->DrawLine(r.x, r.y + skin->font->size, r.x + r.w, r.y + skin->font->size);
             renderer->color = BLACK;
             rect.y += 32;
         } else {
@@ -522,7 +519,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
     } else {
         // change "rom" title menu to game name
         int index = config->GetOptionPos(options, Option::Index::MENU_ROM_OPTIONS);
-        options->at(index).SetName( isRomConfig ? romSelected->name : "Default roms options" );
+        options->at(index).SetName(isRomConfig ? romSelected->name : "Default roms options");
     }
 
     while (true) {
@@ -886,6 +883,7 @@ Gui::Gui(Renderer *rdr, Utility *util, RomList *rList, Config *cfg) {
     rectTitle.w = size.w / 2;
     rectTitle.w -= BORDER_SIZE + BORDER_SIZE / 2;
     rectTitle.h = size.h / 4;
+    rectTitle.h -= BORDER_SIZE;
     // rom list rect
     rectRomList.x = BORDER_SIZE;
     rectRomList.y = size.h / 4;
