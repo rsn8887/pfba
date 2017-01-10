@@ -36,7 +36,7 @@
 //////////
 // INIT //
 //////////
-PSP2Renderer::PSP2Renderer(int w, int h) : Renderer(w, h) {
+PSP2Renderer::PSP2Renderer(int w, int h) : Renderer() {
 
     if ((SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_NOPARACHUTE)) < 0) {
         printf("Couldn't init sdl: %s\n", SDL_GetError());
@@ -45,7 +45,7 @@ PSP2Renderer::PSP2Renderer(int w, int h) : Renderer(w, h) {
     }
 
     vita2d_init();
-    vita2d_set_clear_color((unsigned int) RGBA8(0x00, 0x00, 0x00, 0xFF));
+    vita2d_set_clear_color((unsigned int) RGBA8(color.r, color.g, color.b, color.a));
 
     shaderCount = 8;
     SetShader(0);

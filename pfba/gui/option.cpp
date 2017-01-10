@@ -18,6 +18,10 @@ const char *Option::GetName() {
     return text.c_str();
 }
 
+void Option::SetName(const std::string &name) {
+    text = name;
+}
+
 const char *Option::GetValue() {
     if(value >= options.size()) {
         return "<NA>";

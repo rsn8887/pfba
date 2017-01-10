@@ -71,6 +71,7 @@ public:
     int index = 0;
     int value = 0;
     const char *GetName();
+    void SetName(const std::string &name);
     const char *GetValue();
     void Next();
     void Prev();

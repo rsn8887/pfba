@@ -24,7 +24,7 @@ class Renderer {
 
 public:
 
-    Renderer(int w, int h);
+    Renderer();
     virtual ~Renderer();
 
     virtual Font *LoadFont(const char *path, int size) {return NULL;};  // to implement
@@ -59,7 +59,7 @@ public:
 
     virtual void Delay(unsigned int ms) {};  // to implement
 
-    Color *color;
+    Color color;
     int shaderCount = 0;
     int shaderCurrent = 0;
 };

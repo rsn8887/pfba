@@ -242,11 +242,11 @@ void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, in
             if (i != start && !new_col) {
                 rect.y += 32;
             }
-            skin->font->color = ORANGE;
-            renderer->DrawFont(skin->font, rect.x + 16, rect.y + 32, option->GetName());
-            renderer->DrawRect(true, rect.x + 16, rect.y + 46, rect.w / 3, 2,
-                               ORANGE.r, ORANGE.g, ORANGE.b, ORANGE.a);
-            skin->font->color = WHITE;
+            Rect r = rect; r.x+= 16; r.y += 16; r.w = rect.w/3;
+            renderer->DrawFont(skin->font, &r, &ORANGE, option->GetName());
+            renderer->color = ORANGE;
+            renderer->DrawLine(r.x, r.y + skin->font->size, r.x+r.w, r.y + skin->font->size);
+            renderer->color = BLACK;
             rect.y += 32;
         } else {
 
@@ -368,13 +368,6 @@ void Gui::RunStatesMenu() {
             saves[i].texture = renderer->LoadTexture(saves[i].sshot);
         }
     }
-
-    /*
-    for (int i = 0; i < 3; i++) {
-        Clear();
-        Flip();
-    }
-    */
 
     sdl2_input_clear();
 
@@ -526,12 +519,10 @@ void Gui::RunOptionMenu(bool isRomConfig) {
         options->insert(options->begin(), Option("RETURN", {"GO"}, 0, OPTION_RETURN));
         options->insert(options->begin(),
                         Option(romSelected->name, {romSelected->name}, 0, (Option::Index) 0, Option::Type::MENU));
-        /*
-        for (int i = 0; i < 3; i++) {
-            Clear();
-            Flip();
-        }
-        */
+    } else {
+        // change "rom" title menu to game name
+        int index = config->GetOptionPos(options, Option::Index::MENU_ROM_OPTIONS);
+        options->at(index).SetName(romSelected->name);
     }
 
     while (true) {
@@ -972,4 +963,5 @@ int Gui::GetInputButton() {
 
 Gui::~Gui() {
     delete (skin);
+
 }

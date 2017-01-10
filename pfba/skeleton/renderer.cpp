@@ -4,12 +4,11 @@
 
 #include "renderer.h"
 
-Renderer::Renderer(int w, int h) {
-    color = new Color();
+Renderer::Renderer() {
+    color = BLACK;
 }
 
 Renderer::~Renderer() {
-    delete(color);
 }
 
 Rect Renderer::DrawTexture(Texture *texture, const Rect *rect, bool fit) {
@@ -100,7 +99,7 @@ void Renderer::DrawFont(Font *font, Rect *dst, Color *color, const char *fmt, ..
 }
 
 void Renderer::DrawLine(int x1, int y1, int x2, int y2) {
-    DrawLine(x1, y1, x2, y2, color);
+    DrawLine(x1, y1, x2, y2, &color);
 }
 
 void Renderer::DrawRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a, bool fill) {

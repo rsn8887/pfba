@@ -7,7 +7,7 @@
 //////////
 // INIT //
 //////////
-SDL2Renderer::SDL2Renderer(int w, int h) : Renderer(w, h) {
+SDL2Renderer::SDL2Renderer(int w, int h) : Renderer() {
 
     if ((SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE)) < 0) {
         printf("Couldn't init sdl: %s\n", SDL_GetError());
@@ -172,7 +172,7 @@ void SDL2Renderer::DrawRect(Rect *rect, Color *_color, bool fill) {
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
     }
 
-    SDL_SetRenderDrawColor(renderer, color->r, color->g, color->b, color->a);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 }
 
 void SDL2Renderer::Clip(Rect *rect) {

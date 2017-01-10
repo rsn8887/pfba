@@ -3,6 +3,7 @@
 //
 
 #include <malloc.h>
+#include <cstdio>
 #include "audio.h"
 
 Audio::Audio(int freq, int fps) {
