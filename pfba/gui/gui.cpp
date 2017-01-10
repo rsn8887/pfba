@@ -671,6 +671,10 @@ void Gui::RunOptionMenu(bool isRomConfig) {
             Clear();
             Flip();
         }
+    } else {
+        // restore "rom" title menu for config save
+        int index = config->GetOptionPos(options, Option::Index::MENU_ROM_OPTIONS);
+        options->at(index).SetName("ROM");
     }
 
     if (option_changed) {
