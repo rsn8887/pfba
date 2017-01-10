@@ -522,7 +522,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
     } else {
         // change "rom" title menu to game name
         int index = config->GetOptionPos(options, Option::Index::MENU_ROM_OPTIONS);
-        options->at(index).SetName(romSelected->name);
+        options->at(index).SetName( isRomConfig ? romSelected->name : "Default roms options" );
     }
 
     while (true) {

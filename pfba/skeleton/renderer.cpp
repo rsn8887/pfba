@@ -114,9 +114,7 @@ void Renderer::DrawBorder(Rect *rect, Color *color, bool inside) {
 
     if (inside) {
         r = {rect->x + 1, rect->y + 1, rect->w - 2, rect->h - 2};
-    }/* else {
-        r = {rect->x - 1, rect->y - 1, rect->w + 2, rect->h + 2};
-    }*/
+    }
 
     DrawRect(&r, color, false);
 }
