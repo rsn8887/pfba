@@ -1,7 +1,6 @@
 // Driver Init module
 #include "gui.h"
 #include "burner.h"
-#include "sdl_input.h"
 #include "sdl_run.h"
 
 extern Gui *gui;
@@ -176,7 +175,7 @@ int AppError(TCHAR* szText, int bWarning) {
             gui->GetRenderer()->GetWindowSize().h / 2
     };
 
-    while(!sdl2_input_read()) {
+    while(!gui->GetInput()->Update()[0].state) {
 
         gui->DrawRomList();
 

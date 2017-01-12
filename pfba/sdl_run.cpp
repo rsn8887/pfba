@@ -22,10 +22,9 @@
 
 #include "burner.h"
 #include "sdl_run.h"
-#include "sdl_input.h"
-#include <video.h>
 #include <skeleton/audio.h>
 #include <sdl2/sdl2_audio.h>
+#include <video.h>
 
 static Gui *gui;
 Video *video;
@@ -33,12 +32,12 @@ Audio *audio;
 
 extern int nSekCpuCore;
 struct timeval start;
-extern unsigned int FBA_KEYPAD[4];
+//extern unsigned int FBA_KEYPAD[4];
 
 bool GameLooping;
 bool bPauseOn = false;
 
-int InpMake(unsigned int[]);
+int InpMake(Input::Player *players);
 
 unsigned int GetTicks(void) {
     unsigned int ticks;
@@ -58,8 +57,28 @@ int RunReset() {
 
 int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
 
-    sdl2_input_read();
-    InpMake(FBA_KEYPAD);
+    int rotation = gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION);
+    bool rotate = (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) && !rotation;
+
+    Input::Player *players = gui->GetInput()->Update(rotate);
+    InpMake(players);
+
+    // process menu
+    if ((players[0].state & Input::Key::KEY_COIN)
+        && (players[0].state & Input::Key::KEY_START)) {
+        bPauseOn = true;
+        audio->Pause(1);
+        gui->RunOptionMenu(true);
+        audio->Pause(0);
+        bPauseOn = false;
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_FIRE5)) {
+        bPauseOn = true;
+        audio->Pause(1);
+        gui->RunStatesMenu();
+        audio->Pause(0);
+        bPauseOn = false;
+    }
 
     if (!bPauseOn) {
         nFramesEmulated++;
@@ -71,7 +90,6 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
             video->Lock();
         }
         BurnDrvFrame();
-        //pBurnDraw = NULL;
 
         if (bDraw) {
             if (bDrawFps) {
@@ -129,7 +147,7 @@ void RunEmulator(Gui *g, int drvnum) {
     }
 
     audio = (Audio *) new SDL2Audio(frequency, nBurnFPS);
-    if(audio->available) {
+    if (audio->available) {
         nBurnSoundRate = audio->frequency;
         nBurnSoundLen = audio->buffer_len;
         pBurnSoundOut = audio->buffer;
@@ -157,9 +175,9 @@ void RunEmulator(Gui *g, int drvnum) {
             frame_time = (unsigned int) (100000000 / nBurnFPS);
 
     gettimeofday(&start, NULL);
-    GameLooping = true;
 
-    printf("Let's go!\n");
+    GameLooping = true;
+    printf("---- PFBA EMU START ----\n\n");
 
     while (GameLooping) {
 
@@ -201,7 +219,8 @@ void RunEmulator(Gui *g, int drvnum) {
         }
     }
 
-    printf("---- Shutdown Finalburn Alpha plus ----\n\n");
+    printf("---- PFBA EMU END ----\n\n");
+
     DrvExit();
     InpExit();
     delete (video);

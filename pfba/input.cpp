@@ -1,13 +1,13 @@
 #include <SDL2/SDL.h>
+#include <skeleton/input.h>
 
 #include "burner.h"
 
-extern SDL_Joystick *joys[4];
-extern char joyCount;
-extern unsigned char ServiceRequest;
-extern unsigned char P1P2Start;
 
-int nAnalogSpeed = 0x0100;
+//TODO: extern unsigned char ServiceRequest;
+//TODO: extern unsigned char P1P2Start;
+unsigned char ServiceRequest;
+unsigned char P1P2Start;
 
 #define MAX_INPUT_inp (19)
 
@@ -273,7 +273,7 @@ int InpExit() {
     return 0;
 }
 
-int InpMake(unsigned int key[]) {
+int InpMake(Input::Player *players) {
     if (!bInputOk) return 1;
 
     static int skip = 0;
@@ -283,18 +283,20 @@ int InpMake(unsigned int key[]) {
 
     unsigned int i = 0;
     unsigned int down = 0;
-    short numJoy = joyCount ? joyCount : 1;
     if (ServiceDip) {
         *(ServiceDip) = ServiceRequest;
     }
     int nJoy;
-    for (short joyNum = 0; joyNum < numJoy; joyNum++) {
+    for (short joyNum = 0; joyNum < PLAYER_COUNT; joyNum++) {
+        if (!players[joyNum].enabled) {
+            continue;
+        }
         for (i = 0; i < MAX_INPUT_inp; i++) {
             nJoy = 0;
             if (GameInput[joyNum][i].pVal == NULL) continue;
 
             if (GameInput[joyNum][i].nBit >= 0) {
-                down = key[joyNum] & (1U << GameInput[joyNum][i].nBit);
+                down = players[joyNum].state & (1U << GameInput[joyNum][i].nBit);
 
                 if (GameInput[joyNum][i].nType != 1) {
                     // Set analog controls to full
@@ -303,6 +305,7 @@ int InpMake(unsigned int key[]) {
                         if (down) *(GameInput[joyNum][i].pVal) = 0xff; else *(GameInput[joyNum][i].pVal) = 0x01;
                     }
 
+                    /* TODO
                     if (i == 12) //analogue x
                     {
                         nJoy = SDL_JoystickGetAxis(joys[joyNum], 0) << 1;
@@ -387,6 +390,7 @@ int InpMake(unsigned int key[]) {
                         }
                         *(GameInput[joyNum][i].pShortVal) = nJoy;
                     }
+                    */
                 } else {
                     // Binary controls
                     if (down) *(GameInput[joyNum][i].pVal) = 1; else *(GameInput[joyNum][i].pVal) = 0;

@@ -3,9 +3,9 @@
 //
 #include <algorithm>
 #include "sdl_run.h"
-#include "sdl_input.h"
 #include "video.h"
 #include <skeleton/timer.h>
+#include <skeleton/input.h>
 
 #define BORDER_SIZE 16
 
@@ -290,28 +290,28 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
             {win.x + (win.w / 2) + 16, win.y + win.h - 64, (win.w / 2) - 32, 32}
     };
 
-    sdl2_input_clear();
+    input->Clear(0);
 
     while (true) {
 
-        int key = sdl2_input_read();
+        int key = input->players[0].state;
         if (key || first) {
 
             first = 0;
 
-            if (key & KEYPAD_UP) {
-            } else if (key & KEYPAD_DOWN) {
-            } else if (key & KEYPAD_LEFT) {
+            if (key & Input::Key::KEY_UP) {
+            } else if (key & Input::Key::KEY_DOWN) {
+            } else if (key & Input::Key::KEY_LEFT) {
                 index--;
                 if (index < 0)
                     index = max_choice;
-            } else if (key & KEYPAD_RIGHT) {
+            } else if (key & Input::Key::KEY_RIGHT) {
                 index++;
                 if (index > max_choice)
                     index = 0;
-            } else if (key & KEYPAD_FIRE1) {
+            } else if (key & Input::Key::KEY_FIRE1) {
                 return index;
-            } else if (key & KEYPAD_FIRE2) {
+            } else if (key & Input::Key::KEY_FIRE2) {
                 return -1;
             }
 
@@ -343,6 +343,7 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
         }
     }
 
+    input->Clear(0);
 }
 
 void Gui::RunStatesMenu() {
@@ -366,7 +367,7 @@ void Gui::RunStatesMenu() {
         }
     }
 
-    sdl2_input_clear();
+    input->Clear(0);
 
     if (pBurnDraw == NULL) {
         printf("RunOptionMenu: force redraw: RunOneFrame\n");
@@ -381,22 +382,22 @@ void Gui::RunStatesMenu() {
 
     while (true) {
 
-        int key = sdl2_input_read();
+        int key = input->Update()[0].state;
         if (key || first) {
 
             first = 0;
 
-            if (key & KEYPAD_UP) {
-            } else if (key & KEYPAD_DOWN) {
-            } else if (key & KEYPAD_LEFT) {
+            if (key & Input::Key::KEY_UP) {
+            } else if (key & Input::Key::KEY_DOWN) {
+            } else if (key & Input::Key::KEY_LEFT) {
                 save_index--;
                 if (save_index < 0)
                     save_index = save_max - 1;
-            } else if (key & KEYPAD_RIGHT) {
+            } else if (key & Input::Key::KEY_RIGHT) {
                 save_index++;
                 if (save_index >= save_max)
                     save_index = 0;
-            } else if (key & KEYPAD_FIRE1) {
+            } else if (key & Input::Key::KEY_FIRE1) {
                 if (saves[save_index].available) {
                     int res = MessageBox("Press FIRE1 to confirm, FIRE2 to cancel",
                                          "Load", "Save");
@@ -432,7 +433,7 @@ void Gui::RunStatesMenu() {
                     }
                     break;
                 }
-            } else if (key & KEYPAD_FIRE2) {
+            } else if (key & Input::Key::KEY_FIRE2) {
                 break;
             }
 
@@ -483,7 +484,7 @@ void Gui::RunStatesMenu() {
         Flip();
     }
 
-    sdl2_input_clear();
+    input->Clear(0);
 }
 
 void Gui::RunOptionMenu(bool isRomConfig) {
@@ -496,7 +497,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
     std::vector<Option> *options =
             isRomConfig ? config->GetRomOptions() : config->GetGuiOptions();
 
-    sdl2_input_clear();
+    input->Clear(0);
 
     if (GameLooping) {
 
@@ -524,12 +525,12 @@ void Gui::RunOptionMenu(bool isRomConfig) {
 
     while (true) {
 
-        int key = sdl2_input_read();
+        int key = input->Update()[0].state;
         if (key || first) {
 
             first = 0;
 
-            if (key & KEYPAD_UP) {
+            if (key & Input::Key::KEY_UP) {
                 option_index--;
                 if (option_index < 0)
                     option_index = config->GetOptionPos(options, Option::Index::MENU_KEYBOARD - 1);
@@ -542,7 +543,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                         option_index = config->GetOptionPos(options, Option::Index::MENU_KEYBOARD - 1);
                     option = &options->at((unsigned long) option_index);
                 }
-            } else if (key & KEYPAD_DOWN) {
+            } else if (key & Input::Key::KEY_DOWN) {
                 option_index++;
                 if (option_index >= config->GetOptionPos(options, Option::Index::MENU_KEYBOARD))
                     option_index = 0;
@@ -555,7 +556,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                         option_index = 0;
                     option = &options->at((unsigned long) option_index);
                 }
-            } else if (key & KEYPAD_LEFT) {
+            } else if (key & Input::Key::KEY_LEFT) {
                 option_changed = true;
                 Option *option = &options->at((unsigned long) option_index);
                 if (option->type == Option::Type::INTEGER) {
@@ -591,7 +592,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                             break;
                     }
                 }
-            } else if (key & KEYPAD_RIGHT) {
+            } else if (key & Input::Key::KEY_RIGHT) {
                 option_changed = true;
                 Option *option = &options->at((unsigned long) option_index);
                 if (option->type == Option::Type::INTEGER) {
@@ -628,7 +629,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                             break;
                     }
                 }
-            } else if (key & KEYPAD_FIRE1) {
+            } else if (key & Input::Key::KEY_FIRE1) {
                 Option *option = &options->at((unsigned long) option_index);
                 if (option->type == Option::Type::INPUT) {
                     int btn = GetInputButton();
@@ -643,9 +644,9 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                 } else if (option->index == OPTION_STATES) {
                     RunStatesMenu();
                 }
-            } else if (key & KEYPAD_FIRE2
-                       || (key & KEYPAD_START && !isRomConfig)
-                       || (key & KEYPAD_COIN && isRomConfig)) {
+            } else if (key & Input::Key::KEY_FIRE2
+                       || (key & Input::Key::KEY_START && !isRomConfig)
+                       || (key & Input::Key::KEY_COIN && isRomConfig)) {
                 break;
             }
 
@@ -689,7 +690,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
         GameLooping = false;
     }
 
-    sdl2_input_clear();
+    input->Clear(0);
 }
 
 void Gui::Clear() {
@@ -744,11 +745,16 @@ void Gui::RunRom(RomList::Rom *rom) {
     mode = List;
 }
 
+Input *Gui::GetInput() {
+    return input;
+}
+
+/*
 int Gui::GetInput() {
 
     int key = sdl2_input_read();
 
-    if (key & KEYPAD_UP) {
+    if (key & Input::Key::KEY_UP) {
         rom_index--;
         if (rom_index < 0)
             rom_index = (int) (roms.size() - 1);
@@ -758,7 +764,7 @@ int Gui::GetInput() {
         }
         title_loaded = 0;
         return key;
-    } else if (key & KEYPAD_DOWN) {
+    } else if (key & Input::Key::KEY_DOWN) {
         rom_index++;
         if (rom_index >= roms.size())
             rom_index = 0;
@@ -768,7 +774,7 @@ int Gui::GetInput() {
         }
         title_loaded = 0;
         return key;
-    } else if (key & KEYPAD_RIGHT) {
+    } else if (key & Input::Key::KEY_RIGHT) {
         rom_index += max_lines;
         if (rom_index >= roms.size())
             rom_index = (int) (roms.size() - 1);
@@ -778,7 +784,7 @@ int Gui::GetInput() {
         }
         title_loaded = 0;
         return key;
-    } else if (key & KEYPAD_LEFT) {
+    } else if (key & Input::Key::KEY_LEFT) {
         rom_index -= max_lines;
         if (rom_index < 0)
             rom_index = 0;
@@ -788,13 +794,13 @@ int Gui::GetInput() {
         }
         title_loaded = 0;
         return key;
-    } else if (key & KEYPAD_FIRE1) {
+    } else if (key & Input::Key::KEY_FIRE1) {
         if (romSelected != NULL
             && romSelected->state != RomList::RomState::MISSING) {
             RunRom(romSelected);
         }
         return key;
-    } else if (key & KEYPAD_START) {
+    } else if (key & Input::Key::KEY_START) {
         RunOptionMenu();
         if (title != NULL) {
             DrawBg();
@@ -802,7 +808,7 @@ int Gui::GetInput() {
             renderer->DrawTexture(title, &rectRomPreview, true);
             Flip();
         }
-    } else if (key & KEYPAD_COIN) {
+    } else if (key & Input::Key::KEY_COIN) {
         if (romSelected != NULL) {
             config->Load(romSelected);
             RunOptionMenu(true);
@@ -813,12 +819,13 @@ int Gui::GetInput() {
                 Flip();
             }
         }
-    } else if (key & KEYPAD_QUIT) {
+    } else if (key & Input::Key::KEY_QUIT) {
         quit = true;
     }
 
     return key;
 }
+*/
 
 void Gui::Run() {
 
@@ -832,7 +839,72 @@ void Gui::Run() {
 
     while (!quit) {
 
-        int key = GetInput();
+        int key = input->Update()[0].state;
+
+        if (key & Input::Key::KEY_UP) {
+            rom_index--;
+            if (rom_index < 0)
+                rom_index = (int) (roms.size() - 1);
+            if (title) {
+                delete (title);
+                title = NULL;
+            }
+            title_loaded = 0;
+        } else if (key & Input::Key::KEY_DOWN) {
+            rom_index++;
+            if (rom_index >= roms.size())
+                rom_index = 0;
+            if (title) {
+                delete (title);
+                title = NULL;
+            }
+            title_loaded = 0;
+        } else if (key & Input::Key::KEY_RIGHT) {
+            rom_index += max_lines;
+            if (rom_index >= roms.size())
+                rom_index = (int) (roms.size() - 1);
+            if (title) {
+                delete (title);
+                title = NULL;
+            }
+            title_loaded = 0;
+        } else if (key & Input::Key::KEY_LEFT) {
+            rom_index -= max_lines;
+            if (rom_index < 0)
+                rom_index = 0;
+            if (title) {
+                delete (title);
+                title = NULL;
+            }
+            title_loaded = 0;
+        } else if (key & Input::Key::KEY_FIRE1) {
+            if (romSelected != NULL
+                && romSelected->state != RomList::RomState::MISSING) {
+                RunRom(romSelected);
+            }
+        } else if (key & Input::Key::KEY_START) {
+            RunOptionMenu();
+            if (title != NULL) {
+                DrawBg();
+                DrawRomList();
+                renderer->DrawTexture(title, &rectRomPreview, true);
+                Flip();
+            }
+        } else if (key & Input::Key::KEY_COIN) {
+            if (romSelected != NULL) {
+                config->Load(romSelected);
+                RunOptionMenu(true);
+                if (title != NULL) {
+                    DrawBg();
+                    DrawRomList();
+                    renderer->DrawTexture(title, &rectRomPreview, true);
+                    Flip();
+                }
+            }
+        } else if (key & Input::Key::KEY_QUIT) {
+            quit = true;
+        }
+        
         if (key > 0) {
 
             Clear();
@@ -867,12 +939,13 @@ void Gui::Run() {
     delete (timer_load);
 }
 
-Gui::Gui(Renderer *rdr, Utility *util, RomList *rList, Config *cfg) {
+Gui::Gui(Renderer *rdr, Utility *util, RomList *rList, Config *cfg, Input *in) {
 
     renderer = rdr;
     utility = util;
     romList = rList;
     config = cfg;
+    input = in;
 
     // create skin
     skin = new Skin(szAppSkinPath, renderer);
@@ -915,9 +988,6 @@ Gui::Gui(Renderer *rdr, Utility *util, RomList *rList, Config *cfg) {
 
     // filter roms
     FilterRoms();
-
-    // init input
-    sdl_input_init();
 }
 
 Renderer *Gui::GetRenderer() {
@@ -946,12 +1016,12 @@ int Gui::GetInputButton() {
     };
 
     Timer *timer = new Timer();
-
-    sdl2_input_clear();
+    
+    input->Clear(0);
 
     while (true) {
 
-        int key = sdl2_input_wait_button();
+        int key = input->Wait(0);
         if (key || timer->GetSeconds() >= 3) {
             return key;
         }

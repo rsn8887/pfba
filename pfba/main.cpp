@@ -30,6 +30,7 @@ int _newlib_heap_size_user = 192 * 1024 * 1024;
 #else
 
 #include <sdl2/sdl2_utility.h>
+#include <sdl2/sdl2_input.h>
 
 #endif
 
@@ -38,6 +39,7 @@ Utility *utility;
 Config *config;
 RomList *romList;
 Gui *gui;
+Input *inp;
 
 UINT32 nReplayCurrentFrame;
 char szAppBurnVer[16] = VERSION;
@@ -190,6 +192,67 @@ int main(int argc, char **argv) {
     sprintf(cfgPath, "%s/%s", szAppHomePath, "fbagui.cfg");
     config = new Config(cfgPath, hardwares);
 
+#ifdef __PSP2__
+    inp = (Input *) new SDL2Input();
+    int keys[] {
+            // needs to be in this order
+            config->GetRomValue(Option::Index::KEY_UP),
+            config->GetRomValue(Option::Index::KEY_DOWN),
+            config->GetRomValue(Option::Index::KEY_LEFT),
+            config->GetRomValue(Option::Index::KEY_RIGHT),
+            config->GetRomValue(Option::Index::KEY_COIN1),
+            config->GetRomValue(Option::Index::KEY_START1),
+            config->GetRomValue(Option::Index::KEY_FIRE1),
+            config->GetRomValue(Option::Index::KEY_FIRE2),
+            config->GetRomValue(Option::Index::KEY_FIRE3),
+            config->GetRomValue(Option::Index::KEY_FIRE4),
+            config->GetRomValue(Option::Index::KEY_FIRE5),
+            config->GetRomValue(Option::Index::KEY_FIRE6),
+            0 // KEY_QUIT
+    };
+    inp->SetKeyboardMapping(keyboard_keys);
+#elif __RPI__
+#else
+    // init input
+    inp = (Input *) new SDL2Input();
+
+    int keyboard_keys[] {
+            // needs to be in this order
+            config->GetRomValue(Option::Index::KEY_UP),
+            config->GetRomValue(Option::Index::KEY_DOWN),
+            config->GetRomValue(Option::Index::KEY_LEFT),
+            config->GetRomValue(Option::Index::KEY_RIGHT),
+            config->GetRomValue(Option::Index::KEY_COIN1),
+            config->GetRomValue(Option::Index::KEY_START1),
+            config->GetRomValue(Option::Index::KEY_FIRE1),
+            config->GetRomValue(Option::Index::KEY_FIRE2),
+            config->GetRomValue(Option::Index::KEY_FIRE3),
+            config->GetRomValue(Option::Index::KEY_FIRE4),
+            config->GetRomValue(Option::Index::KEY_FIRE5),
+            config->GetRomValue(Option::Index::KEY_FIRE6),
+            0 // KEY_QUIT
+    };
+    inp->SetKeyboardMapping(keyboard_keys);
+
+    int joystick_keys[] {
+            // needs to be in this order
+            config->GetRomValue(Option::Index::JOY_UP),
+            config->GetRomValue(Option::Index::JOY_DOWN),
+            config->GetRomValue(Option::Index::JOY_LEFT),
+            config->GetRomValue(Option::Index::JOY_RIGHT),
+            config->GetRomValue(Option::Index::JOY_COIN1),
+            config->GetRomValue(Option::Index::JOY_START1),
+            config->GetRomValue(Option::Index::JOY_FIRE1),
+            config->GetRomValue(Option::Index::JOY_FIRE2),
+            config->GetRomValue(Option::Index::JOY_FIRE3),
+            config->GetRomValue(Option::Index::JOY_FIRE4),
+            config->GetRomValue(Option::Index::JOY_FIRE5),
+            config->GetRomValue(Option::Index::JOY_FIRE6),
+            0 // KEY_QUIT
+    };
+    inp->SetJoystickMapping(0, joystick_keys);
+#endif
+
     // build roms list
     std::vector<std::string> rom_paths;
     for (int i = 0; i < DIRS_MAX; i++) {
@@ -198,7 +261,7 @@ int main(int argc, char **argv) {
     romList = new RomList(utility, rom_paths, &hardwares);
 
     // run gui
-    gui = new Gui(renderer, utility, romList, config);
+    gui = new Gui(renderer, utility, romList, config, inp);
 #ifdef __PSP2__ // prevent rom list scrolling lag on psp2
     gui->SetTitleLoadDelay(500);
 #endif
@@ -212,6 +275,7 @@ int main(int argc, char **argv) {
     delete (romList);
     delete (renderer);
     delete (config);
+    delete (inp);
 
 #ifdef __PSP2__
     scePowerSetArmClockFrequency(333);

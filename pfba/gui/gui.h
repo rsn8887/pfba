@@ -6,17 +6,20 @@
 #define _GUI_H_
 
 #include <skeleton/renderer.h>
+#include <skeleton/input.h>
 #include "skin.h"
 #include "romlist.h"
 #include "config.h"
 class Config;
 class Option;
 
+#define INPUT_DELAY 150
+
 class Gui {
 
 public:
 
-    Gui(Renderer *rdr, Utility *util, RomList *rList, Config *cfg);
+    Gui(Renderer *rdr, Utility *util, RomList *rList, Config *cfg, Input *input);
 
     ~Gui();
 
@@ -40,19 +43,19 @@ public:
     Renderer *GetRenderer();
     Skin *GetSkin();
     Config *GetConfig();
+    Input *GetInput();
 
 private:
 
-    int GetInput();
     bool IsOptionHidden(Option *option);
 
     enum GuiMode { List = 0, CfgGui };
     GuiMode mode = List;
-    Config *config;
-
+    Config *config = NULL;
     Renderer *renderer = NULL;
-    Utility *utility;
+    Utility *utility = NULL;
     Skin *skin = NULL;
+    Input *input = NULL;
 
     Texture *title = NULL;
     int title_loaded = 0;
