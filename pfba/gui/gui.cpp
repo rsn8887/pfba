@@ -636,6 +636,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                     int btn = GetButton();
                     if (btn >= 0) {
                         option->value = btn;
+                        option_changed = true;
                     }
                 } else if (option->index == OPTION_EXIT) {
                     stop = true;
@@ -691,9 +692,8 @@ void Gui::RunOptionMenu(bool isRomConfig) {
         GameLooping = false;
     }
 
-    input->Clear(0);
-
     SetPlayerInputMapping(isRomConfig);
+    input->Clear(0);
 }
 
 void Gui::Clear() {
