@@ -5,7 +5,6 @@
 #include "sdl_run.h"
 #include "video.h"
 #include <skeleton/timer.h>
-#include <skeleton/input.h>
 
 #define BORDER_SIZE 16
 
@@ -56,15 +55,12 @@ void Gui::FilterRoms() {
     int showAll = config->GetGuiValue(Option::Index::GUI_SHOW_ALL);
     int showHardwareCfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
     int showHardware = romList->hardwares[showHardwareCfg].prefix;
-    //printf("hardware: %i\n", hardware);
 
     remove_copy_if(romList->list.begin(), romList->list.end(), back_inserter(roms),
                    [showAll, showClone, showHardware](const RomList::Rom r) {
                        return !showAll && r.state != RomList::RomState::WORKING
                               || !showClone && r.parent != NULL
-                              || showHardware > 0
-                                 && (((r.hardware | HARDWARE_PREFIX_CARTRIDGE) ^ HARDWARE_PREFIX_CARTRIDGE)
-                                     & 0xff000000) != showHardware;
+                              || showHardware > 0 && !RomList::IsHardware(r.hardware, showHardware);
                    });
 
     rom_index = 0;
@@ -304,10 +300,10 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
             } else if (key & Input::Key::KEY_LEFT) {
                 index--;
                 if (index < 0)
-                    index = max_choice-1;
+                    index = max_choice - 1;
             } else if (key & Input::Key::KEY_RIGHT) {
                 index++;
-                if (index > max_choice-1)
+                if (index > max_choice - 1)
                     index = 0;
             } else if (key & Input::Key::KEY_FIRE1) {
                 return index;
@@ -767,6 +763,7 @@ void Gui::Run() {
     while (!quit) {
 
         int key = input->Update()[0].state;
+        //printf("key: %i\n", key);
 
         if (key & Input::Key::KEY_UP) {
             rom_index--;
@@ -831,7 +828,7 @@ void Gui::Run() {
         } else if (key & Input::Key::KEY_QUIT) {
             quit = true;
         }
-        
+
         if (key > 0) {
 
             Clear();
@@ -935,7 +932,7 @@ void Gui::SetTitleLoadDelay(int delay) {
 
 int Gui::GetButton() {
 
-    Rect window{
+    Rect box{
             renderer->GetWindowSize().w / 4,
             renderer->GetWindowSize().h / 4,
             renderer->GetWindowSize().w / 2,
@@ -943,7 +940,7 @@ int Gui::GetButton() {
     };
 
     Timer *timer = new Timer();
-    
+
     input->Clear(0);
 
     while (true) {
@@ -953,23 +950,34 @@ int Gui::GetButton() {
             return btn;
         }
 
-        renderer->DrawRect(&window, &GRAY);
-        renderer->DrawBorder(&window, &GREEN);
-        renderer->DrawFont(skin->font, &window, &WHITE, true, true, "PRESS A BUTTON");
+        DrawBg();
+
+        Rect rect{32, 32,
+                  renderer->GetWindowSize().w - 64,
+                  renderer->GetWindowSize().h - 64
+        };
+        renderer->DrawRect(&rect, &GRAY);
+        renderer->DrawBorder(&rect, &GREEN);
+
+        renderer->DrawRect(&box, &GRAY);
+        renderer->DrawBorder(&box, &GREEN);
+        renderer->DrawFont(skin->font, &box, &WHITE, true, true, "PRESS A BUTTON (%i)", 3-timer->GetSeconds());
         Flip();
     }
 }
 
 void Gui::SetPlayerInputMapping(bool isRomConfig) {
 
-    if(isRomConfig) {
+    if (isRomConfig) {
         input->SetKeyboardMapping(config->GetRomPlayerInputKeys(0));
         int deadzone = 2000 + config->GetRomValue(Option::Index::JOY_DEADZONE) * 2000;
+        printf("Gui::SetPlayerInputMapping: deadzone = %i\n", deadzone);
         input->SetJoystickMapping(0, config->GetRomPlayerInputButtons(0), deadzone);
     } else {
         int *keys = config->GetGuiPlayerInputKeys(0);
         input->SetKeyboardMapping(keys);
         int deadzone = 2000 + config->GetGuiValue(Option::Index::JOY_DEADZONE) * 2000;
+        printf("Gui::SetPlayerInputMapping: deadzone = %i\n", deadzone);
         input->SetJoystickMapping(0, config->GetGuiPlayerInputButtons(0), deadzone);
     }
 }

@@ -155,7 +155,12 @@ int ProgressUpdateBurner(double dProgress, const TCHAR* pszText, bool bAbs)
         int x = window.x+16;
         int w = window.w-32;
         gui->GetRenderer()->DrawRect(x-1, window.y+window.h - 65, w+2, 34, 255, 255, 255, 255, false);
-        gui->GetRenderer()->DrawRect(x, window.y+window.h - 64, (int)(nProgressPosBurn*(double)w), 32, 255, 255, 0, 255);
+
+        int progress_y = (int)(nProgressPosBurn*(double)w);
+        if(progress_y > w) {
+            progress_y = w;
+        }
+        gui->GetRenderer()->DrawRect(x, window.y+window.h - 64, progress_y, 32, 255, 255, 0, 255);
     } else {
         gui->GetRenderer()->DrawFont(gui->GetSkin()->font, window.x + 16, window.y + 96, "Please wait...");
     }

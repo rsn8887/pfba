@@ -42,7 +42,7 @@ public:
         unsigned int state;
         int dead_zone = 8000;
         bool enabled = false;
-        void *custom = NULL;
+        void *data = NULL;
     };
 
     // map keyboard to player 0
@@ -55,21 +55,11 @@ public:
     virtual ~Input() {};
 
     virtual Player *Update(bool rotate = false) { return players; }; // to implement
-    virtual int GetButton(int player) { return 0; }; // to implement
-    virtual int Clear(int player) { return 0; }; // to implement
+    virtual int GetButton(int player) { return -1; }; // to implement
 
-    void SetJoystickMapping(int player, int *mapping, int deadzone = 8000) {
-        for(int i=0; i<KEY_COUNT; i++) {
-            players[player].mapping[i] = mapping[i];
-        }
-        players[player].dead_zone = deadzone;
-    }
-
-    void SetKeyboardMapping(int *mapping) {
-        for(int i=0; i<KEY_COUNT; i++) {
-            keyboard.mapping[i] = mapping[i];
-        }
-    }
+    virtual int Clear(int player);
+    virtual void SetJoystickMapping(int player, int *mapping, int deadzone = 8000);
+    virtual void SetKeyboardMapping(int *mapping);
 
     Player players[PLAYER_COUNT];
     Keyboard keyboard;

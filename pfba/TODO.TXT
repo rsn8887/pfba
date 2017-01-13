@@ -1,7 +1,8 @@
 # COMMON
 ========
 
-
+add joystick axis input configuration
+add > 1 joystick support
 fix crash with non working roms (cps2 wrong set, ...) identified as 68K CycloneRun crash
 add help screen
 
@@ -28,9 +29,9 @@ DONE // GUI: fix screenshot dismiss on gui option return
 
 # PSP2
 =======
-GUI: FIX "cv_*.png" loading
 
 # NEXT RELEASE
+DONE // GUI: FIX "cv_*.png" loading
 DONE // EMU: fix filters not applied ?
 # OLD RELEASES
 DONE // - remove slow shaders : CRT_EASY, GTU, XBR2X/FAST, BUCUBIC,

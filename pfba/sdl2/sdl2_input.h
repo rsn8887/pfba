@@ -16,7 +16,6 @@ public:
 
     virtual Player *Update(bool rotate = false);
     virtual int GetButton(int player);
-    virtual int Clear(int player);
 
 private:
     virtual void process_axis(Input::Player& player, bool rotate = false);

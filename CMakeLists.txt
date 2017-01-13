@@ -5,7 +5,7 @@ set(CMAKE_SYSTEM_NAME "Generic")
 enable_language(ASM)
 
 # delete cmake cache folder before changing this option
-option(BUILD_PSP2 "Build with PSP2 support" OFF)
+option(BUILD_PSP2 "Build with PSP2 support" ON)
 option(BUILD_RPI "Build with RPI support" OFF)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -310,6 +310,7 @@ if (BUILD_PSP2)
             pfba/psp2/*.c*
             pfba/psp2/libvita2d/source/*.c
             pfba/sdl2/sdl2_audio.cpp # TODO: get rid of sdl2, use sdl2 audio for now
+            pfba/sdl2/sdl2_input.cpp # TODO: get rid of sdl2, use sdl2 input for now
             pfba/cpu/c68000_intf.cpp
             pfba/cpu/cyclone/Cyclone.s
             )

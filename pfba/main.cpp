@@ -18,7 +18,7 @@
  */
 
 #include <gui/gui.h>
-#include "burner.h"
+#include <sdl2/sdl2_input.h>
 
 #ifdef __PSP2__
 #include <psp2/power.h>
@@ -28,10 +28,7 @@ int _newlib_heap_size_user = 192 * 1024 * 1024;
 #elif __RPI__
 #include <sdl2/sdl2_utility.h>
 #else
-
 #include <sdl2/sdl2_utility.h>
-#include <sdl2/sdl2_input.h>
-
 #endif
 
 Renderer *renderer;
