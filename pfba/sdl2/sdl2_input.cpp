@@ -16,13 +16,13 @@ static int key_id[Input::Key::KEY_COUNT] {
         Input::Key::KEY_FIRE3,
         Input::Key::KEY_FIRE4,
         Input::Key::KEY_FIRE5,
-        Input::Key::KEY_FIRE6,
-        Input::Key::KEY_QUIT,
+        Input::Key::KEY_FIRE6
 };
 
 SDL2Input::SDL2Input() {
 
-    if (!SDL_WasInit(SDL_INIT_JOYSTICK)) {
+    if (SDL_WasInit(SDL_INIT_JOYSTICK) == 0) {
+        printf("SDL2Input: SDL_InitSubSystem\n");
         SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     }
 
@@ -34,13 +34,13 @@ SDL2Input::SDL2Input() {
 
     if (joystick_count > 0) {
         for (int i = 0; i < joystick_count; i++) {
-            SDL_Joystick *joy = SDL_JoystickOpen(i);
-            players[i].custom = joy;
+            printf("Joystick: %i\n", i);
+            players[i].custom = SDL_JoystickOpen(i);
             players[i].enabled = true;
-            printf("Name: %s\n", SDL_JoystickName(joy));
-            printf("Hats %d\n", SDL_JoystickNumHats(joy));
-            printf("Buttons %d\n", SDL_JoystickNumButtons(joy));
-            printf("Axis %d\n", SDL_JoystickNumAxes(joy));
+            printf("Name: %s\n", SDL_JoystickName((SDL_Joystick *)players[i].custom));
+            printf("Hats %d\n", SDL_JoystickNumHats((SDL_Joystick *)players[i].custom));
+            printf("Buttons %d\n", SDL_JoystickNumButtons((SDL_Joystick *)players[i].custom));
+            printf("Axis %d\n", SDL_JoystickNumAxes((SDL_Joystick *)players[i].custom));
         }
     } else {
         // allow keyboard mapping to player1
@@ -52,6 +52,7 @@ SDL2Input::SDL2Input() {
             players[i].mapping[k] = 0;
         }
     }
+
     for(int i=0; i<KEY_COUNT; i++) {
         keyboard.mapping[i] = 0;
     }
@@ -59,11 +60,12 @@ SDL2Input::SDL2Input() {
 
 SDL2Input::~SDL2Input() {
 
-    if (SDL_WasInit(SDL_INIT_JOYSTICK)) {
-        SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-    }
     for (int i = 0; i < PLAYER_COUNT; i++) {
         players[i].enabled = false;
+    }
+
+    if (SDL_WasInit(SDL_INIT_JOYSTICK)) {
+        SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
     }
 }
 
@@ -103,7 +105,7 @@ Input::Player *SDL2Input::Update(bool rotate) {
     return players;
 }
 
-int SDL2Input::Wait(int player) {
+int SDL2Input::GetButton(int player) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_JOYBUTTONUP) {

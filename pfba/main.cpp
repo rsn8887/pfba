@@ -41,15 +41,14 @@ RomList *romList;
 Gui *gui;
 Input *inp;
 
-UINT32 nReplayCurrentFrame;
 char szAppBurnVer[16] = VERSION;
 // replaces ips_manager.cpp
 bool bDoIpsPatch = 0;
-void IpsApplyPatches(UINT8* base, char* rom_name) {}
+void IpsApplyPatches(UINT8 *base, char *rom_name) {}
 // needed by cps3run.cpp and dataeast/d_backfire.cpp
 void Reinitialise() {}
 // needed by neo_run.cpp
-void	wav_exit() {}
+void wav_exit() {}
 int bRunPause;
 
 int main(int argc, char **argv) {
@@ -188,69 +187,19 @@ int main(int argc, char **argv) {
     BurnLibInit();
 
     // load configuration
-    char cfgPath[MAX_PATH];
-    sprintf(cfgPath, "%s/%s", szAppHomePath, "fbagui.cfg");
+    std::string cfgPath = szAppHomePath;
+    cfgPath += "/fbagui.cfg";
     config = new Config(cfgPath, hardwares);
 
 #ifdef __PSP2__
+    // init input
     inp = (Input *) new SDL2Input();
-    int keys[] {
-            // needs to be in this order
-            config->GetRomValue(Option::Index::KEY_UP),
-            config->GetRomValue(Option::Index::KEY_DOWN),
-            config->GetRomValue(Option::Index::KEY_LEFT),
-            config->GetRomValue(Option::Index::KEY_RIGHT),
-            config->GetRomValue(Option::Index::KEY_COIN1),
-            config->GetRomValue(Option::Index::KEY_START1),
-            config->GetRomValue(Option::Index::KEY_FIRE1),
-            config->GetRomValue(Option::Index::KEY_FIRE2),
-            config->GetRomValue(Option::Index::KEY_FIRE3),
-            config->GetRomValue(Option::Index::KEY_FIRE4),
-            config->GetRomValue(Option::Index::KEY_FIRE5),
-            config->GetRomValue(Option::Index::KEY_FIRE6),
-            0 // KEY_QUIT
-    };
-    inp->SetKeyboardMapping(keyboard_keys);
 #elif __RPI__
+    // init input
+    inp = (Input *) new SDL2Input();
 #else
     // init input
     inp = (Input *) new SDL2Input();
-
-    int keyboard_keys[] {
-            // needs to be in this order
-            config->GetRomValue(Option::Index::KEY_UP),
-            config->GetRomValue(Option::Index::KEY_DOWN),
-            config->GetRomValue(Option::Index::KEY_LEFT),
-            config->GetRomValue(Option::Index::KEY_RIGHT),
-            config->GetRomValue(Option::Index::KEY_COIN1),
-            config->GetRomValue(Option::Index::KEY_START1),
-            config->GetRomValue(Option::Index::KEY_FIRE1),
-            config->GetRomValue(Option::Index::KEY_FIRE2),
-            config->GetRomValue(Option::Index::KEY_FIRE3),
-            config->GetRomValue(Option::Index::KEY_FIRE4),
-            config->GetRomValue(Option::Index::KEY_FIRE5),
-            config->GetRomValue(Option::Index::KEY_FIRE6),
-            0 // KEY_QUIT
-    };
-    inp->SetKeyboardMapping(keyboard_keys);
-
-    int joystick_keys[] {
-            // needs to be in this order
-            config->GetRomValue(Option::Index::JOY_UP),
-            config->GetRomValue(Option::Index::JOY_DOWN),
-            config->GetRomValue(Option::Index::JOY_LEFT),
-            config->GetRomValue(Option::Index::JOY_RIGHT),
-            config->GetRomValue(Option::Index::JOY_COIN1),
-            config->GetRomValue(Option::Index::JOY_START1),
-            config->GetRomValue(Option::Index::JOY_FIRE1),
-            config->GetRomValue(Option::Index::JOY_FIRE2),
-            config->GetRomValue(Option::Index::JOY_FIRE3),
-            config->GetRomValue(Option::Index::JOY_FIRE4),
-            config->GetRomValue(Option::Index::JOY_FIRE5),
-            config->GetRomValue(Option::Index::JOY_FIRE6),
-            0 // KEY_QUIT
-    };
-    inp->SetJoystickMapping(0, joystick_keys);
 #endif
 
     // build roms list
@@ -258,7 +207,7 @@ int main(int argc, char **argv) {
     for (int i = 0; i < DIRS_MAX; i++) {
         rom_paths.push_back(config->GetRomPath(i));
     }
-    romList = new RomList(utility, rom_paths, &hardwares);
+    romList = new RomList(utility, rom_paths, hardwares);
 
     // run gui
     gui = new Gui(renderer, utility, romList, config, inp);
@@ -269,7 +218,6 @@ int main(int argc, char **argv) {
 
     BurnLibExit();
 
-    hardwares.clear();
     delete (gui);
     delete (utility);
     delete (romList);

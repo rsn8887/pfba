@@ -12,9 +12,9 @@
 
 RomList::RomList(Utility *utility,
                  const std::vector<std::string> &paths,
-                 std::vector<Hardware> *hardwares) {
+                 std::vector<Hardware> &hwList) {
 
-    this->hardwares = hardwares;
+    this->hardwares = hwList;
 
     printf("RomList: building list...\n");
     clock_t begin = clock();
@@ -46,9 +46,9 @@ RomList::RomList(Utility *utility,
         rom.hardware = BurnDrvGetHardwareCode();
 
         // add rom to "ALL" game list
-        hardwares->at(0).supported_count++;
+        hardwares[0].supported_count++;
         if (rom.parent) {
-            hardwares->at(0).clone_count++;
+            hardwares[0].clone_count++;
         }
 
         // add rom to specific hardware
@@ -67,9 +67,9 @@ RomList::RomList(Utility *utility,
             sprintf(path, "%s.zip", rom.zip);
             if (std::find(files[j].begin(), files[j].end(), path) != files[j].end()) {
                 rom.state = BurnDrvIsWorking() ? RomState::WORKING : RomState::NOT_WORKING;
-                hardwares->at(0).available_count++;
+                hardwares[0].available_count++;
                 if (rom.parent) {
-                    hardwares->at(0).available_clone_count++;
+                    hardwares[0].available_clone_count++;
                 }
                 if (hardware) {
                     hardware->available_count++;
@@ -82,12 +82,12 @@ RomList::RomList(Utility *utility,
         }
 
         if (rom.state == RomState::MISSING) {
-            hardwares->at(0).missing_count++;
+            hardwares[0].missing_count++;
             if (hardware) {
                 hardware->missing_count++;
             }
             if (rom.parent) {
-                hardwares->at(0).missing_clone_count++;
+                hardwares[0].missing_clone_count++;
                 if (hardware) {
                     hardware->missing_clone_count++;
                 }

@@ -32,7 +32,6 @@ Audio *audio;
 
 extern int nSekCpuCore;
 struct timeval start;
-//extern unsigned int FBA_KEYPAD[4];
 
 bool GameLooping;
 bool bPauseOn = false;
@@ -168,6 +167,9 @@ void RunEmulator(Gui *g, int drvnum) {
     printf("Creating video device\n");
     video = new Video(gui->GetRenderer());
 
+    // set per rom input scheme
+    gui->SetPlayerInputMapping(true);
+
     RunReset();
 
     int now, done = 0, timer = 0, ticks = 0, tick = 0, i = 0, fps = 0;
@@ -227,4 +229,6 @@ void RunEmulator(Gui *g, int drvnum) {
     video = NULL;
     delete (audio);
     audio = NULL;
+
+    gui->SetPlayerInputMapping(false);
 }

@@ -7,9 +7,9 @@
 #include <burner.h>
 #include "config.h"
 
-Config::Config(const char *cfgPath, const std::vector<RomList::Hardware> &hardwares) {
+Config::Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwList) {
 
-    strncpy(configPath, cfgPath, 512);
+    configPath = cfgPath;
 
     options_gui.clear();
 
@@ -25,9 +25,9 @@ Config::Config(const char *cfgPath, const std::vector<RomList::Hardware> &hardwa
     roms_paths.push_back("");
 
     // build hardware list configuration
-    std::vector<std::string> hardware_name;
-    for (int i = 0; i < hardwares.size(); i++) {
-        hardware_name.push_back(hardwares[i].name);
+    std::vector<std::string> hardware_names;
+    for (int i = 0; i < hwList.size(); i++) {
+        hardware_names.push_back(hwList[i].name);
     }
 
     ////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@ Config::Config(const char *cfgPath, const std::vector<RomList::Hardware> &hardwa
     options_gui.push_back(Option("MAIN", {"MAIN"}, 0, Option::Index::MENU_MAIN, Option::Type::MENU));
     options_gui.push_back(Option("SHOW_ALL", {"WORKING", "ALL"}, 1, Option::Index::GUI_SHOW_ALL));
     options_gui.push_back(Option("SHOW_CLONES", {"NO", "YES"}, 0, Option::Index::GUI_SHOW_CLONES));
-    options_gui.push_back(Option("SHOW_HARDWARE", hardware_name, 0, Option::Index::GUI_SHOW_HARDWARE));
+    options_gui.push_back(Option("SHOW_HARDWARE", hardware_names, 0, Option::Index::GUI_SHOW_HARDWARE));
 
     // default rom config
     options_gui.push_back(Option("ROM", {"ROM"}, 0, Option::Index::MENU_ROM_OPTIONS, Option::Type::MENU));
@@ -80,7 +80,7 @@ Config::Config(const char *cfgPath, const std::vector<RomList::Hardware> &hardwa
             Option("JOY_START1", {"7"}, KEY_JOY_START1_DEFAULT, Option::Index::JOY_START1, Option::Type::INPUT));
     options_gui.push_back(Option("JOY_DEADZONE",
                                  {"2000", "4000", "6000", "8000", "10000", "12000", "14000", "16000",
-                                  "18000", "20000", "22000", "24000", "26000", "28000", "30000"}, 4,
+                                  "18000", "20000", "22000", "24000", "26000", "28000", "30000"}, 3,
                                  Option::Index::JOY_DEADZONE, Option::Type::INTEGER));
 
     // keyboard
@@ -127,7 +127,8 @@ void Config::Load(RomList::Rom *rom) {
 
     if (config_read_file(&cfg, path.c_str())) {
 
-        printf("config file found: %s\n", path.c_str());
+        printf("###########################\n");
+        printf("CFG FOUND: %s\n", path.c_str());
 
         config_setting_t *settings_root = config_lookup(&cfg, "FBA_CONFIG");
         if (settings_root) {
@@ -145,7 +146,7 @@ void Config::Load(RomList::Rom *rom) {
                             roms_paths[i] = value;
                             if (!roms_paths[i].empty() && roms_paths[i].back() != '/')
                                 roms_paths[i] += '/';
-                            printf("found rom_paths[%i]: %s\n", i, value);
+                            printf("%s: %s\n", path, value);
                         }
                     }
                 } else {
@@ -161,10 +162,12 @@ void Config::Load(RomList::Rom *rom) {
                     int value = 0;
                     if (config_setting_lookup_int(settings, options->at(i).GetName(), &value)) {
                         options->at(i).value = value;
+                        printf("%s: %i\n", options->at(i).GetName(), value);
                     }
                 }
             }
         }
+        printf("###########################\n");
     } else {
         // no need to save default rom config
         if (!isRomCfg) {
@@ -281,4 +284,80 @@ int Config::GetOptionPos(std::vector<Option> *options, int index) {
         }
     }
     return 0;
+}
+
+int *Config::GetGuiPlayerInputKeys(int player) {
+
+    // TODO: player > 0 not supported yet
+    keyboard_keys[0] = GetGuiValue(Option::Index::KEY_UP);
+    keyboard_keys[1] = GetGuiValue(Option::Index::KEY_DOWN);
+    keyboard_keys[2] = GetGuiValue(Option::Index::KEY_LEFT);
+    keyboard_keys[3] = GetGuiValue(Option::Index::KEY_RIGHT);
+    keyboard_keys[4] = GetGuiValue(Option::Index::KEY_COIN1);
+    keyboard_keys[5] = GetGuiValue(Option::Index::KEY_START1);
+    keyboard_keys[6] = GetGuiValue(Option::Index::KEY_FIRE1);
+    keyboard_keys[7] = GetGuiValue(Option::Index::KEY_FIRE2);
+    keyboard_keys[8] = GetGuiValue(Option::Index::KEY_FIRE3);
+    keyboard_keys[9] = GetGuiValue(Option::Index::KEY_FIRE4);
+    keyboard_keys[10] = GetGuiValue(Option::Index::KEY_FIRE5);
+    keyboard_keys[11] = GetGuiValue(Option::Index::KEY_FIRE6);
+
+    return keyboard_keys;
+}
+
+int *Config::GetGuiPlayerInputButtons(int player) {
+
+    // TODO: player > 0 not supported yet
+    joystick_keys[0] = GetGuiValue(Option::Index::JOY_UP);
+    joystick_keys[1] = GetGuiValue(Option::Index::JOY_DOWN);
+    joystick_keys[2] = GetGuiValue(Option::Index::JOY_LEFT);
+    joystick_keys[3] = GetGuiValue(Option::Index::JOY_RIGHT);
+    joystick_keys[4] = GetGuiValue(Option::Index::JOY_COIN1);
+    joystick_keys[5] = GetGuiValue(Option::Index::JOY_START1);
+    joystick_keys[6] = GetGuiValue(Option::Index::JOY_FIRE1);
+    joystick_keys[7] = GetGuiValue(Option::Index::JOY_FIRE2);
+    joystick_keys[8] = GetGuiValue(Option::Index::JOY_FIRE3);
+    joystick_keys[9] = GetGuiValue(Option::Index::JOY_FIRE4);
+    joystick_keys[10] = GetGuiValue(Option::Index::JOY_FIRE5);
+    joystick_keys[11] = GetGuiValue(Option::Index::JOY_FIRE6);
+
+    return joystick_keys;
+}
+
+int *Config::GetRomPlayerInputKeys(int player) {
+
+    // TODO: player > 0 not supported yet
+    keyboard_keys[0] = GetRomValue(Option::Index::KEY_UP);
+    keyboard_keys[1] = GetRomValue(Option::Index::KEY_DOWN);
+    keyboard_keys[2] = GetRomValue(Option::Index::KEY_LEFT);
+    keyboard_keys[3] = GetRomValue(Option::Index::KEY_RIGHT);
+    keyboard_keys[4] = GetRomValue(Option::Index::KEY_COIN1);
+    keyboard_keys[5] = GetRomValue(Option::Index::KEY_START1);
+    keyboard_keys[6] = GetRomValue(Option::Index::KEY_FIRE1);
+    keyboard_keys[7] = GetRomValue(Option::Index::KEY_FIRE2);
+    keyboard_keys[8] = GetRomValue(Option::Index::KEY_FIRE3);
+    keyboard_keys[9] = GetRomValue(Option::Index::KEY_FIRE4);
+    keyboard_keys[10] = GetRomValue(Option::Index::KEY_FIRE5);
+    keyboard_keys[11] = GetRomValue(Option::Index::KEY_FIRE6);
+
+    return keyboard_keys;
+}
+
+int *Config::GetRomPlayerInputButtons(int player) {
+
+    // TODO: player > 0 not supported yet
+    joystick_keys[0] = GetRomValue(Option::Index::JOY_UP);
+    joystick_keys[1] = GetRomValue(Option::Index::JOY_DOWN);
+    joystick_keys[2] = GetRomValue(Option::Index::JOY_LEFT);
+    joystick_keys[3] = GetRomValue(Option::Index::JOY_RIGHT);
+    joystick_keys[4] = GetRomValue(Option::Index::JOY_COIN1);
+    joystick_keys[5] = GetRomValue(Option::Index::JOY_START1);
+    joystick_keys[6] = GetRomValue(Option::Index::JOY_FIRE1);
+    joystick_keys[7] = GetRomValue(Option::Index::JOY_FIRE2);
+    joystick_keys[8] = GetRomValue(Option::Index::JOY_FIRE3);
+    joystick_keys[9] = GetRomValue(Option::Index::JOY_FIRE4);
+    joystick_keys[10] = GetRomValue(Option::Index::JOY_FIRE5);
+    joystick_keys[11] = GetRomValue(Option::Index::JOY_FIRE6);
+
+    return joystick_keys;
 }

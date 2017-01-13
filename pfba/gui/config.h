@@ -44,9 +44,7 @@ class Config {
 
 public:
 
-    int rotation[4] {0, 90, 180, 270};
-
-    Config(const char *cfgPath, const std::vector<RomList::Hardware> &hardwares);
+    Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwList);
     ~Config() {};
 
     void Load(RomList::Rom *rom = NULL);
@@ -62,12 +60,21 @@ public:
 
     int GetOptionPos(std::vector<Option> *options, int index);
 
+    int *GetGuiPlayerInputKeys(int player);
+    int *GetGuiPlayerInputButtons(int player);
+    int *GetRomPlayerInputKeys(int player);
+    int *GetRomPlayerInputButtons(int player);
+
 private:
     std::vector<std::string> roms_paths;
     std::vector<Option> options_gui;
     std::vector<Option> options_rom;
-    char configPath[512];
+    std::string configPath;
     bool done = false;
+
+
+    int keyboard_keys[Input::KEY_COUNT];
+    int joystick_keys[Input::KEY_COUNT];
 };
 
 #endif //_CONFIG_H_

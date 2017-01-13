@@ -15,7 +15,7 @@ public:
     virtual ~SDL2Input();
 
     virtual Player *Update(bool rotate = false);
-    virtual int Wait(int player);
+    virtual int GetButton(int player);
     virtual int Clear(int player);
 
 private:

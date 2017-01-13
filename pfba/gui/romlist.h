@@ -33,7 +33,7 @@ public:
 
     RomList(Utility *utility,
             const std::vector<std::string> &paths,
-            std::vector<Hardware> *hardwares);
+            std::vector<Hardware> &hwList);
     ~RomList();
 
     enum RomState {
@@ -57,21 +57,21 @@ public:
     };
 
     std::vector<Rom> list;
-    std::vector<Hardware> *hardwares;
+    std::vector<Hardware> hardwares;
 
     Hardware *GetHardware(int hardware_prefix) {
-        for (int i = 0; i < hardwares->size(); i++) {
-            if (IsHardware(hardware_prefix, hardwares->at(i).prefix)) {
-                return &hardwares->at(i);
+        for (int i = 0; i < hardwares.size(); i++) {
+            if (IsHardware(hardware_prefix, hardwares[i].prefix)) {
+                return &hardwares[i];
             }
         }
         return NULL;
     };
 
     const char *GetHardwareName(int hardware_prefix) {
-        for (int i = 0; i < hardwares->size(); i++) {
-            if (hardwares->at(i).prefix == hardware_prefix) {
-                return hardwares->at(i).name.c_str();
+        for (int i = 0; i < hardwares.size(); i++) {
+            if (hardwares[i].prefix == hardware_prefix) {
+                return hardwares[i].name.c_str();
             }
         }
         return "UNKNOW";

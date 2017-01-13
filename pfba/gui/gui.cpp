@@ -55,7 +55,7 @@ void Gui::FilterRoms() {
     int showClone = config->GetGuiValue(Option::Index::GUI_SHOW_CLONES);
     int showAll = config->GetGuiValue(Option::Index::GUI_SHOW_ALL);
     int showHardwareCfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
-    int showHardware = romList->hardwares->at(showHardwareCfg).prefix;
+    int showHardware = romList->hardwares[showHardwareCfg].prefix;
     //printf("hardware: %i\n", hardware);
 
     remove_copy_if(romList->list.begin(), romList->list.end(), back_inserter(roms),
@@ -109,7 +109,7 @@ void Gui::DrawRomInfo(RomList::Rom *rom) {
     r.w -= 32;
 
     int hw_cfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
-    RomList::Hardware hw = romList->hardwares->at((unsigned int) hw_cfg);
+    RomList::Hardware hw = romList->hardwares[hw_cfg];
     int show_clones = config->GetGuiValue(Option::Index::GUI_SHOW_CLONES);
     int available = (int) roms.size();
     if (config->GetGuiValue(Option::Index::GUI_SHOW_ALL)) {
@@ -294,7 +294,7 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
 
     while (true) {
 
-        int key = input->players[0].state;
+        int key = input->Update()[0].state;
         if (key || first) {
 
             first = 0;
@@ -304,10 +304,10 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
             } else if (key & Input::Key::KEY_LEFT) {
                 index--;
                 if (index < 0)
-                    index = max_choice;
+                    index = max_choice-1;
             } else if (key & Input::Key::KEY_RIGHT) {
                 index++;
-                if (index > max_choice)
+                if (index > max_choice-1)
                     index = 0;
             } else if (key & Input::Key::KEY_FIRE1) {
                 return index;
@@ -498,6 +498,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
             isRomConfig ? config->GetRomOptions() : config->GetGuiOptions();
 
     input->Clear(0);
+    SetPlayerInputMapping(false);
 
     if (GameLooping) {
 
@@ -632,7 +633,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
             } else if (key & Input::Key::KEY_FIRE1) {
                 Option *option = &options->at((unsigned long) option_index);
                 if (option->type == Option::Type::INPUT) {
-                    int btn = GetInputButton();
+                    int btn = GetButton();
                     if (btn >= 0) {
                         option->value = btn;
                     }
@@ -691,6 +692,8 @@ void Gui::RunOptionMenu(bool isRomConfig) {
     }
 
     input->Clear(0);
+
+    SetPlayerInputMapping(isRomConfig);
 }
 
 void Gui::Clear() {
@@ -749,84 +752,6 @@ Input *Gui::GetInput() {
     return input;
 }
 
-/*
-int Gui::GetInput() {
-
-    int key = sdl2_input_read();
-
-    if (key & Input::Key::KEY_UP) {
-        rom_index--;
-        if (rom_index < 0)
-            rom_index = (int) (roms.size() - 1);
-        if (title) {
-            delete (title);
-            title = NULL;
-        }
-        title_loaded = 0;
-        return key;
-    } else if (key & Input::Key::KEY_DOWN) {
-        rom_index++;
-        if (rom_index >= roms.size())
-            rom_index = 0;
-        if (title) {
-            delete (title);
-            title = NULL;
-        }
-        title_loaded = 0;
-        return key;
-    } else if (key & Input::Key::KEY_RIGHT) {
-        rom_index += max_lines;
-        if (rom_index >= roms.size())
-            rom_index = (int) (roms.size() - 1);
-        if (title) {
-            delete (title);
-            title = NULL;
-        }
-        title_loaded = 0;
-        return key;
-    } else if (key & Input::Key::KEY_LEFT) {
-        rom_index -= max_lines;
-        if (rom_index < 0)
-            rom_index = 0;
-        if (title) {
-            delete (title);
-            title = NULL;
-        }
-        title_loaded = 0;
-        return key;
-    } else if (key & Input::Key::KEY_FIRE1) {
-        if (romSelected != NULL
-            && romSelected->state != RomList::RomState::MISSING) {
-            RunRom(romSelected);
-        }
-        return key;
-    } else if (key & Input::Key::KEY_START) {
-        RunOptionMenu();
-        if (title != NULL) {
-            DrawBg();
-            DrawRomList();
-            renderer->DrawTexture(title, &rectRomPreview, true);
-            Flip();
-        }
-    } else if (key & Input::Key::KEY_COIN) {
-        if (romSelected != NULL) {
-            config->Load(romSelected);
-            RunOptionMenu(true);
-            if (title != NULL) {
-                DrawBg();
-                DrawRomList();
-                renderer->DrawTexture(title, &rectRomPreview, true);
-                Flip();
-            }
-        }
-    } else if (key & Input::Key::KEY_QUIT) {
-        quit = true;
-    }
-
-    return key;
-}
-*/
-
 void Gui::Run() {
 
     Clear();
@@ -836,6 +761,8 @@ void Gui::Run() {
 
     Timer *timer_input = new Timer();
     Timer *timer_load = new Timer();
+
+    SetPlayerInputMapping(false);
 
     while (!quit) {
 
@@ -1006,7 +933,7 @@ void Gui::SetTitleLoadDelay(int delay) {
     title_delay = delay;
 }
 
-int Gui::GetInputButton() {
+int Gui::GetButton() {
 
     Rect window{
             renderer->GetWindowSize().w / 4,
@@ -1021,15 +948,29 @@ int Gui::GetInputButton() {
 
     while (true) {
 
-        int key = input->Wait(0);
-        if (key || timer->GetSeconds() >= 3) {
-            return key;
+        int btn = input->GetButton(0);
+        if (btn >= 0 || timer->GetSeconds() >= 3) {
+            return btn;
         }
 
         renderer->DrawRect(&window, &GRAY);
         renderer->DrawBorder(&window, &GREEN);
         renderer->DrawFont(skin->font, &window, &WHITE, true, true, "PRESS A BUTTON");
         Flip();
+    }
+}
+
+void Gui::SetPlayerInputMapping(bool isRomConfig) {
+
+    if(isRomConfig) {
+        input->SetKeyboardMapping(config->GetRomPlayerInputKeys(0));
+        int deadzone = 2000 + config->GetRomValue(Option::Index::JOY_DEADZONE) * 2000;
+        input->SetJoystickMapping(0, config->GetRomPlayerInputButtons(0), deadzone);
+    } else {
+        int *keys = config->GetGuiPlayerInputKeys(0);
+        input->SetKeyboardMapping(keys);
+        int deadzone = 2000 + config->GetGuiValue(Option::Index::JOY_DEADZONE) * 2000;
+        input->SetJoystickMapping(0, config->GetGuiPlayerInputButtons(0), deadzone);
     }
 }
 

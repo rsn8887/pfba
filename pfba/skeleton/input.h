@@ -34,7 +34,7 @@ public:
         KEY_FIRE5 = 0x0400,
         KEY_FIRE6 = 0x0800,
         KEY_QUIT = 0x1000,
-        KEY_COUNT = 13
+        KEY_COUNT = 12 // don't parse KEY_QUIT
     };
 
     struct Player {
@@ -55,13 +55,14 @@ public:
     virtual ~Input() {};
 
     virtual Player *Update(bool rotate = false) { return players; }; // to implement
-    virtual int Wait(int player) { return 0; }; // to implement
+    virtual int GetButton(int player) { return 0; }; // to implement
     virtual int Clear(int player) { return 0; }; // to implement
 
-    void SetJoystickMapping(int player, int *mapping) {
+    void SetJoystickMapping(int player, int *mapping, int deadzone = 8000) {
         for(int i=0; i<KEY_COUNT; i++) {
             players[player].mapping[i] = mapping[i];
         }
+        players[player].dead_zone = deadzone;
     }
 
     void SetKeyboardMapping(int *mapping) {

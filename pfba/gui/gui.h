@@ -33,9 +33,11 @@ public:
     void DrawRomInfo(RomList::Rom *rom);
     void RunOptionMenu(bool isRomConfig = false);
     void RunStatesMenu();
-    int GetInputButton();
+    int GetButton();
     int LoadTitle(RomList::Rom *rom);
     void SetTitleLoadDelay(int delay);
+
+    void SetPlayerInputMapping(bool isRomCfg);
 
     void Clear();
     void Flip();
