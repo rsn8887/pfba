@@ -78,7 +78,8 @@ public:
     };
 
     static bool IsHardware(int hardware, int type) {
-        return (((hardware | HARDWARE_PREFIX_CARTRIDGE) ^ HARDWARE_PREFIX_CARTRIDGE)
+        return (type == HARDWARE_PREFIX_ALL) ||
+                (((hardware | HARDWARE_PREFIX_CARTRIDGE) ^ HARDWARE_PREFIX_CARTRIDGE)
                 & 0xff000000) == type;
     }
 };

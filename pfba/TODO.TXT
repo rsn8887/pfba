@@ -28,7 +28,7 @@ DONE // GUI: hide rotation option if not needed
 DONE // GUI: fix screenshot dismiss on gui option return
 
 # PSP2
-=======
+=====================
 
 # NEXT RELEASE
 DONE // GUI: FIX "cv_*.png" loading
@@ -38,9 +38,9 @@ DONE // - remove slow shaders : CRT_EASY, GTU, XBR2X/FAST, BUCUBIC,
 DONE // - EMU: allow vertical gameplay
 
 
-=====================
 # RPI (raspbian jessy)
 =====================
+
 download toolchain: https://github.com/raspberrypi/tools
 copy toolchain (tools) to /usr/local/rpi-tools
 device:
@@ -55,3 +55,17 @@ device:
 copy "/usr/local" (device) to "/usr/local/rpi-tools/sysroot" (computer)
 copy "/opt/vc/lib" (device) to "/usr/local/rpi-tools/sysroot" (computer)
 SDL2: add "usermod -a -G video cpasjuste" to use sdl2 as normal user in terminal
+
+
+# CYCLONE M68K - STATUS
+=========================
+drv/cps         => working
+drv/cave        => working
+drv/dataeast    => working
+drv/konami      => not working:
+                    d_mystwarr: "gaiapols", NULL, NULL, NULL, "1993", "Gaiapolis (ver EAF)\0", NULL, "Konami", "GX123" (C AND ASM)
+                    d_mystwarr: "mmaulers", NULL, NULL, NULL, "1993", "Monster Maulers (ver EAA)\0", NULL, "Konami", "GX170" (C AND ASM)
+drv/megadrive   => todo: fix console support ?
+drv/neogeo      => working
+drv/pgm         => working
+drv/pre90s      =>

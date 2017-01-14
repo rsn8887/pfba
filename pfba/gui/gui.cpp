@@ -55,12 +55,15 @@ void Gui::FilterRoms() {
     int showAll = config->GetGuiValue(Option::Index::GUI_SHOW_ALL);
     int showHardwareCfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
     int showHardware = romList->hardwares[showHardwareCfg].prefix;
+    if(showAll) {
+        showHardware = HARDWARE_PREFIX_ALL;
+    }
 
     remove_copy_if(romList->list.begin(), romList->list.end(), back_inserter(roms),
                    [showAll, showClone, showHardware](const RomList::Rom r) {
                        return !showAll && r.state != RomList::RomState::WORKING
                               || !showClone && r.parent != NULL
-                              || showHardware > 0 && !RomList::IsHardware(r.hardware, showHardware);
+                              || !RomList::IsHardware(r.hardware, showHardware);
                    });
 
     rom_index = 0;
