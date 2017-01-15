@@ -54,8 +54,8 @@ public:
 
     virtual Rect GetWindowSize() {return Rect{0, 0, 0, 0};};  // to implement
 
-    virtual void ClearScreen() {};  // to implement
-    virtual void FlipScreen() {};  // to implement
+    virtual void Clear() {};  // to implement
+    virtual void Flip() {};  // to implement
 
     virtual void Delay(unsigned int ms) {};  // to implement
 

@@ -120,7 +120,7 @@ void Video::Scale() {
 }
 
 void Video::Clear() {
-    renderer->ClearScreen();
+    renderer->Clear();
 }
 
 void Video::Lock() {
@@ -138,7 +138,7 @@ void Video::Render() {
 }
 
 void Video::Flip() {
-    renderer->FlipScreen();
+    renderer->Flip();
 }
 
 Video::~Video() {

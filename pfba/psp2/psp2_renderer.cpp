@@ -205,12 +205,12 @@ void PSP2Renderer::Clip(Rect *rect) {
     }
 }
 
-void PSP2Renderer::ClearScreen() {
+void PSP2Renderer::Clear() {
     StartDrawring();
     vita2d_clear_screen();
 }
 
-void PSP2Renderer::FlipScreen() {
+void PSP2Renderer::Flip() {
     if (drawing_started) {
         vita2d_end_drawing();
         //if (shaderCurrent != ShaderType::texture) // screen tearing on some games

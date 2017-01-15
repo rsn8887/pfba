@@ -34,7 +34,8 @@ public:
     void RunOptionMenu(bool isRomConfig = false);
     void RunStatesMenu();
     int GetButton();
-    int LoadTitle(RomList::Rom *rom);
+    int TitleLoad(RomList::Rom *rom);
+    void TitleFree();
     void SetTitleLoadDelay(int delay);
 
     void SetPlayerInputMapping(bool isRomCfg);

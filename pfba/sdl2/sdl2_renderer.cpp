@@ -185,13 +185,13 @@ void SDL2Renderer::Clip(Rect *rect) {
     }
 }
 
-void SDL2Renderer::ClearScreen() {
+void SDL2Renderer::Clear() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 }
 
-void SDL2Renderer::FlipScreen() {
+void SDL2Renderer::Flip() {
     SDL_RenderPresent(renderer);
 }
 

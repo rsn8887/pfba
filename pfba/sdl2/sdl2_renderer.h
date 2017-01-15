@@ -35,8 +35,8 @@ public:
 
     virtual Rect GetWindowSize();
 
-    virtual void ClearScreen();
-    virtual void FlipScreen();
+    virtual void Clear();
+    virtual void Flip();
 
     virtual void Delay(unsigned int ms);
 

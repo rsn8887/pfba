@@ -24,56 +24,6 @@ struct SaveState {
     bool available = false;
 };
 
-int Gui::LoadTitle(RomList::Rom *rom) {
-
-    if (title != NULL) {
-        delete (title);
-        title = NULL;
-    }
-
-    char path[MAX_PATH];
-    sprintf(path, "%s/%s.png", szAppTitlePath, rom->zip);
-    if (utility->FileExist(path)) {
-        title = renderer->LoadTexture(path);
-        return title != NULL;
-    } else if (rom->parent) {
-        memset(path, 0, MAX_PATH);
-        sprintf(path, "%s/%s.png", szAppTitlePath, rom->parent);
-        if (utility->FileExist(path)) {
-            title = renderer->LoadTexture(path);
-            return title != NULL;
-        }
-    }
-    return 0;
-}
-
-void Gui::FilterRoms() {
-
-    roms.clear();
-
-    int showClone = config->GetGuiValue(Option::Index::GUI_SHOW_CLONES);
-    int showAll = config->GetGuiValue(Option::Index::GUI_SHOW_ALL);
-    int showHardwareCfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
-    int showHardware = romList->hardwares[showHardwareCfg].prefix;
-    if(showAll) {
-        showHardware = HARDWARE_PREFIX_ALL;
-    }
-
-    remove_copy_if(romList->list.begin(), romList->list.end(), back_inserter(roms),
-                   [showAll, showClone, showHardware](const RomList::Rom r) {
-                       return !showAll && r.state != RomList::RomState::WORKING
-                              || !showClone && r.parent != NULL
-                              || !RomList::IsHardware(r.hardware, showHardware);
-                   });
-
-    rom_index = 0;
-    if (title) {
-        delete (title);
-        title = NULL;
-    }
-    title_loaded = 0;
-}
-
 void Gui::DrawBg() {
 
     if (skin->tex_bg) {
@@ -289,7 +239,7 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
             {win.x + (win.w / 2) + 16, win.y + win.h - 64, (win.w / 2) - 32, 32}
     };
 
-    if(choice2 == NULL) {
+    if (choice2 == NULL) {
         buttons[0].x = win.x + (win.w / 2) - (buttons[0].w / 2);
     }
 
@@ -298,7 +248,7 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
     while (true) {
 
         int key = input->Update()[0].state;
-        if (key || first) {
+        if (key > 0 || first) {
 
             first = 0;
 
@@ -386,7 +336,7 @@ void Gui::RunStatesMenu() {
     while (true) {
 
         int key = input->Update()[0].state;
-        if (key || first) {
+        if (key > 0 || first) {
 
             first = 0;
 
@@ -530,7 +480,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
     while (true) {
 
         int key = input->Update()[0].state;
-        if (key || first) {
+        if (key > 0 || first) {
 
             first = 0;
 
@@ -699,62 +649,6 @@ void Gui::RunOptionMenu(bool isRomConfig) {
     input->Clear(0);
 }
 
-void Gui::Clear() {
-    renderer->ClearScreen();
-}
-
-void Gui::Flip() {
-    renderer->FlipScreen();
-}
-
-void Gui::RunRom(RomList::Rom *rom) {
-
-    if (rom == NULL) {
-        return;
-    }
-
-    char path[MAX_PATH];
-    for (int i = 0; i < DIRS_MAX; i++) {
-        if (strlen(config->GetRomPath(i)) > 0) {
-            sprintf(path, "%s%s.zip", config->GetRomPath(i), rom->zip);
-            printf("%s\n", path);
-            if (utility->FileExist(path))
-                break;
-        }
-    }
-
-    if (!utility->FileExist(path)) {
-        printf("RunRom: rom not found: `%s`\n", rom->zip);
-        return;
-    }
-
-    printf("RunRom: %s\n", path);
-    for (nBurnDrvSelect[0] = 0; nBurnDrvSelect[0] < nBurnDrvCount; nBurnDrvSelect[0]++) {
-        nBurnDrvActive = nBurnDrvSelect[0];
-        if (strcasecmp(rom->zip, BurnDrvGetTextA(DRV_NAME)) == 0)
-            break;
-    }
-
-    if (nBurnDrvActive >= nBurnDrvCount) {
-        printf("RunRom: driver not found\n");
-        return;
-    }
-
-    // load rom settings
-    printf("RunRom: config->LoadRom(%s)\n", rom->zip);
-    config->Load(rom);
-
-    printf("RunRom: RunEmulator: start\n");
-    RunEmulator(this, nBurnDrvActive);
-
-    printf("RunRom: RunEmulator: return\n");
-    mode = List;
-}
-
-Input *Gui::GetInput() {
-    return input;
-}
-
 void Gui::Run() {
 
     Clear();
@@ -770,73 +664,56 @@ void Gui::Run() {
     while (!quit) {
 
         int key = input->Update()[0].state;
-        //printf("key: %i\n", key);
-
-        if (key & Input::Key::KEY_UP) {
-            rom_index--;
-            if (rom_index < 0)
-                rom_index = (int) (roms.size() - 1);
-            if (title) {
-                delete (title);
-                title = NULL;
-            }
-            title_loaded = 0;
-        } else if (key & Input::Key::KEY_DOWN) {
-            rom_index++;
-            if (rom_index >= roms.size())
-                rom_index = 0;
-            if (title) {
-                delete (title);
-                title = NULL;
-            }
-            title_loaded = 0;
-        } else if (key & Input::Key::KEY_RIGHT) {
-            rom_index += max_lines;
-            if (rom_index >= roms.size())
-                rom_index = (int) (roms.size() - 1);
-            if (title) {
-                delete (title);
-                title = NULL;
-            }
-            title_loaded = 0;
-        } else if (key & Input::Key::KEY_LEFT) {
-            rom_index -= max_lines;
-            if (rom_index < 0)
-                rom_index = 0;
-            if (title) {
-                delete (title);
-                title = NULL;
-            }
-            title_loaded = 0;
-        } else if (key & Input::Key::KEY_FIRE1) {
-            if (romSelected != NULL
-                && romSelected->state != RomList::RomState::MISSING) {
-                RunRom(romSelected);
-            }
-        } else if (key & Input::Key::KEY_START) {
-            RunOptionMenu();
-            if (title != NULL) {
-                DrawBg();
-                DrawRomList();
-                renderer->DrawTexture(title, &rectRomPreview, true);
-                Flip();
-            }
-        } else if (key & Input::Key::KEY_COIN) {
-            if (romSelected != NULL) {
-                config->Load(romSelected);
-                RunOptionMenu(true);
+        if (key > 0) {
+            if (key & Input::Key::KEY_UP) {
+                rom_index--;
+                if (rom_index < 0)
+                    rom_index = (int) (roms.size() - 1);
+                TitleFree();
+            } else if (key & Input::Key::KEY_DOWN) {
+                rom_index++;
+                if (rom_index >= roms.size())
+                    rom_index = 0;
+                TitleFree();
+            } else if (key & Input::Key::KEY_RIGHT) {
+                rom_index += max_lines;
+                if (rom_index >= roms.size())
+                    rom_index = (int) (roms.size() - 1);
+                TitleFree();
+            } else if (key & Input::Key::KEY_LEFT) {
+                rom_index -= max_lines;
+                if (rom_index < 0)
+                    rom_index = 0;
+                TitleFree();
+            } else if (key & Input::Key::KEY_FIRE1) {
+                if (romSelected != NULL
+                    && romSelected->state != RomList::RomState::MISSING) {
+                    RunRom(romSelected);
+                }
+            } else if (key & Input::Key::KEY_START) {
+                RunOptionMenu();
                 if (title != NULL) {
+                    // refresh preview/title image
                     DrawBg();
                     DrawRomList();
                     renderer->DrawTexture(title, &rectRomPreview, true);
                     Flip();
                 }
+            } else if (key & Input::Key::KEY_COIN) {
+                if (romSelected != NULL) {
+                    config->Load(romSelected);
+                    RunOptionMenu(true);
+                    if (title != NULL) {
+                        // refresh preview/title image
+                        DrawBg();
+                        DrawRomList();
+                        renderer->DrawTexture(title, &rectRomPreview, true);
+                        Flip();
+                    }
+                }
+            } else if (key & Input::Key::KEY_QUIT) {
+                quit = true;
             }
-        } else if (key & Input::Key::KEY_QUIT) {
-            quit = true;
-        }
-
-        if (key > 0) {
 
             Clear();
             DrawBg();
@@ -854,7 +731,7 @@ void Gui::Run() {
         } else {
             if (romSelected != NULL && !title_loaded
                 && timer_load->GetMillis() >= title_delay) {
-                if (LoadTitle(romSelected)) {
+                if (TitleLoad(romSelected)) {
                     DrawBg();
                     DrawRomList();
                     Flip();
@@ -921,6 +798,105 @@ Gui::Gui(Renderer *rdr, Utility *util, RomList *rList, Config *cfg, Input *in) {
     FilterRoms();
 }
 
+void Gui::TitleFree() {
+    if (title) {
+        delete (title);
+        title = NULL;
+    }
+    title_loaded = 0;
+}
+
+int Gui::TitleLoad(RomList::Rom *rom) {
+
+    TitleFree();
+
+    char path[MAX_PATH];
+    sprintf(path, "%s/%s.png", szAppTitlePath, rom->zip);
+    if (utility->FileExist(path)) {
+        title = renderer->LoadTexture(path);
+        return title != NULL;
+    } else if (rom->parent) {
+        memset(path, 0, MAX_PATH);
+        sprintf(path, "%s/%s.png", szAppTitlePath, rom->parent);
+        if (utility->FileExist(path)) {
+            title = renderer->LoadTexture(path);
+            return title != NULL;
+        }
+    }
+    return 0;
+}
+
+void Gui::FilterRoms() {
+
+    roms.clear();
+
+    int showClone = config->GetGuiValue(Option::Index::GUI_SHOW_CLONES);
+    int showAll = config->GetGuiValue(Option::Index::GUI_SHOW_ALL);
+    int showHardwareCfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
+    int showHardware = romList->hardwares[showHardwareCfg].prefix;
+    if (showAll) {
+        showHardware = HARDWARE_PREFIX_ALL;
+    }
+
+    remove_copy_if(romList->list.begin(), romList->list.end(), back_inserter(roms),
+                   [showAll, showClone, showHardware](const RomList::Rom r) {
+                       return !showAll && r.state != RomList::RomState::WORKING
+                              || !showClone && r.parent != NULL
+                              || !RomList::IsHardware(r.hardware, showHardware);
+                   });
+
+    rom_index = 0;
+    TitleFree();
+}
+
+void Gui::RunRom(RomList::Rom *rom) {
+
+    if (rom == NULL) {
+        return;
+    }
+
+    char path[MAX_PATH];
+    for (int i = 0; i < DIRS_MAX; i++) {
+        if (strlen(config->GetRomPath(i)) > 0) {
+            sprintf(path, "%s%s.zip", config->GetRomPath(i), rom->zip);
+            printf("%s\n", path);
+            if (utility->FileExist(path))
+                break;
+        }
+    }
+
+    if (!utility->FileExist(path)) {
+        printf("RunRom: rom not found: `%s`\n", rom->zip);
+        return;
+    }
+
+    printf("RunRom: %s\n", path);
+    for (nBurnDrvSelect[0] = 0; nBurnDrvSelect[0] < nBurnDrvCount; nBurnDrvSelect[0]++) {
+        nBurnDrvActive = nBurnDrvSelect[0];
+        if (strcasecmp(rom->zip, BurnDrvGetTextA(DRV_NAME)) == 0)
+            break;
+    }
+
+    if (nBurnDrvActive >= nBurnDrvCount) {
+        printf("RunRom: driver not found\n");
+        return;
+    }
+
+    // load rom settings
+    printf("RunRom: config->LoadRom(%s)\n", rom->zip);
+    config->Load(rom);
+
+    printf("RunRom: RunEmulator: start\n");
+    RunEmulator(this, nBurnDrvActive);
+
+    printf("RunRom: RunEmulator: return\n");
+    mode = List;
+}
+
+Input *Gui::GetInput() {
+    return input;
+}
+
 Renderer *Gui::GetRenderer() {
     return renderer;
 }
@@ -957,18 +933,10 @@ int Gui::GetButton() {
             return btn;
         }
 
-        DrawBg();
-
-        Rect rect{32, 32,
-                  renderer->GetWindowSize().w - 64,
-                  renderer->GetWindowSize().h - 64
-        };
-        renderer->DrawRect(&rect, &GRAY);
-        renderer->DrawBorder(&rect, &GREEN);
-
+        renderer->Clear();
         renderer->DrawRect(&box, &GRAY);
         renderer->DrawBorder(&box, &GREEN);
-        renderer->DrawFont(skin->font, &box, &WHITE, true, true, "PRESS A BUTTON (%i)", 3-timer->GetSeconds());
+        renderer->DrawFont(skin->font, &box, &WHITE, true, true, "PRESS A BUTTON (%i)", 3 - timer->GetSeconds());
         Flip();
     }
 }
@@ -987,6 +955,14 @@ void Gui::SetPlayerInputMapping(bool isRomConfig) {
         printf("Gui::SetPlayerInputMapping: deadzone = %i\n", deadzone);
         input->SetJoystickMapping(0, config->GetGuiPlayerInputButtons(0), deadzone);
     }
+}
+
+void Gui::Clear() {
+    renderer->Clear();
+}
+
+void Gui::Flip() {
+    renderer->Flip();
 }
 
 Gui::~Gui() {

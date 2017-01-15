@@ -34,8 +34,8 @@ public:
 
     Rect GetWindowSize();
 
-    void ClearScreen();
-    void FlipScreen();
+    void Clear();
+    void Flip();
     
     void Delay(unsigned int ms);
 
