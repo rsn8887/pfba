@@ -88,9 +88,13 @@ void Video::Scale() {
             if(rotation == 0 || rotation == 180) {
                 scale.h = window.h;
                 scale.w = (int) ((float) scale.w *((float) scale.h / (float) VideoBufferHeight));
+                if(scale.w > window.w) {
+                    scale.w = window.w;
+                    scale.h = (int) ((float) scale.w * ((float) VideoBufferHeight / (float) VideoBufferWidth));
+                }
             } else {
                 scale.w = window.h;
-                scale.h = (int) ((float) scale.h * ((float) scale.w / (float) VideoBufferWidth));
+                scale.h = (int) ((float) scale.w * ((float) VideoBufferHeight / (float) VideoBufferWidth));
             }
             break;
 

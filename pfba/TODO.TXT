@@ -1,6 +1,7 @@
 # COMMON
 ========
-fix rom filtering (showAll & showHardware)
+
+fix randrom fire1/fire2 inverted in menu ?!
 add 1P+2P / dip switch combo button
 add joystick axis input configuration
 add > 1 joystick support
@@ -8,6 +9,8 @@ fix crash with non working roms (cps2 wrong set, ...) identified as 68K CycloneR
 add help screen
 
 # NEXT RELEASE
+DONE // fix "FIT" mode on vertical games
+DONE // fix rom filtering (showAll & showHardware)
 DONE // fix some multiple cpu arm m68k games (cylone)
 DONE // fix arm m68k savestates (cyclone)
 DONE // add savestates support (SELECT + L)
