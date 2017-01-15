@@ -8,12 +8,6 @@
 #include <cstring>
 #include <vector>
 
-// TODO: enable custom axis mapping
-#define JOY_AXIS_LX 0
-#define JOY_AXIS_LY 1
-#define JOY_AXIS_RX 2
-#define JOY_AXIS_RY 3
-
 #define PLAYER_COUNT 4
 
 class Input {
@@ -39,6 +33,10 @@ public:
 
     struct Player {
         int mapping[KEY_COUNT];
+        int axis_lx = 0;
+        int axis_ly = 1;
+        int axis_rx = 2;
+        int axis_ry = 3;
         unsigned int state;
         int dead_zone = 8000;
         bool enabled = false;

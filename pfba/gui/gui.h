@@ -38,7 +38,7 @@ public:
     void TitleFree();
     void SetTitleLoadDelay(int delay);
 
-    void SetPlayerInputMapping(bool isRomCfg);
+    void UpdateInputMapping(bool isRomCfg);
 
     void Clear();
     void Flip();

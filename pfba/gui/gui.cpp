@@ -218,8 +218,8 @@ void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, in
         } else {
 
             // skip rotation option if not needed
-            // TODO: get rid of this non independent function
-            if (isRomCfg && IsOptionHidden(option)) {
+            if ((isRomCfg && IsOptionHidden(option))
+                    || option->type == Option::Type::HIDDEN) {
                 continue;
             }
 
@@ -472,7 +472,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
             isRomConfig ? config->GetRomOptions() : config->GetGuiOptions();
 
     input->Clear(0);
-    SetPlayerInputMapping(false);
+    UpdateInputMapping(false);
 
     if (GameLooping) {
 
@@ -666,7 +666,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
         GameLooping = false;
     }
 
-    SetPlayerInputMapping(isRomConfig);
+    UpdateInputMapping(isRomConfig);
     input->Clear(0);
 }
 
@@ -680,7 +680,7 @@ void Gui::Run() {
     Timer *timer_input = new Timer();
     Timer *timer_load = new Timer();
 
-    SetPlayerInputMapping(false);
+    UpdateInputMapping(false);
 
     while (!quit) {
 
@@ -959,17 +959,24 @@ int Gui::GetButton() {
     }
 }
 
-void Gui::SetPlayerInputMapping(bool isRomConfig) {
+void Gui::UpdateInputMapping(bool isRomConfig) {
 
     if (isRomConfig) {
         input->SetKeyboardMapping(config->GetRomPlayerInputKeys(0));
         int deadzone = 2000 + config->GetRomValue(Option::Index::JOY_DEADZONE) * 2000;
         input->SetJoystickMapping(0, config->GetRomPlayerInputButtons(0), deadzone);
+        input->players[0].axis_lx = config->GetRomValue(Option::Index::JOY_AXIS_LX);
+        input->players[0].axis_ly = config->GetRomValue(Option::Index::JOY_AXIS_LY);
+        input->players[0].axis_rx = config->GetRomValue(Option::Index::JOY_AXIS_RX);
+        input->players[0].axis_ry = config->GetRomValue(Option::Index::JOY_AXIS_RY);
     } else {
-        int *keys = config->GetGuiPlayerInputKeys(0);
-        input->SetKeyboardMapping(keys);
+        input->SetKeyboardMapping(config->GetGuiPlayerInputKeys(0));
         int deadzone = 2000 + config->GetGuiValue(Option::Index::JOY_DEADZONE) * 2000;
         input->SetJoystickMapping(0, config->GetGuiPlayerInputButtons(0), deadzone);
+        input->players[0].axis_lx = config->GetGuiValue(Option::Index::JOY_AXIS_LX);
+        input->players[0].axis_ly = config->GetGuiValue(Option::Index::JOY_AXIS_LY);
+        input->players[0].axis_rx = config->GetGuiValue(Option::Index::JOY_AXIS_RX);
+        input->players[0].axis_ry = config->GetGuiValue(Option::Index::JOY_AXIS_RY);
     }
 }
 

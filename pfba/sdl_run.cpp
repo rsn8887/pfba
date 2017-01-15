@@ -179,7 +179,7 @@ void RunEmulator(Gui *g, int drvnum) {
     video = new Video(gui->GetRenderer());
 
     // set per rom input scheme
-    gui->SetPlayerInputMapping(true);
+    gui->UpdateInputMapping(true);
 
     RunReset();
 
@@ -241,5 +241,5 @@ void RunEmulator(Gui *g, int drvnum) {
     delete (audio);
     audio = NULL;
 
-    gui->SetPlayerInputMapping(false);
+    gui->UpdateInputMapping(false);
 }

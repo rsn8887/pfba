@@ -20,6 +20,7 @@ public:
         MENU = 0,
         INTEGER,
         INPUT,
+        HIDDEN
     };
 
     enum Index {
@@ -47,6 +48,10 @@ public:
         JOY_FIRE6,
         JOY_COIN1,
         JOY_START1,
+        JOY_AXIS_LX,
+        JOY_AXIS_LY,
+        JOY_AXIS_RX,
+        JOY_AXIS_RY,
         JOY_DEADZONE,
         MENU_KEYBOARD,
         KEY_UP,

@@ -54,7 +54,8 @@ Config::Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwLis
 
     // joystick
     options_gui.push_back(Option("JOYPAD", {"JOYPAD"}, 0, Option::Index::MENU_JOYPAD, Option::Type::MENU));
-    options_gui.push_back(Option("JOY_UP", {"-1"}, KEY_JOY_UP_DEFAULT, Option::Index::JOY_UP, Option::Type::INPUT));
+    options_gui.push_back(
+            Option("JOY_UP", {"-1"}, KEY_JOY_UP_DEFAULT, Option::Index::JOY_UP, Option::Type::INPUT));
     options_gui.push_back(
             Option("JOY_DOWN", {"-1"}, KEY_JOY_DOWN_DEFAULT, Option::Index::JOY_DOWN, Option::Type::INPUT));
     options_gui.push_back(
@@ -77,6 +78,11 @@ Config::Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwLis
             Option("JOY_COIN1", {"6"}, KEY_JOY_COIN1_DEFAULT, Option::Index::JOY_COIN1, Option::Type::INPUT));
     options_gui.push_back(
             Option("JOY_START1", {"7"}, KEY_JOY_START1_DEFAULT, Option::Index::JOY_START1, Option::Type::INPUT));
+    // TODO: add gui option for axis in option menu
+    options_gui.push_back(Option("JOY_AXIS_LX", {"0"}, KEY_JOY_AXIS_LX, Option::Index::JOY_AXIS_LX, Option::Type::HIDDEN));
+    options_gui.push_back(Option("JOY_AXIS_LY", {"1"}, KEY_JOY_AXIS_LY, Option::Index::JOY_AXIS_LY, Option::Type::HIDDEN));
+    options_gui.push_back(Option("JOY_AXIS_RX", {"2"}, KEY_JOY_AXIS_RX, Option::Index::JOY_AXIS_RX, Option::Type::HIDDEN));
+    options_gui.push_back(Option("JOY_AXIS_RY", {"3"}, KEY_JOY_AXIS_RY, Option::Index::JOY_AXIS_RY, Option::Type::HIDDEN));
     options_gui.push_back(Option("JOY_DEADZONE",
                                  {"2000", "4000", "6000", "8000", "10000", "12000", "14000", "16000",
                                   "18000", "20000", "22000", "24000", "26000", "28000", "30000"}, 3,

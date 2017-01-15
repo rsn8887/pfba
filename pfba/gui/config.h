@@ -25,6 +25,10 @@ class Gui;
 #define KEY_JOY_FIRE6_DEFAULT   5
 #define KEY_JOY_COIN1_DEFAULT   10
 #define KEY_JOY_START1_DEFAULT  11
+#define KEY_JOY_AXIS_LX 0
+#define KEY_JOY_AXIS_LY 1
+#define KEY_JOY_AXIS_RX 2
+#define KEY_JOY_AXIS_RY 3
 #else
 #define KEY_JOY_UP_DEFAULT      -1  // use hat
 #define KEY_JOY_DOWN_DEFAULT    -1  // use hat
@@ -38,6 +42,10 @@ class Gui;
 #define KEY_JOY_FIRE6_DEFAULT   5
 #define KEY_JOY_COIN1_DEFAULT   6
 #define KEY_JOY_START1_DEFAULT  7
+#define KEY_JOY_AXIS_LX 0
+#define KEY_JOY_AXIS_LY 1
+#define KEY_JOY_AXIS_RX 4
+#define KEY_JOY_AXIS_RY 5
 #endif
 
 class Config {

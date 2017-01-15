@@ -121,38 +121,23 @@ void SDL2Input::process_axis(Input::Player& player, bool rotate) {
         return;
     }
 
-    // TODO: add joy axis config to options menu
-    int x[2] = {SDL_JoystickGetAxis((SDL_Joystick *) player.data, JOY_AXIS_LX),
-                SDL_JoystickGetAxis((SDL_Joystick *) player.data, JOY_AXIS_RX)};
-#ifdef __RPI__
-    if (x[0] > player.dead_zone) {
-           player.state |= rotate ? Input::Key::KEY_DOWN : Input::Key::KEY_RIGHT;
-        } else if (x[0] < -player.dead_zone) {
-            player.state |= rotate ? Input::Key::KEY_UP : Input::Key::KEY_LEFT;
-        }
+    int x[2] = {SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.axis_lx),
+                SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.axis_rx)};
 
-        int y[2] = {SDL_JoystickGetAxis((SDL_Joystick *) player.custom, JOY_AXIS_LY),
-                    SDL_JoystickGetAxis((SDL_Joystick *) player.custom, JOY_AXIS_RY)};
-        if (y[0] > player.dead_zone) {
-            player.state |= rotate ? Input::Key::KEY_LEFT : Input::Key::KEY_DOWN;
-        } else if (y[0] < -player.dead_zone) {
-            player.state |= rotate ? Input::Key::KEY_RIGHT : Input::Key::KEY_UP;
-        }
-#else
     if (x[0] > player.dead_zone || x[1] > player.dead_zone) {
         player.state |= rotate ? Input::Key::KEY_DOWN : Input::Key::KEY_RIGHT;
     } else if (x[0] < -player.dead_zone || x[1] < -player.dead_zone) {
         player.state |= rotate ? Input::Key::KEY_UP : Input::Key::KEY_LEFT;
     }
 
-    int y[2] = {SDL_JoystickGetAxis((SDL_Joystick *) player.data, JOY_AXIS_LY),
-                SDL_JoystickGetAxis((SDL_Joystick *) player.data, JOY_AXIS_RY)};
+    int y[2] = {SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.axis_ly),
+                SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.axis_ry)};
+
     if (y[0] > player.dead_zone || y[1] > player.dead_zone) {
         player.state |= rotate ? Input::Key::KEY_LEFT : Input::Key::KEY_DOWN;
     } else if (y[0] < -player.dead_zone || y[1] < -player.dead_zone) {
         player.state |= rotate ? Input::Key::KEY_RIGHT : Input::Key::KEY_UP;
     }
-#endif
 }
 
 void SDL2Input::process_hat(Input::Player& player, bool rotate) {
