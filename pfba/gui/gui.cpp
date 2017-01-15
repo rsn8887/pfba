@@ -52,11 +52,6 @@ void Gui::DrawRomInfo(RomList::Rom *rom) {
         return;
     }
 
-    Rect r = rectRomInfo;
-    r.x += 16;
-    r.y += 16;
-    r.w -= 32;
-
     int hw_cfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
     RomList::Hardware hw = romList->hardwares[hw_cfg];
     int show_clones = config->GetGuiValue(Option::Index::GUI_SHOW_CLONES);
@@ -64,9 +59,18 @@ void Gui::DrawRomInfo(RomList::Rom *rom) {
     if (config->GetGuiValue(Option::Index::GUI_SHOW_ALL)) {
         available = show_clones ? hw.available_count : hw.available_count - hw.available_clone_count;
     }
+    char str[512];
+    sprintf(str, "ROMS: %i / %i", available, (int) roms.size());
 
-    renderer->DrawFont(skin->font, &r, &WHITE, "ROMS: %i / %i", available, roms.size());
-    r.y += skin->font->size * 2;
+    Rect r = rectRomInfo;
+    r.x = (r.x + r.w) - skin->font->GetWidth(str) - 16;
+    r.y = rectRomInfo.y + rectRomInfo.h - skin->font->GetHeight(str) - 16;
+    renderer->DrawFont(skin->font, &r, &WHITE, str, available, roms.size());
+
+    r = rectRomInfo;
+    r.x += 16;
+    r.y += 16;
+    r.w -= 32;
 
     switch(rom->state) {
         case RomList::RomState::MISSING:
