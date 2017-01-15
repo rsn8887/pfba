@@ -41,8 +41,15 @@ Video::Video(Renderer *renderer) {
     renderer->UnlockTexture(screen);
 
     renderer->SetShader(gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER));
-    screen->SetFiltering(gui->GetConfig()->GetRomValue(Option::Index::ROM_FILTER));
+    Filter(gui->GetConfig()->GetRomValue(Option::Index::ROM_FILTER));
     Scale();
+}
+
+void Video::Filter(int filter) {
+    screen->SetFiltering(filter);
+    // SDL2 needs to regenerate a texture, so update burn buffer
+    renderer->LockTexture(screen, NULL, (void **) &pBurnDraw, &nBurnPitch);
+    renderer->UnlockTexture(screen);
 }
 
 void Video::Scale() {

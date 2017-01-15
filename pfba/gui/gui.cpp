@@ -553,7 +553,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
 
                         case Option::Index::ROM_FILTER:
                             if (GameLooping && video) {
-                                video->screen->SetFiltering(option->value);
+                                video->Filter(option->value);
                             }
                             break;
 
@@ -590,7 +590,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
 
                         case Option::Index::ROM_FILTER:
                             if (GameLooping && video) {
-                                video->screen->SetFiltering(option->value);
+                                video->Filter(option->value);
                             }
                             break;
 
@@ -964,13 +964,11 @@ void Gui::SetPlayerInputMapping(bool isRomConfig) {
     if (isRomConfig) {
         input->SetKeyboardMapping(config->GetRomPlayerInputKeys(0));
         int deadzone = 2000 + config->GetRomValue(Option::Index::JOY_DEADZONE) * 2000;
-        printf("Gui::SetPlayerInputMapping: deadzone = %i\n", deadzone);
         input->SetJoystickMapping(0, config->GetRomPlayerInputButtons(0), deadzone);
     } else {
         int *keys = config->GetGuiPlayerInputKeys(0);
         input->SetKeyboardMapping(keys);
         int deadzone = 2000 + config->GetGuiValue(Option::Index::JOY_DEADZONE) * 2000;
-        printf("Gui::SetPlayerInputMapping: deadzone = %i\n", deadzone);
         input->SetJoystickMapping(0, config->GetGuiPlayerInputButtons(0), deadzone);
     }
 }

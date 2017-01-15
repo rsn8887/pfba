@@ -48,27 +48,10 @@ PSP2Texture::PSP2Texture(int w, int h) : Texture(w, h) {
 
 void PSP2Texture::SetFiltering(int filter) {
 
-    SceGxmTextureFilter tf = SCE_GXM_TEXTURE_FILTER_POINT;
-
-    switch (filter) {
-        case TEXTURE_FILTER_LINEAR:
-            tf = SCE_GXM_TEXTURE_FILTER_LINEAR;
-            break;
-
-        case TEXTURE_FILTER_POINT_ANISO:
-            tf = SCE_GXM_TEXTURE_FILTER_ANISO_POINT;
-            break;
-
-        case TEXTURE_FILTER_LINEAR_ANISO:
-            tf = SCE_GXM_TEXTURE_FILTER_ANISO_LINEAR;
-            break;
-
-        case TEXTURE_FILTER_POINT:
-        default:
-            break;
-    }
-
-    vita2d_texture_set_filters(tex, SCE_GXM_TEXTURE_FILTER_POINT, tf);
+    vita2d_texture_set_filters(tex,
+                               SCE_GXM_TEXTURE_FILTER_POINT,
+                               filter == TEXTURE_FILTER_POINT ?
+                               SCE_GXM_TEXTURE_FILTER_POINT : SCE_GXM_TEXTURE_FILTER_LINEAR);
 }
 
 PSP2Texture::~PSP2Texture() {

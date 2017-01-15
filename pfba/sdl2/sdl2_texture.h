@@ -12,9 +12,11 @@ class SDL2Texture : Texture {
 public:
     SDL2Texture(SDL_Renderer *renderer, const char *path);
     SDL2Texture(SDL_Renderer *renderer, int w, int h);
+    void SetFiltering(int filter);
     ~SDL2Texture();
 
     SDL_Texture *tex = NULL;
+    SDL_Renderer *renderer = NULL;
 };
 
 #endif //_SDL2_TEXTURE_H_

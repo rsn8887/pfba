@@ -20,6 +20,7 @@ public:
     void Render();
     virtual void Flip();
     virtual void Scale();
+    virtual void Filter(int filter);
 
     Renderer *renderer = NULL;
     Texture *screen = NULL;
