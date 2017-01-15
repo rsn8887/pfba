@@ -178,21 +178,23 @@ void SDL2Input::process_buttons(Input::Player &player, bool rotate) {
 
     for(int i=0; i<KEY_COUNT; i++) {
 
+        int mapping = player.mapping[i];
+
 #ifdef __PSP2__
         // rotate buttons on ps vita to play in portrait mode
         if (rotate) {
-            switch (player.mapping[i]) {
+            switch (mapping) {
                 case 2: // PSP2_CROSS (SDL-Vita)
-                    player.mapping[i] = 1; // PSP2_CIRCLE (SDL-Vita)
+                    mapping = 1; // PSP2_CIRCLE (SDL-Vita)
                     break;
                 case 3: // PSP2_SQUARE (SDL-Vita)
-                    player.mapping[i] = 2; // PSP2_CROSS (SDL-Vita)
+                    mapping = 2; // PSP2_CROSS (SDL-Vita)
                     break;
                 case 0: // PSP2_TRIANGLE (SDL-Vita)
-                    player.mapping[i] = 3; // PSP2_SQUARE (SDL-Vita)
+                    mapping = 3; // PSP2_SQUARE (SDL-Vita)
                     break;
                 case 1: // PSP2_CIRCLE (SDL-Vita)
-                    player.mapping[i] = 0; // PSP2_TRIANGLE (SDL-Vita)
+                    mapping = 0; // PSP2_TRIANGLE (SDL-Vita)
                     break;
                 default:
                     break;
@@ -200,7 +202,7 @@ void SDL2Input::process_buttons(Input::Player &player, bool rotate) {
         }
 #endif
 
-        if (SDL_JoystickGetButton((SDL_Joystick *) player.data, player.mapping[i])) {
+        if (SDL_JoystickGetButton((SDL_Joystick *) player.data, mapping)) {
             if (rotate && key_id[i] == Input::Key::KEY_UP) {
                 player.state |= Input::Key::KEY_RIGHT;
             } else if (rotate && key_id[i] == Input::Key::KEY_DOWN) {

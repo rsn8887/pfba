@@ -1,14 +1,15 @@
 # COMMON
 ========
 
-fix randrom fire1/fire2 inverted in menu ?!
+add favorites in hardware list
 add 1P+2P / dip switch combo button
-add joystick axis input configuration
+add joystick axis input configuration in gui
 add > 1 joystick support
 fix crash with non working roms (cps2 wrong set, ...) identified as 68K CycloneRun crash
 add help screen
 
 # NEXT RELEASE
+DONE // fix randrom fire1/fire2 inverted in menu ?!
 DONE // fix "FIT" mode on vertical games
 DONE // fix rom filtering (showAll & showHardware)
 DONE // fix some multiple cpu arm m68k games (cylone)
@@ -33,13 +34,6 @@ DONE // GUI: fix screenshot dismiss on gui option return
 
 # PSP2
 =====================
-
-# NEXT RELEASE
-DONE // GUI: FIX "cv_*.png" loading
-DONE // EMU: fix filters not applied ?
-# OLD RELEASES
-DONE // - remove slow shaders : CRT_EASY, GTU, XBR2X/FAST, BUCUBIC,
-DONE // - EMU: allow vertical gameplay
 
 
 # RPI (raspbian jessy)
