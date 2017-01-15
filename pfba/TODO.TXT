@@ -1,6 +1,7 @@
 # COMMON
 ========
-
+fix rom filtering (showAll & showHardware)
+add 1P+2P / dip switch combo button
 add joystick axis input configuration
 add > 1 joystick support
 fix crash with non working roms (cps2 wrong set, ...) identified as 68K CycloneRun crash
@@ -57,15 +58,16 @@ copy "/opt/vc/lib" (device) to "/usr/local/rpi-tools/sysroot" (computer)
 SDL2: add "usermod -a -G video cpasjuste" to use sdl2 as normal user in terminal
 
 
-# CYCLONE M68K - STATUS
+# M68K - STATUS
 =========================
 drv/cps         => working
 drv/cave        => working
 drv/dataeast    => working
-drv/konami      => not working:
-                    d_mystwarr: "gaiapols", NULL, NULL, NULL, "1993", "Gaiapolis (ver EAF)\0", NULL, "Konami", "GX123" (C AND ASM)
-                    d_mystwarr: "mmaulers", NULL, NULL, NULL, "1993", "Monster Maulers (ver EAA)\0", NULL, "Konami", "GX170" (C AND ASM)
+drv/konami      => not working :
+                    d_mystwarr: "gaiapols", NULL, NULL, NULL, "1993", "Gaiapolis (ver EAF)\0", NULL, "Konami", "GX123" (C AND ASM, CRASH)
+                    d_mystwarr: "mmaulers", NULL, NULL, NULL, "1993", "Monster Maulers (ver EAA)\0", NULL, "Konami", "GX170" (C AND ASM, CRASH)
 drv/megadrive   => todo: fix console support ?
 drv/neogeo      => working
 drv/pgm         => working
-drv/pre90s      =>
+drv/pre90s      => not working:
+                    d_aztarac: "aztarac", NULL, NULL, NULL, "1983", "Aztarac\0", "Vector graphics", "Centuri", "Miscellaneous" (C AND ASM, CRASH)

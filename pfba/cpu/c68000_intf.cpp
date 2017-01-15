@@ -13,7 +13,6 @@
 #define EMU_C68K
 #define SEK_CORE_C68K (0)
 #define SEK_CORE_M68K (1)
-extern INT32 nSekCpuCore;						// 0 - c68k (cyclone), 1 - m68k
 
 INT32 nSekCpuCore = SEK_CORE_C68K;  // 0 - c68k, 1 - m68k
 

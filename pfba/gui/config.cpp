@@ -49,7 +49,6 @@ Config::Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwLis
             Option("SHADER", {"NONE", "SHARP", "SHARP+SCAN", "LCD3X", "AAA", "SCALE2X"}, 2, Option::Index::ROM_SHADER));
     options_gui.push_back(Option("ROTATION", {"OFF", "ON"}, 0, Option::Index::ROM_ROTATION));
     options_gui.push_back(Option("SHOW_FPS", {"NO", "YES"}, 0, Option::Index::ROM_SHOW_FPS));
-    options_gui.push_back(Option("M68K", {"ASM", "C"}, 0, Option::Index::ROM_M68K));
     options_gui.push_back(
             Option("AUDIO_FREQ", {"OFF", "11025", "22050", "44100", "48000"}, 3, Option::Index::ROM_AUDIO_FREQ));
 

@@ -289,6 +289,10 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
             {win.x + (win.w / 2) + 16, win.y + win.h - 64, (win.w / 2) - 32, 32}
     };
 
+    if(choice2 == NULL) {
+        buttons[0].x = win.x + (win.w / 2) - (buttons[0].w / 2);
+    }
+
     input->Clear(0);
 
     while (true) {
