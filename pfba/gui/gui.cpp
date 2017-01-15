@@ -68,19 +68,26 @@ void Gui::DrawRomInfo(RomList::Rom *rom) {
     renderer->DrawFont(skin->font, &r, &WHITE, "ROMS: %i / %i", available, roms.size());
     r.y += skin->font->size * 2;
 
+    switch(rom->state) {
+        case RomList::RomState::MISSING:
+            renderer->DrawFont(skin->font, &r, &WHITE, "STATUS: MISSING");
+            break;
+        case RomList::RomState::NOT_WORKING:
+            renderer->DrawFont(skin->font, &r, &WHITE, "STATUS: NOT WORKING");
+            break;
+        case RomList::RomState::WORKING:
+            renderer->DrawFont(skin->font, &r, &WHITE, "STATUS: WORKING");
+            break;
+        default:
+            break;
+    }
+    r.y += skin->font->size;
+
     renderer->DrawFont(skin->font, &r, &WHITE, "SYSTEM: %s", rom->system);
     r.y += skin->font->size;
 
     renderer->DrawFont(skin->font, &r, &WHITE, "MANUFACTURER: %s", rom->manufacturer);
     r.y += skin->font->size;
-
-    if (rom->flags & BDF_ORIENTATION_VERTICAL) {
-        renderer->DrawFont(skin->font, r.x, r.y, "ORIENTATION: VERTICAL");
-        if (rom->flags & BDF_ORIENTATION_FLIPPED) {
-            renderer->DrawFont(skin->font, r.x + skin->font->GetWidth("ORIENTATION: VERTICAL"), r.y, " / FLIPPED");
-        }
-        r.y += skin->font->size;
-    }
 
     renderer->DrawFont(skin->font, &r, &WHITE, "YEAR: %s", rom->year);
     r.y += skin->font->size;
@@ -90,6 +97,14 @@ void Gui::DrawRomInfo(RomList::Rom *rom) {
 
     if (rom->parent) {
         renderer->DrawFont(skin->font, r.x, r.y, "PARENT: %s.ZIP", rom->parent);
+        r.y += skin->font->size;
+    }
+
+    if (rom->flags & BDF_ORIENTATION_VERTICAL) {
+        renderer->DrawFont(skin->font, r.x, r.y, "ORIENTATION: VERTICAL");
+        if (rom->flags & BDF_ORIENTATION_FLIPPED) {
+            renderer->DrawFont(skin->font, r.x + skin->font->GetWidth("ORIENTATION: VERTICAL"), r.y, " / FLIPPED");
+        }
         r.y += skin->font->size;
     }
 }
@@ -141,8 +156,10 @@ void Gui::DrawRomList() {
         }
 
         // draw rom name text
-        renderer->DrawFont(skin->font, &rectText, &color, false, true, rom.name);
-
+        Rect r = rectText;
+        r.x += 6;
+        r.w -= 6;
+        renderer->DrawFont(skin->font, &r, &color, false, true, rom.name);
         rectText.y += font_height;
     }
 }
@@ -839,7 +856,7 @@ void Gui::FilterRoms() {
                    [showAll, showClone, showHardware](const RomList::Rom r) {
                        return !showAll && r.state != RomList::RomState::WORKING
                               || !showClone && r.parent != NULL
-                              || !RomList::IsHardware(r.hardware, showHardware);
+                              || showHardware != HARDWARE_PREFIX_ALL && !RomList::IsHardware(r.hardware, showHardware);
                    });
 
     rom_index = 0;

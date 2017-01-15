@@ -97,6 +97,13 @@ RomList::RomList(Utility *utility,
         list.push_back(rom);
     }
 
+    for(int i=0; i<hardwares.size(); i++) {
+        printf("[%s] roms: %i/%i | clones: %i/%i)\n",
+               hardwares[i].name.c_str(),
+               hardwares[i].available_count, hardwares[i].supported_count,
+               hardwares[i].available_clone_count, hardwares[i].clone_count);
+    }
+
     for (int i = 0; i < DIRS_MAX; i++) {
         files[i].clear();
     }
