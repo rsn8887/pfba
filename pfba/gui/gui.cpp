@@ -512,6 +512,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                 // skip menus and submenus
                 Option *option = &options->at((unsigned long) option_index);
                 while (option->type == Option::Type::MENU
+                       || option->type == Option::Type::HIDDEN
                        || (isRomConfig && IsOptionHidden(option))) {
                     option_index--;
                     if (option_index < 0)
@@ -525,6 +526,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                 // skip menus and submenus
                 Option *option = &options->at((unsigned long) option_index);
                 while (option->type == Option::Type::MENU
+                       || option->type == Option::Type::HIDDEN
                        || (isRomConfig && IsOptionHidden(option))) {
                     option_index++;
                     if (option_index >= config->GetOptionPos(options, Option::Index::MENU_KEYBOARD))

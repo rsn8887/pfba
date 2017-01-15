@@ -36,7 +36,7 @@ Config::Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwLis
 
     // main/gui config
     options_gui.push_back(Option("MAIN", {"MAIN"}, 0, Option::Index::MENU_MAIN, Option::Type::MENU));
-    options_gui.push_back(Option("SHOW_ALL", {"WORKING", "ALL"}, 1, Option::Index::GUI_SHOW_ALL));
+    options_gui.push_back(Option("SHOW", {"WORKING", "ALL"}, 1, Option::Index::GUI_SHOW_ALL));
     options_gui.push_back(Option("SHOW_CLONES", {"NO", "YES"}, 0, Option::Index::GUI_SHOW_CLONES));
     options_gui.push_back(Option("SHOW_HARDWARE", hardware_names, 0, Option::Index::GUI_SHOW_HARDWARE));
 
