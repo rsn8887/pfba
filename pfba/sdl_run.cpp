@@ -118,14 +118,16 @@ void RunEmulator(Gui *g, int drvnum) {
 #if defined(__PSP2__) || defined(__RPI__)
     nSekCpuCore = 0; // SEK_CORE_C68K: USE CYCLONE ARM ASM M68K CORE
     int hardware = BurnDrvGetHardwareCode();
-    if (hardware & HARDWARE_SEGA_FD1089A_ENC
-        || hardware & HARDWARE_SEGA_FD1089B_ENC
-        || hardware & HARDWARE_SEGA_MC8123_ENC
-        || hardware & HARDWARE_SEGA_FD1094_ENC
-        || hardware & HARDWARE_SEGA_FD1094_ENC_CPU2) {
-        nSekCpuCore = 1; // SEK_CORE_M68K: USE C M68K CORE
-        gui->MessageBox("ROM IS CRYPTED, USE DECRYPTED ROM (CLONE)\n"
-                                "TO ENABLE CYCLONE ASM CORE (FASTER)", "OK", NULL);
+    if(RomList::IsHardware(hardware, HARDWARE_PREFIX_SEGA)) {
+        if (hardware & HARDWARE_SEGA_FD1089A_ENC
+            || hardware & HARDWARE_SEGA_FD1089B_ENC
+            || hardware & HARDWARE_SEGA_MC8123_ENC
+            || hardware & HARDWARE_SEGA_FD1094_ENC
+            || hardware & HARDWARE_SEGA_FD1094_ENC_CPU2) {
+            nSekCpuCore = 1; // SEK_CORE_M68K: USE C M68K CORE
+            gui->MessageBox("ROM IS CRYPTED, USE DECRYPTED ROM (CLONE)\n"
+                                    "TO ENABLE CYCLONE ASM CORE (FASTER)", "OK", NULL);
+        }
     }
 #endif
     bForce60Hz = true;
