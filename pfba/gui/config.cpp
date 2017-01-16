@@ -16,7 +16,7 @@ Config::Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwLis
     // gui config
     roms_paths.clear();
 #ifdef __PSP2__
-    roms_paths.push_back("ux0:/data/vfba/roms/");
+    roms_paths.push_back("ux0:/data/pfba/roms/");
 #else
     roms_paths.push_back("./roms/");
 #endif

@@ -23,6 +23,19 @@ The linux and rpi3 ports currently run in fullscreen mode, doesn't support filte
 
 -----
 
+**PS VITA**
+
+>- data is located at "ux0:/data/pfba"
+>- default rom path is "ux0:/data/pfba/roms/"
+>- rom path can be changed in "ux0:/data/pfba/pfba.cfg"
+>- preview images can be put in "ux0:/data/pfba/previews/rom-name.png"
+>- in the ui: START = gui options + default rom configuration
+>- in the ui: SELECT = selected rom configuration
+>- in game: START+SELECT = menu
+>- in game: START+L = saves states
+
+-----
+
 **Linux compilation**
 
 >- mkdir cmake-build

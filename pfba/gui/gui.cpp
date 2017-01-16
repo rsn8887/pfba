@@ -834,13 +834,13 @@ int Gui::TitleLoad(RomList::Rom *rom) {
     TitleFree();
 
     char path[MAX_PATH];
-    sprintf(path, "%s/%s.png", szAppTitlePath, rom->zip);
+    sprintf(path, "%s/%s.png", szAppPreviewPath, rom->zip);
     if (utility->FileExist(path)) {
         title = renderer->LoadTexture(path);
         return title != NULL;
     } else if (rom->parent) {
         memset(path, 0, MAX_PATH);
-        sprintf(path, "%s/%s.png", szAppTitlePath, rom->parent);
+        sprintf(path, "%s/%s.png", szAppPreviewPath, rom->parent);
         if (utility->FileExist(path)) {
             title = renderer->LoadTexture(path);
             return title != NULL;

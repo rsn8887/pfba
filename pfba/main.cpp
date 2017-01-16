@@ -60,15 +60,14 @@ int main(int argc, char **argv) {
     scePowerSetGpuXbarClockFrequency(222);
 
     // create needed directories
-    sceIoMkdir("ux0:/data/vfba", 0777);
-    sceIoMkdir("ux0:/data/vfba/saves", 0777);
-    sceIoMkdir("ux0:/data/vfba/configs", 0777);
-    sceIoMkdir("ux0:/data/vfba/hiscore", 0777);
-    sceIoMkdir("ux0:/data/vfba/samples", 0777);
-    sceIoMkdir("ux0:/data/vfba/previews", 0777);
-    sceIoMkdir("ux0:/data/vfba/titles", 0777);
-    sceIoMkdir("ux0:/data/vfba/blend", 0777);
-    sceIoMkdir("ux0:/data/vfba/roms", 0777);
+    sceIoMkdir("ux0:/data/pfba", 0777);
+    sceIoMkdir("ux0:/data/pfba/saves", 0777);
+    sceIoMkdir("ux0:/data/pfba/configs", 0777);
+    sceIoMkdir("ux0:/data/pfba/hiscore", 0777);
+    sceIoMkdir("ux0:/data/pfba/samples", 0777);
+    sceIoMkdir("ux0:/data/pfba/previews", 0777);
+    sceIoMkdir("ux0:/data/pfba/blend", 0777);
+    sceIoMkdir("ux0:/data/pfba/roms", 0777);
 
     renderer = (Renderer *) new PSP2Renderer(960, 544);
     utility = (Utility*)new PSP2Utility();
@@ -185,7 +184,7 @@ int main(int argc, char **argv) {
 
     // load configuration
     std::string cfgPath = szAppHomePath;
-    cfgPath += "/fbagui.cfg";
+    cfgPath += "/pfba.cfg";
     config = new Config(cfgPath, hardwares);
 
 #ifdef __PSP2__
