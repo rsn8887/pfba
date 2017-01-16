@@ -108,6 +108,44 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
     return 0;
 }
 
+#if defined(__PSP2__) || defined(__RPI__)
+static int GetSekCpuCore(Gui *g) {
+
+    //int sekCpuCore = 0; // SEK_CORE_C68K: USE CYCLONE ARM ASM M68K CORE
+    int sekCpuCore = g->GetConfig()->GetRomValue(Option::Index::ROM_M68K);
+
+    std::vector<std::string> zipList;
+    int hardware = BurnDrvGetHardwareCode();
+    if (RomList::IsHardware(hardware, HARDWARE_PREFIX_SEGA)) {
+        if (hardware & HARDWARE_SEGA_FD1089A_ENC
+            || hardware & HARDWARE_SEGA_FD1089B_ENC
+            || hardware & HARDWARE_SEGA_MC8123_ENC
+            || hardware & HARDWARE_SEGA_FD1094_ENC
+            || hardware & HARDWARE_SEGA_FD1094_ENC_CPU2) {
+            sekCpuCore = 1; // SEK_CORE_M68K: USE C M68K CORE
+            g->MessageBox("ROM IS CRYPTED, USE DECRYPTED ROM (CLONE)\n"
+                                    "TO ENABLE CYCLONE ASM CORE (FASTER)", "OK", NULL);
+        }
+    } else if (RomList::IsHardware(hardware, HARDWARE_PREFIX_TOAPLAN)) {
+        zipList.push_back("batrider");
+        zipList.push_back("bbakraid");
+        zipList.push_back("bgaregga");
+    }
+
+    std::string zip = BurnDrvGetTextA(DRV_NAME);
+    for(int i=0; i<zipList.size(); i++) {
+        if (zipList[i].compare(0, zip.length(), zip) == 0) {
+            g->MessageBox("THIS ROM DOESNT SUPPORT THE M68K ASM CORE\n"
+                                  "CYCLONE ASM CORE DISABLED", "OK", NULL);
+            sekCpuCore = 1; // SEK_CORE_M68K: USE C M68K CORE
+            break;
+        }
+    }
+
+    return sekCpuCore;
+}
+#endif
+
 void RunEmulator(Gui *g, int drvnum) {
 
     printf("RunEmulator '%s'\n", BurnDrvGetTextA(DRV_FULLNAME));
@@ -116,19 +154,7 @@ void RunEmulator(Gui *g, int drvnum) {
     gui = g;
 
 #if defined(__PSP2__) || defined(__RPI__)
-    nSekCpuCore = 0; // SEK_CORE_C68K: USE CYCLONE ARM ASM M68K CORE
-    int hardware = BurnDrvGetHardwareCode();
-    if(RomList::IsHardware(hardware, HARDWARE_PREFIX_SEGA)) {
-        if (hardware & HARDWARE_SEGA_FD1089A_ENC
-            || hardware & HARDWARE_SEGA_FD1089B_ENC
-            || hardware & HARDWARE_SEGA_MC8123_ENC
-            || hardware & HARDWARE_SEGA_FD1094_ENC
-            || hardware & HARDWARE_SEGA_FD1094_ENC_CPU2) {
-            nSekCpuCore = 1; // SEK_CORE_M68K: USE C M68K CORE
-            gui->MessageBox("ROM IS CRYPTED, USE DECRYPTED ROM (CLONE)\n"
-                                    "TO ENABLE CYCLONE ASM CORE (FASTER)", "OK", NULL);
-        }
-    }
+    nSekCpuCore = GetSekCpuCore(gui);
 #endif
     bForce60Hz = true;
 

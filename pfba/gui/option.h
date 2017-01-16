@@ -34,6 +34,7 @@ public:
         ROM_SHADER,
         ROM_ROTATION,
         ROM_SHOW_FPS,
+        ROM_M68K,
         ROM_AUDIO_FREQ,
         MENU_JOYPAD,
         JOY_UP,
