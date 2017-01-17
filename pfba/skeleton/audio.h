@@ -17,7 +17,7 @@ public:
     virtual void Play() {};
     virtual void Pause(int pause);
 
-    int frequency = 44100;
+    int frequency = 48000;
     int channels = 2;
     short *buffer = NULL;
     int buffer_size = 0;

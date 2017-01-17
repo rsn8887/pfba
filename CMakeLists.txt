@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.0)
 set(CMAKE_SYSTEM_NAME "Generic")
 enable_language(ASM)
 
-# delete cmake cache folder before changing this option
+# delete cmake cache folder before changing this options
 option(BUILD_PSP2 "Build with PSP2 support" OFF)
 option(BUILD_RPI "Build with RPI support" OFF)
 
@@ -292,8 +292,14 @@ set(FLAGS
         -DBUILD_SDL -DBUILD_M68K
         -DTOAPLAN_SOUND_SAMPLES_HACK
         -Wno-write-strings -Wno-narrowing
-        -D__fastcall= -D__fastcall__= -D_fastcall=
+        -D_fastcall= -D__fastcall= -D__fastcall__=
+        "-DINLINE=static inline" "-DSH2_INLINE=static inline"
         )
+if (BUILD_DEBUG)
+    list(APPEND FLAGS -O0 -g -DDEBUG)
+else ()
+    list(APPEND FLAGS -O3 -DNDEBUG)
+endif(BUILD_DEBUG)
 
 #################
 # PSP2 (ps vita)
@@ -324,7 +330,6 @@ if (BUILD_PSP2)
         list(APPEND FLAGS -D__PSP2_DEBUG__)
     else ()
         list(APPEND FLAGS
-                -O3
                 -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard -ffast-math
                 -fno-asynchronous-unwind-tables -funroll-loops
                 -mword-relocations -fno-unwind-tables -fno-optimize-sibling-calls
@@ -361,6 +366,7 @@ else ()
             pfba/sdl2/*.c*
             )
     list(APPEND SRC_PFBA ${SRC_SDL2})
+    list(APPEND FLAGS )
     set(LDFLAGS SDL2 SDL2_image SDL2_ttf png z)
     ##############
     # RPI
@@ -378,7 +384,6 @@ else ()
         list(APPEND SRC_PFBA ${SRC_RPI})
         # rpi3 compile flags
         list(APPEND FLAGS
-                -O3
                 -D__RPI__ -DBUILD_C68K -DUSE_FILE32API
                 -march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53 -mfpu=neon-fp-armv8
                 -mfloat-abi=hard -mvectorize-with-neon-quad -funsafe-math-optimizations

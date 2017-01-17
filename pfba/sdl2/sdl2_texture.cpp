@@ -10,9 +10,8 @@
 SDL2Texture::SDL2Texture(SDL_Renderer *renderer, const char *path) : Texture(path) {
 
     this->renderer = renderer;
-    SDL_Surface *temp;
 
-    temp = IMG_Load(path);
+    SDL_Surface *temp = IMG_Load(path);
     if (temp == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s", path, SDL_GetError());
         return;
@@ -21,11 +20,11 @@ SDL2Texture::SDL2Texture(SDL_Renderer *renderer, const char *path) : Texture(pat
     tex = SDL_CreateTextureFromSurface(renderer, temp);
     if (!tex) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
+    } else {
+        SDL_QueryTexture(tex, NULL, NULL, &width, &height);
     }
 
     SDL_FreeSurface(temp);
-
-    SDL_QueryTexture(tex, NULL, NULL, &width, &height);
 }
 
 SDL2Texture::SDL2Texture(SDL_Renderer *renderer, int w, int h) : Texture(w, h) {
@@ -36,8 +35,9 @@ SDL2Texture::SDL2Texture(SDL_Renderer *renderer, int w, int h) : Texture(w, h) {
                             SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, w, h);
     if (!tex) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
+    } else {
+        SDL_QueryTexture(tex, NULL, NULL, &width, &height);
     }
-    SDL_QueryTexture(tex, NULL, NULL, &width, &height);
 }
 
 void SDL2Texture::SetFiltering(int filter) {
@@ -54,7 +54,6 @@ void SDL2Texture::SetFiltering(int filter) {
     if (!tex) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
     }
-    SDL_QueryTexture(tex, NULL, NULL, &width, &height);
 }
 
 SDL2Texture::~SDL2Texture() {

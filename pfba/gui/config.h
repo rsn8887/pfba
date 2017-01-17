@@ -60,6 +60,7 @@ public:
 
     int GetGuiValue(int id);
     int GetRomValue(int id);
+    int GetRomAudioFrequency();
 
     const char *GetRomPath(int n);
 

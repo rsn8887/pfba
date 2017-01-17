@@ -176,7 +176,6 @@ int main(int argc, char **argv) {
             {HARDWARE_PREFIX_MIDWAY,             "Midway"},
             {HARDWARE_PREFIX_MSX,                "MSX"}
     };
-
 #endif
 
     BurnPathsInit();

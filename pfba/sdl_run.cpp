@@ -146,40 +146,23 @@ static int GetSekCpuCore(Gui *g) {
 }
 #endif
 
-int AudioInit() {
+void AudioInit(Config *cfg) {
 
-    nInterpolation = gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO_INTERPOLATION);
-    nFMInterpolation = gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO_FMINTERPOLATION);
+    nInterpolation =
+            cfg->GetRomValue(Option::Index::ROM_AUDIO_INTERPOLATION) == 0 ? 1 : 3;
+    nFMInterpolation =
+            cfg->GetRomValue(Option::Index::ROM_AUDIO_FMINTERPOLATION) == 0 ? 0 : 3;
 
-    // audio needs to be inited before rom driver...
-    printf("Creating audio device\n");
-
-    int frequency = 44100;
-    switch (gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO_FREQ)) {
-        case 0:
-            frequency = 0;
-            break;
-        case 1:
-            frequency = 11025;
-            break;
-        case 2:
-            frequency = 22050;
-            break;
-        case 4:
-            frequency = 48000;
-            break;
-        default:
-            break;
-    }
-
-    audio = (Audio *) new SDL2Audio(frequency, nBurnFPS);
+    audio = (Audio *) new SDL2Audio(nBurnSoundRate, nBurnFPS);
     if (audio->available) {
         nBurnSoundRate = audio->frequency;
         nBurnSoundLen = audio->buffer_len;
         pBurnSoundOut = audio->buffer;
+    } else {
+        nBurnSoundRate = 0;
+        nBurnSoundLen = 0;
+        pBurnSoundOut = NULL;
     }
-
-    return frequency;
 }
 
 void RunEmulator(Gui *g, int drvnum) {
@@ -192,9 +175,8 @@ void RunEmulator(Gui *g, int drvnum) {
 #if defined(__PSP2__) || defined(__RPI__)
     nSekCpuCore = GetSekCpuCore(gui);
 #endif
-    bForce60Hz = true;
-
-    int frequency = AudioInit();
+    bForce60Hz = gui->GetConfig()->GetRomValue(Option::Index::ROM_FORCE_60HZ) == 1;
+    nBurnSoundRate = gui->GetConfig()->GetRomAudioFrequency();
 
     InpInit();
     InpDIP();
@@ -207,9 +189,13 @@ void RunEmulator(Gui *g, int drvnum) {
                        "- Memory error\n\n");
         DrvExit();
         InpExit();
-        delete (audio);
         return;
     }
+
+    printf("bForce60Hz = %i, nBurnFPS = %d\n", bForce60Hz, nBurnFPS);
+
+    printf("Creating audio device\n");
+    AudioInit(gui->GetConfig());
 
     printf("Creating video device\n");
     video = new Video(gui->GetRenderer());
@@ -231,7 +217,7 @@ void RunEmulator(Gui *g, int drvnum) {
     while (GameLooping) {
 
         // audio lag when waiting for audio, force "frameskip" when audio enabled
-        int frameSkip = frequency;
+        int frameSkip = nBurnSoundRate;
         int showFps = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHOW_FPS);
 
         if (frameSkip) {

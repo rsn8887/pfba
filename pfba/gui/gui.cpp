@@ -657,8 +657,10 @@ void Gui::RunOptionMenu(bool isRomConfig) {
     }
 
     if (option_changed) {
-        nInterpolation = config->GetRomValue(Option::Index::ROM_AUDIO_INTERPOLATION);
-        nFMInterpolation = config->GetRomValue(Option::Index::ROM_AUDIO_FMINTERPOLATION);
+        nInterpolation =
+                config->GetRomValue(Option::Index::ROM_AUDIO_INTERPOLATION) == 0 ? 1 : 3;
+        nFMInterpolation =
+                config->GetRomValue(Option::Index::ROM_AUDIO_FMINTERPOLATION) == 0 ? 0 : 3;
         if (isRomConfig) {
             config->Save(romSelected);
         } else {
