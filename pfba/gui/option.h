@@ -36,6 +36,8 @@ public:
         ROM_SHOW_FPS,
         ROM_M68K,
         ROM_AUDIO_FREQ,
+        ROM_AUDIO_INTERPOLATION,
+        ROM_AUDIO_FMINTERPOLATION,
         MENU_JOYPAD,
         JOY_UP,
         JOY_DOWN,

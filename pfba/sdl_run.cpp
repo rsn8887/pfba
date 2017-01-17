@@ -146,20 +146,10 @@ static int GetSekCpuCore(Gui *g) {
 }
 #endif
 
-void RunEmulator(Gui *g, int drvnum) {
+int AudioInit() {
 
-    printf("RunEmulator '%s'\n", BurnDrvGetTextA(DRV_FULLNAME));
-
-    // set gui pointer
-    gui = g;
-
-#if defined(__PSP2__) || defined(__RPI__)
-    nSekCpuCore = GetSekCpuCore(gui);
-#endif
-    bForce60Hz = true;
-
-    InpInit();
-    InpDIP();
+    nInterpolation = gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO_INTERPOLATION);
+    nFMInterpolation = gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO_FMINTERPOLATION);
 
     // audio needs to be inited before rom driver...
     printf("Creating audio device\n");
@@ -188,6 +178,26 @@ void RunEmulator(Gui *g, int drvnum) {
         nBurnSoundLen = audio->buffer_len;
         pBurnSoundOut = audio->buffer;
     }
+
+    return frequency;
+}
+
+void RunEmulator(Gui *g, int drvnum) {
+
+    printf("RunEmulator '%s'\n", BurnDrvGetTextA(DRV_FULLNAME));
+
+    // set gui pointer
+    gui = g;
+
+#if defined(__PSP2__) || defined(__RPI__)
+    nSekCpuCore = GetSekCpuCore(gui);
+#endif
+    bForce60Hz = true;
+
+    int frequency = AudioInit();
+
+    InpInit();
+    InpDIP();
 
     printf("Initialize rom driver\n");
     if (DrvInit(drvnum, false) != 0) {
