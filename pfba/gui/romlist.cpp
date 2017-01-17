@@ -10,11 +10,9 @@
 #include "burner.h"
 #include "romlist.h"
 
-RomList::RomList(Utility *utility,
-                 const std::vector<std::string> &paths,
-                 std::vector<Hardware> &hwList) {
+RomList::RomList(Utility *utility, std::vector<Hardware> *hwList, const std::vector<std::string> &paths) {
 
-    this->hardwares = hwList;
+    hardwareList = hwList;
 
     printf("RomList: building list...\n");
     clock_t begin = clock();
@@ -46,9 +44,9 @@ RomList::RomList(Utility *utility,
         rom.hardware = BurnDrvGetHardwareCode();
 
         // add rom to "ALL" game list
-        hardwares[0].supported_count++;
+        hardwareList->at(0).supported_count++;
         if (rom.parent) {
-            hardwares[0].clone_count++;
+            hardwareList->at(0).clone_count++;
         }
 
         // add rom to specific hardware
@@ -67,9 +65,9 @@ RomList::RomList(Utility *utility,
             sprintf(path, "%s.zip", rom.zip);
             if (std::find(files[j].begin(), files[j].end(), path) != files[j].end()) {
                 rom.state = BurnDrvIsWorking() ? RomState::WORKING : RomState::NOT_WORKING;
-                hardwares[0].available_count++;
+                hardwareList->at(0).available_count++;
                 if (rom.parent) {
-                    hardwares[0].available_clone_count++;
+                    hardwareList->at(0).available_clone_count++;
                 }
                 if (hardware) {
                     hardware->available_count++;
@@ -82,12 +80,12 @@ RomList::RomList(Utility *utility,
         }
 
         if (rom.state == RomState::MISSING) {
-            hardwares[0].missing_count++;
+            hardwareList->at(0).missing_count++;
             if (hardware) {
                 hardware->missing_count++;
             }
             if (rom.parent) {
-                hardwares[0].missing_clone_count++;
+                hardwareList->at(0).missing_clone_count++;
                 if (hardware) {
                     hardware->missing_clone_count++;
                 }
@@ -97,11 +95,11 @@ RomList::RomList(Utility *utility,
         list.push_back(rom);
     }
 
-    for(int i=0; i<hardwares.size(); i++) {
+    for(int i=0; i<hardwareList->size(); i++) {
         printf("[%s] roms: %i/%i | clones: %i/%i)\n",
-               hardwares[i].name.c_str(),
-               hardwares[i].available_count, hardwares[i].supported_count,
-               hardwares[i].available_clone_count, hardwares[i].clone_count);
+               hardwareList->at(i).name.c_str(),
+               hardwareList->at(i).available_count, hardwareList->at(i).supported_count,
+               hardwareList->at(i).available_clone_count, hardwareList->at(i).clone_count);
     }
 
     for (int i = 0; i < DIRS_MAX; i++) {

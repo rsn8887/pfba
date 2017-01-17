@@ -31,9 +31,8 @@ public:
         }
     };
 
-    RomList(Utility *utility,
-            const std::vector<std::string> &paths,
-            std::vector<Hardware> &hwList);
+    RomList(Utility *utility, std::vector<Hardware> *hwList,
+            const std::vector<std::string> &paths);
     ~RomList();
 
     enum RomState {
@@ -57,21 +56,21 @@ public:
     };
 
     std::vector<Rom> list;
-    std::vector<Hardware> hardwares;
+    std::vector<Hardware> *hardwareList;
 
     Hardware *GetHardware(int hardware_prefix) {
-        for (int i = 0; i < hardwares.size(); i++) {
-            if (IsHardware(hardware_prefix, hardwares[i].prefix)) {
-                return &hardwares[i];
+        for (int i = 0; i < hardwareList->size(); i++) {
+            if (IsHardware(hardware_prefix, hardwareList->at(i).prefix)) {
+                return &hardwareList->at(i);
             }
         }
         return NULL;
     };
 
     const char *GetHardwareName(int hardware_prefix) {
-        for (int i = 0; i < hardwares.size(); i++) {
-            if (hardwares[i].prefix == hardware_prefix) {
-                return hardwares[i].name.c_str();
+        for (int i = 0; i < hardwareList->size(); i++) {
+            if (hardwareList->at(i).prefix == hardware_prefix) {
+                return hardwareList->at(i).name.c_str();
             }
         }
         return "UNKNOW";

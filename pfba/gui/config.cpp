@@ -7,7 +7,7 @@
 #include <burner.h>
 #include "config.h"
 
-Config::Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwList) {
+Config::Config(const std::string &cfgPath) {
 
     configPath = cfgPath;
 
@@ -25,9 +25,40 @@ Config::Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwLis
     roms_paths.push_back("");
 
     // build hardware list configuration
+    hardwareList.push_back({HARDWARE_PREFIX_ALL, "All"});
+    hardwareList.push_back({HARDWARE_PREFIX_SNK, "Neo Geo"});
+    hardwareList.push_back({HARDWARE_PREFIX_CAPCOM, "CPS-1"});
+    hardwareList.push_back({HARDWARE_PREFIX_CPS2, "CPS-2"});
+    hardwareList.push_back({HARDWARE_PREFIX_CPS3, "CPS-3"});
+    hardwareList.push_back({HARDWARE_PREFIX_IGS_PGM, "PGM"});
+    hardwareList.push_back({HARDWARE_PREFIX_PSIKYO, "Psikyo"});
+    hardwareList.push_back({HARDWARE_PREFIX_CAVE, "Cave"});
+    hardwareList.push_back({HARDWARE_PREFIX_SEGA, "Sega"});
+    hardwareList.push_back({HARDWARE_PREFIX_CAPCOM_MISC, "Capcom (Other)"});
+    hardwareList.push_back({HARDWARE_PREFIX_DATAEAST, "Data East"});
+    hardwareList.push_back({HARDWARE_PREFIX_GALAXIAN, "Galaxian"});
+    hardwareList.push_back({HARDWARE_PREFIX_IREM, "Irem"});
+    hardwareList.push_back({HARDWARE_PREFIX_KANEKO, "Kaneko"});
+    hardwareList.push_back({HARDWARE_PREFIX_KONAMI, "Konami"});
+    hardwareList.push_back({HARDWARE_PREFIX_MISC_PRE90S, "Misc (pre 90s)"});
+    hardwareList.push_back({HARDWARE_PREFIX_MISC_POST90S, "Misc (post 90s)"});
+    hardwareList.push_back({HARDWARE_PREFIX_PACMAN, "Pacman"});
+    hardwareList.push_back({HARDWARE_PREFIX_SETA, "Seta"});
+    hardwareList.push_back({HARDWARE_PREFIX_TAITO, "Taito"});
+    hardwareList.push_back({HARDWARE_PREFIX_TECHNOS, "Technos"});
+    hardwareList.push_back({HARDWARE_PREFIX_TOAPLAN, "Toaplan"});
+    hardwareList.push_back({HARDWARE_PREFIX_SEGA_MEGADRIVE, "Sega MegaDrive"});
+    hardwareList.push_back({HARDWARE_PREFIX_SEGA_MASTER_SYSTEM, "Sega MasterSystem"});
+    hardwareList.push_back({HARDWARE_PREFIX_SEGA_SG1000, "Sega SG1000"});
+    hardwareList.push_back({HARDWARE_PREFIX_SEGA_GAME_GEAR, "Sega GameGear"});
+    hardwareList.push_back({HARDWARE_PREFIX_PCENGINE, "PC-Engine"});
+    hardwareList.push_back({HARDWARE_PREFIX_COLECO, "Coleco"});
+    hardwareList.push_back({HARDWARE_PREFIX_MIDWAY, "Midway"});
+    hardwareList.push_back({HARDWARE_PREFIX_MSX, "MSX"});
+
     std::vector<std::string> hardware_names;
-    for (int i = 0; i < hwList.size(); i++) {
-        hardware_names.push_back(hwList[i].name);
+    for (int i = 0; i < hardwareList.size(); i++) {
+        hardware_names.push_back(hardwareList[i].name);
     }
 
     ////////////////////////////////////////////////////////////
@@ -51,7 +82,8 @@ Config::Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwLis
     options_gui.push_back(Option("SHOW_FPS", {"NO", "YES"}, 0, Option::Index::ROM_SHOW_FPS));
     options_gui.push_back(Option("M68K", {"ASM", "C"}, 0, Option::Index::ROM_M68K));
     options_gui.push_back(Option("FORCE_60HZ", {"OFF", "ON"}, 1, Option::Index::ROM_FORCE_60HZ));
-    options_gui.push_back(Option("AUDIO_FREQ", {"OFF", "11025", "22050", "44100", "48000"}, 4, Option::Index::ROM_AUDIO_FREQ));
+    options_gui.push_back(
+            Option("AUDIO_FREQ", {"OFF", "11025", "22050", "44100", "48000"}, 4, Option::Index::ROM_AUDIO_FREQ));
     options_gui.push_back(Option("AUDIO_INTERP", {"MIN", "MAX"}, 1, Option::Index::ROM_AUDIO_INTERPOLATION));
     options_gui.push_back(Option("AUDIO_FMINTERP", {"OFF", "ON"}, 1, Option::Index::ROM_AUDIO_FMINTERPOLATION));
 
@@ -82,10 +114,14 @@ Config::Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwLis
     options_gui.push_back(
             Option("JOY_START1", {"7"}, KEY_JOY_START1_DEFAULT, Option::Index::JOY_START1, Option::Type::INPUT));
     // TODO: add gui option for axis in option menu
-    options_gui.push_back(Option("JOY_AXIS_LX", {"0"}, KEY_JOY_AXIS_LX, Option::Index::JOY_AXIS_LX, Option::Type::HIDDEN));
-    options_gui.push_back(Option("JOY_AXIS_LY", {"1"}, KEY_JOY_AXIS_LY, Option::Index::JOY_AXIS_LY, Option::Type::HIDDEN));
-    options_gui.push_back(Option("JOY_AXIS_RX", {"2"}, KEY_JOY_AXIS_RX, Option::Index::JOY_AXIS_RX, Option::Type::HIDDEN));
-    options_gui.push_back(Option("JOY_AXIS_RY", {"3"}, KEY_JOY_AXIS_RY, Option::Index::JOY_AXIS_RY, Option::Type::HIDDEN));
+    options_gui.push_back(
+            Option("JOY_AXIS_LX", {"0"}, KEY_JOY_AXIS_LX, Option::Index::JOY_AXIS_LX, Option::Type::HIDDEN));
+    options_gui.push_back(
+            Option("JOY_AXIS_LY", {"1"}, KEY_JOY_AXIS_LY, Option::Index::JOY_AXIS_LY, Option::Type::HIDDEN));
+    options_gui.push_back(
+            Option("JOY_AXIS_RX", {"2"}, KEY_JOY_AXIS_RX, Option::Index::JOY_AXIS_RX, Option::Type::HIDDEN));
+    options_gui.push_back(
+            Option("JOY_AXIS_RY", {"3"}, KEY_JOY_AXIS_RY, Option::Index::JOY_AXIS_RY, Option::Type::HIDDEN));
     options_gui.push_back(Option("JOY_DEADZONE",
                                  {"2000", "4000", "6000", "8000", "10000", "12000", "14000", "16000",
                                   "18000", "20000", "22000", "24000", "26000", "28000", "30000"}, 3,
@@ -286,11 +322,19 @@ int Config::GetRomAudioFrequency() {
 }
 
 const char *Config::GetRomPath(int n) {
-    if (n > 3) {
+    if (n >= DIRS_MAX) {
         return roms_paths[0].c_str();
     } else {
         return roms_paths[n].c_str();
     }
+}
+
+std::vector<std::string> Config::GetRomPaths() {
+    std::vector<std::string> rom_paths;
+    for (int i = 0; i < DIRS_MAX; i++) {
+        rom_paths.push_back(GetRomPath(i));
+    }
+    return roms_paths;
 }
 
 std::vector<Option> *Config::GetGuiOptions() {

@@ -71,111 +71,12 @@ int main(int argc, char **argv) {
 
     renderer = (Renderer *) new PSP2Renderer(960, 544);
     utility = (Utility*)new PSP2Utility();
-
-    std::vector<RomList::Hardware> hardwares = {
-            {HARDWARE_PREFIX_ALL,                "All"},
-            {HARDWARE_PREFIX_SNK,                "Neo Geo"},
-            {HARDWARE_PREFIX_CAPCOM,             "CPS-1"},
-            {HARDWARE_PREFIX_CPS2,               "CPS-2"},
-            {HARDWARE_PREFIX_CPS3,               "CPS-3"},
-            {HARDWARE_PREFIX_IGS_PGM,            "PGM"},
-            {HARDWARE_PREFIX_PSIKYO,             "Psikyo"},
-            {HARDWARE_PREFIX_CAVE,               "Cave"},
-            {HARDWARE_PREFIX_SEGA,               "Sega"},
-            {HARDWARE_PREFIX_CAPCOM_MISC,        "Capcom (Other)"},
-            {HARDWARE_PREFIX_DATAEAST,           "Data East"},
-            {HARDWARE_PREFIX_GALAXIAN,           "Galaxian"},
-            {HARDWARE_PREFIX_IREM,               "Irem"},
-            {HARDWARE_PREFIX_KANEKO,             "Kaneko"},
-            {HARDWARE_PREFIX_KONAMI,             "Konami"},
-            {HARDWARE_PREFIX_MISC_PRE90S,        "Misc (pre 90s)"},
-            {HARDWARE_PREFIX_MISC_POST90S,       "Misc (post 90s)"},
-            {HARDWARE_PREFIX_PACMAN,             "Pacman"},
-            {HARDWARE_PREFIX_SETA,               "Seta"},
-            {HARDWARE_PREFIX_TAITO,              "Taito"},
-            {HARDWARE_PREFIX_TECHNOS,            "Technos"},
-            {HARDWARE_PREFIX_TOAPLAN,            "Toaplan"},
-            {HARDWARE_PREFIX_SEGA_MEGADRIVE,     "Sega MegaDrive"},
-            {HARDWARE_PREFIX_SEGA_MASTER_SYSTEM, "Sega MasterSystem"},
-            {HARDWARE_PREFIX_SEGA_SG1000,        "Sega SG1000"},
-            {HARDWARE_PREFIX_SEGA_GAME_GEAR,     "Sega GameGear"},
-            {HARDWARE_PREFIX_PCENGINE,           "PC-Engine"},
-            {HARDWARE_PREFIX_COLECO,             "Coleco"},
-            {HARDWARE_PREFIX_MIDWAY,             "Midway"},
-            {HARDWARE_PREFIX_MSX,                "MSX"}
-    };
 #elif __RPI__
     renderer = (Renderer *) new SDL2Renderer(0, 0);
     utility = (Utility*)new SDL2Utility();
-
-    std::vector<RomList::Hardware> hardwares = {
-            {HARDWARE_PREFIX_ALL,                "All"},
-            {HARDWARE_PREFIX_SNK,                "Neo Geo"},
-            {HARDWARE_PREFIX_CAPCOM,             "CPS-1"},
-            {HARDWARE_PREFIX_CPS2,               "CPS-2"},
-            {HARDWARE_PREFIX_CPS3,               "CPS-3"},
-            {HARDWARE_PREFIX_IGS_PGM,            "PGM"},
-            {HARDWARE_PREFIX_PSIKYO,             "Psikyo"},
-            {HARDWARE_PREFIX_CAVE,               "Cave"},
-            {HARDWARE_PREFIX_SEGA,               "Sega"},
-            {HARDWARE_PREFIX_CAPCOM_MISC,        "Capcom (Other)"},
-            {HARDWARE_PREFIX_DATAEAST,           "Data East"},
-            {HARDWARE_PREFIX_GALAXIAN,           "Galaxian"},
-            {HARDWARE_PREFIX_IREM,               "Irem"},
-            {HARDWARE_PREFIX_KANEKO,             "Kaneko"},
-            {HARDWARE_PREFIX_KONAMI,             "Konami"},
-            {HARDWARE_PREFIX_MISC_PRE90S,        "Misc (pre 90s)"},
-            {HARDWARE_PREFIX_MISC_POST90S,       "Misc (post 90s)"},
-            {HARDWARE_PREFIX_PACMAN,             "Pacman"},
-            {HARDWARE_PREFIX_SETA,               "Seta"},
-            {HARDWARE_PREFIX_TAITO,              "Taito"},
-            {HARDWARE_PREFIX_TECHNOS,            "Technos"},
-            {HARDWARE_PREFIX_TOAPLAN,            "Toaplan"},
-            {HARDWARE_PREFIX_SEGA_MEGADRIVE,     "Sega MegaDrive"},
-            {HARDWARE_PREFIX_SEGA_MASTER_SYSTEM, "Sega MasterSystem"},
-            {HARDWARE_PREFIX_SEGA_SG1000,        "Sega SG1000"},
-            {HARDWARE_PREFIX_SEGA_GAME_GEAR,     "Sega GameGear"},
-            {HARDWARE_PREFIX_PCENGINE,           "PC-Engine"},
-            {HARDWARE_PREFIX_COLECO,             "Coleco"},
-            {HARDWARE_PREFIX_MIDWAY,             "Midway"},
-            {HARDWARE_PREFIX_MSX,                "MSX"}
-    };
 #else
     renderer = (Renderer *) new SDL2Renderer(960, 544);
     utility = (Utility *) new SDL2Utility();
-
-    std::vector<RomList::Hardware> hardwares {
-            {HARDWARE_PREFIX_ALL,                "All"},
-            {HARDWARE_PREFIX_SNK,                "Neo Geo"},
-            {HARDWARE_PREFIX_CAPCOM,             "CPS-1"},
-            {HARDWARE_PREFIX_CPS2,               "CPS-2"},
-            {HARDWARE_PREFIX_CPS3,               "CPS-3"},
-            {HARDWARE_PREFIX_IGS_PGM,            "PGM"},
-            {HARDWARE_PREFIX_PSIKYO,             "Psikyo"},
-            {HARDWARE_PREFIX_CAVE,               "Cave"},
-            {HARDWARE_PREFIX_SEGA,               "Sega"},
-            {HARDWARE_PREFIX_CAPCOM_MISC,        "Capcom (Other)"},
-            {HARDWARE_PREFIX_DATAEAST,           "Data East"},
-            {HARDWARE_PREFIX_GALAXIAN,           "Galaxian"},
-            {HARDWARE_PREFIX_IREM,               "Irem"},
-            {HARDWARE_PREFIX_KANEKO,             "Kaneko"},
-            {HARDWARE_PREFIX_KONAMI,             "Konami"},
-            {HARDWARE_PREFIX_MISC_PRE90S,        "Misc (pre 90s)"},
-            {HARDWARE_PREFIX_MISC_POST90S,       "Misc (post 90s)"},
-            {HARDWARE_PREFIX_PACMAN,             "Pacman"},
-            {HARDWARE_PREFIX_SETA,               "Seta"},
-            {HARDWARE_PREFIX_TAITO,              "Taito"},
-            {HARDWARE_PREFIX_TECHNOS,            "Technos"},
-            {HARDWARE_PREFIX_TOAPLAN,            "Toaplan"},
-            {HARDWARE_PREFIX_SEGA_MEGADRIVE,     "Sega MegaDrive"},
-            {HARDWARE_PREFIX_SEGA_MASTER_SYSTEM, "Sega MasterSystem"},
-            {HARDWARE_PREFIX_SEGA_SG1000,        "Sega SG1000"},
-            {HARDWARE_PREFIX_SEGA_GAME_GEAR,     "Sega GameGear"},
-            {HARDWARE_PREFIX_PCENGINE,           "PC-Engine"},
-            {HARDWARE_PREFIX_COLECO,             "Coleco"},
-            {HARDWARE_PREFIX_MIDWAY,             "Midway"},
-            {HARDWARE_PREFIX_MSX,                "MSX"}
-    };
 #endif
 
     BurnPathsInit();
@@ -184,7 +85,7 @@ int main(int argc, char **argv) {
     // load configuration
     std::string cfgPath = szAppHomePath;
     cfgPath += "/pfba.cfg";
-    config = new Config(cfgPath, hardwares);
+    config = new Config(cfgPath);
 
 #ifdef __PSP2__
     // init input
@@ -197,12 +98,8 @@ int main(int argc, char **argv) {
     inp = (Input *) new SDL2Input();
 #endif
 
-    // build roms list
-    std::vector<std::string> rom_paths;
-    for (int i = 0; i < DIRS_MAX; i++) {
-        rom_paths.push_back(config->GetRomPath(i));
-    }
-    romList = new RomList(utility, rom_paths, hardwares);
+    // build/init roms list
+    romList = new RomList(utility, &config->hardwareList, config->GetRomPaths());
 
     // run gui
     gui = new Gui(renderer, utility, romList, config, inp);

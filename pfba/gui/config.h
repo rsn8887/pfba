@@ -52,7 +52,7 @@ class Config {
 
 public:
 
-    Config(const std::string &cfgPath, std::vector<RomList::Hardware> &hwList);
+    Config(const std::string &cfgPath);
     ~Config() {};
 
     void Load(RomList::Rom *rom = NULL);
@@ -63,6 +63,7 @@ public:
     int GetRomAudioFrequency();
 
     const char *GetRomPath(int n);
+    std::vector<std::string> GetRomPaths();
 
     std::vector<Option> *GetGuiOptions();
     std::vector<Option> *GetRomOptions();
@@ -74,13 +75,14 @@ public:
     int *GetRomPlayerInputKeys(int player);
     int *GetRomPlayerInputButtons(int player);
 
+    std::vector<RomList::Hardware> hardwareList;
+
 private:
     std::vector<std::string> roms_paths;
     std::vector<Option> options_gui;
     std::vector<Option> options_rom;
     std::string configPath;
     bool done = false;
-
 
     int keyboard_keys[Input::KEY_COUNT];
     int joystick_keys[Input::KEY_COUNT];

@@ -53,7 +53,7 @@ void Gui::DrawRomInfo(RomList::Rom *rom) {
     }
 
     int hw_cfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
-    RomList::Hardware hw = romList->hardwares[hw_cfg];
+    RomList::Hardware hw = config->hardwareList[hw_cfg];
     int show_clones = config->GetGuiValue(Option::Index::GUI_SHOW_CLONES);
     int available = (int) roms.size();
     if (config->GetGuiValue(Option::Index::GUI_SHOW_ALL)) {
@@ -860,7 +860,7 @@ void Gui::FilterRoms() {
     int showClone = config->GetGuiValue(Option::Index::GUI_SHOW_CLONES);
     int showAll = config->GetGuiValue(Option::Index::GUI_SHOW_ALL);
     int showHardwareCfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
-    int showHardware = romList->hardwares[showHardwareCfg].prefix;
+    int showHardware = config->hardwareList[showHardwareCfg].prefix;
 
     remove_copy_if(romList->list.begin(), romList->list.end(), back_inserter(roms),
                    [showAll, showClone, showHardware](const RomList::Rom r) {
