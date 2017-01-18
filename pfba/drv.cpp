@@ -1,7 +1,7 @@
 // Driver Init module
 #include "gui.h"
 #include "burner.h"
-#include "sdl_run.h"
+#include "run.h"
 
 extern Gui *gui;
 int bDrvOkay = 0;                        // 1 if the Driver has been initted okay, and it's okay to use the BurnDrv functions

@@ -21,7 +21,7 @@
 #include <sys/time.h>
 
 #include "burner.h"
-#include "sdl_run.h"
+#include "run.h"
 #include <skeleton/audio.h>
 #include <sdl2/sdl2_audio.h>
 #include <video.h>
@@ -221,9 +221,9 @@ void RunEmulator(Gui *g, int drvnum) {
         int showFps = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHOW_FPS);
 
         if (frameSkip) {
-            timer = GetTicks() / frame_time;;
+            timer = GetTicks() / frame_time;
             if (timer - tick > frame_limit && showFps) {
-                fps = nFramesRendered;
+                fps = nFramesRendered - 1;
                 nFramesRendered = 0;
                 tick = timer;
             }
@@ -244,7 +244,7 @@ void RunEmulator(Gui *g, int drvnum) {
             if (showFps) {
                 timer = GetTicks();
                 if (timer - tick > 1000000) {
-                    fps = nFramesRendered;
+                    fps = nFramesRendered - 1;
                     nFramesRendered = 0;
                     tick = timer;
                 }

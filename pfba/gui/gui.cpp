@@ -2,7 +2,7 @@
 // Created by cpasjuste on 22/11/16.
 //
 #include <algorithm>
-#include "sdl_run.h"
+#include "run.h"
 #include "video.h"
 #include <skeleton/timer.h>
 

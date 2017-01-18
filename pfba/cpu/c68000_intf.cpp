@@ -1243,8 +1243,8 @@ INT32 SekScan(INT32 nAction)
 
 #ifdef EMU_C68K
 		if ((nSekCpuCore == SEK_CORE_C68K) && nSekCPUType[i] == 0x68000) {
-            ba.Data = &c68k;
-            ba.nLen = 24 * 4;
+            ba.Data = &c68k[i];
+            ba.nLen = sizeof(Cyclone);//24 * 4;
             ba.szName = szName;
             BurnAcb(&ba);
 		} else {
