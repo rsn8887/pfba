@@ -18,8 +18,8 @@ The portability of the project is one of the main concerns, but while it's alrea
 
 **Currently supported devices**
 
->- Linux (sdl2)
->- RPI 3 (sdl2)
+>- Linux (sdl2, wip)
+>- RPI 3 (sdl2, wip)
 >- Ps Vita (vita2d)
 
 The linux and rpi3 ports currently run in fullscreen mode, doesn't support filtering (shaders, wip), and only one joypad. This is something easily fixable and will be done sometime in the future.
