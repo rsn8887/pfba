@@ -19,7 +19,7 @@ class Gui {
 
 public:
 
-    Gui(Renderer *rdr, Utility *util, RomList *rList, Config *cfg, Input *input);
+    Gui(Renderer *rdr, Skin *skin, Utility *util, RomList *rList, Config *cfg, Input *input);
 
     ~Gui();
 

@@ -72,7 +72,7 @@ void Gui::DrawRomInfo(RomList::Rom *rom) {
     r.y += 16;
     r.w -= 32;
 
-    switch(rom->state) {
+    switch (rom->state) {
         case RomList::RomState::MISSING:
             renderer->DrawFont(skin->font, &r, &WHITE, "STATUS: MISSING");
             break;
@@ -219,7 +219,7 @@ void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, in
 
             // skip rotation option if not needed
             if ((isRomCfg && IsOptionHidden(option))
-                    || option->type == Option::Type::HIDDEN) {
+                || option->type == Option::Type::HIDDEN) {
                 continue;
             }
 
@@ -231,13 +231,27 @@ void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, in
             }
 
             renderer->DrawFont(skin->font, rect.x + 16, rect.y + 32, option->GetName());
-            Rect sel{rect.x + 196, rect.y + 25, 140, 30};
-            if (option->type == Option::Type::INPUT)
-                renderer->DrawFont(skin->font, &sel, &WHITE, false, true, "%i", option->value);
-            else
-                renderer->DrawFont(skin->font, &sel, &WHITE, false, true, option->GetValue());
 
-            rect.y += skin->font->size;
+            Rect sel{rect.x + 196, rect.y + 25, 140, 30};
+            if (option->type == Option::Type::INPUT) {
+                Skin::Button *button = skin->GetButton(option->value);
+                if (button) {
+                    if (button->texture) {
+                        Rect r = sel;
+                        r.w = r.h = skin->font->size;
+                        r.y += 3; // TODO: fix DrawTexture ?
+                        renderer->DrawTexture(button->texture, &r);
+                    } else {
+                        renderer->DrawFont(skin->font, &sel, &WHITE, false, true, "%s", button->name.c_str());
+                    }
+                } else {
+                    renderer->DrawFont(skin->font, &sel, &WHITE, false, true, "%i", option->value);
+                }
+                rect.y += skin->font->size + 4;
+            } else {
+                renderer->DrawFont(skin->font, &sel, &WHITE, false, true, option->GetValue());
+                rect.y += skin->font->size;
+            }
         }
     }
 }
@@ -774,16 +788,15 @@ void Gui::Run() {
     delete (timer_load);
 }
 
-Gui::Gui(Renderer *rdr, Utility *util, RomList *rList, Config *cfg, Input *in) {
+Gui::Gui(Renderer *rdr, Skin *sk, Utility *util, RomList *rList, Config *cfg, Input *in) {
 
     renderer = rdr;
+    skin = sk;
     utility = util;
     romList = rList;
     config = cfg;
     input = in;
 
-    // create skin
-    skin = new Skin(szAppSkinPath, renderer);
     skin->font->color = WHITE;
 
     // set drawing rects

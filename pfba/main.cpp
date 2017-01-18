@@ -28,7 +28,9 @@ int _newlib_heap_size_user = 192 * 1024 * 1024;
 #elif __RPI__
 #include <sdl2/sdl2_utility.h>
 #else
+
 #include <sdl2/sdl2_utility.h>
+
 #endif
 
 Renderer *renderer;
@@ -37,18 +39,25 @@ Config *config;
 RomList *romList;
 Gui *gui;
 Input *inp;
+Skin *skin;
 
 char szAppBurnVer[16] = VERSION;
 // replaces ips_manager.cpp
 bool bDoIpsPatch = 0;
+
 void IpsApplyPatches(UINT8 *base, char *rom_name) {}
+
 // needed by cps3run.cpp and dataeast/d_backfire.cpp
 void Reinitialise() {}
+
 // needed by neo_run.cpp
 void wav_exit() {}
+
 int bRunPause;
 
 int main(int argc, char **argv) {
+
+    std::vector<Skin::Button> buttons;
 #ifdef __PSP2__
 #ifdef __PSP2_DEBUG__
     psp2shell_init(3333, 5);
@@ -68,6 +77,19 @@ int main(int argc, char **argv) {
     sceIoMkdir("ux0:/data/pfba/previews", 0777);
     sceIoMkdir("ux0:/data/pfba/blend", 0777);
     sceIoMkdir("ux0:/data/pfba/roms", 0777);
+
+    buttons.push_back({8, "UP"});
+    buttons.push_back({6, "DOWN"});
+    buttons.push_back({7, "LEFT"});
+    buttons.push_back({9, "RIGHT"});
+    buttons.push_back({0, "TRIANGLE"});
+    buttons.push_back({1, "CIRCLE"});
+    buttons.push_back({2, "CROSS"});
+    buttons.push_back({3, "SQUARE"});
+    buttons.push_back({4, "L"});
+    buttons.push_back({5, "R"});
+    buttons.push_back({10, "SELECT"});
+    buttons.push_back({11, "START"});
 
     renderer = (Renderer *) new PSP2Renderer(960, 544);
     utility = (Utility*)new PSP2Utility();
@@ -101,8 +123,11 @@ int main(int argc, char **argv) {
     // build/init roms list
     romList = new RomList(utility, &config->hardwareList, config->GetRomPaths());
 
+    // skin
+    Skin *skin = new Skin(renderer, szAppSkinPath, buttons);
+
     // run gui
-    gui = new Gui(renderer, utility, romList, config, inp);
+    gui = new Gui(renderer, skin, utility, romList, config, inp);
 #ifdef __PSP2__ // prevent rom list scrolling lag on psp2
     gui->SetTitleLoadDelay(500);
 #endif
