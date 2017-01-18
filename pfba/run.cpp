@@ -111,8 +111,8 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
 #if defined(__PSP2__) || defined(__RPI__)
 static int GetSekCpuCore(Gui *g) {
 
-    //int sekCpuCore = 0; // SEK_CORE_C68K: USE CYCLONE ARM ASM M68K CORE
-    int sekCpuCore = g->GetConfig()->GetRomValue(Option::Index::ROM_M68K);
+    int sekCpuCore = 0; // SEK_CORE_C68K: USE CYCLONE ARM ASM M68K CORE
+    //int sekCpuCore = g->GetConfig()->GetRomValue(Option::Index::ROM_M68K);
 
     std::vector<std::string> zipList;
     int hardware = BurnDrvGetHardwareCode();

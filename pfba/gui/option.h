@@ -34,7 +34,7 @@ public:
         ROM_SHADER,
         ROM_ROTATION,
         ROM_SHOW_FPS,
-        ROM_M68K,
+        //ROM_M68K,
         ROM_FORCE_60HZ,
         ROM_AUDIO_FREQ,
         ROM_AUDIO_INTERPOLATION,
