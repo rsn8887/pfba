@@ -1,15 +1,18 @@
 PFBA: Portable Final Burn Alpha
 ===========================
 
+![](http://files.mydedibox.fr/files/Dev/psp2/pfba/screen1-mini.jpg)
+
+
 **The main goals of this [final burn alpha](http://www.fbalpha.com/) port are/were :**
 
->- have a basic but user friendly user interface on non windows devices (90%)
->- use a recent rendering interface for speed and effects support (80%)
->- cross-platform and code portability (80%)
->- easy updates of fba core (no modifications to the original sources) (100%)
->- use arm asm m68k ([cyclone](https://github.com/notaz/cyclone68000)) core on arm devices (99%)
+>- have a basic but user friendly user interface on non windows devices
+>- use a recent rendering interface for speed and effects support
+>- cross-platform and code portability
+>- easy updates of fba core (no modifications to the original sources)
+>- use arm asm m68k ([cyclone](https://github.com/notaz/cyclone68000)) core on arm devices
 
-The portability of the project is one of the main concerns, but while it's already in a good shape (few rendering functions to implement), a few class would need a better implementation like input and audio. This is something that will be worked on.
+The portability of the project is one of the main concerns, but while it's already in a good shape (few rendering functions to implement), some code would still need a better implementation.
 
 -----
 
