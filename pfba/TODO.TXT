@@ -1,8 +1,8 @@
 # COMMON
 ========
 
-add per platform button name/icon in option ui
-add favorites in hardware list
+add per platform input button name/icon in option ui
+add favorites section in hardware list
 add 1P+2P / dip switch combo button
 add joystick axis input configuration in gui
 add > 1 joystick support

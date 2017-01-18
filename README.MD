@@ -59,3 +59,14 @@ The linux and rpi3 ports currently run in fullscreen mode, doesn't support filte
 >- cmake -DBUILD_RPI=ON -DCMAKE_BUILD_TYPE=Release ..
 >- make pfba.deps
 >- make pfba
+
+-----
+
+**Thanks**
+
+>- Xavier for the support (http://www.consolex-bordeaux.fr/)
+>- ScHlAuChi for all the advices and testing
+>- fba/mame authors (http://www.fbalpha.com/, http://mamedev.org/)
+>- xerpi for vita2d (https://github.com/xerpi/libvita2d)
+>- frangarcj for vita2d shader support (https://github.com/frangarcj/vita2dlib)
+>- people behind the vitasdk (https://github.com/vitasdk)
