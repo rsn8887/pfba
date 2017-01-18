@@ -6,7 +6,7 @@
 #include <SDL2/SDL.h>
 #include "sdl2_audio.h"
 
-static bool use_mutex = true;
+static bool use_mutex = false;
 
 static int buf_size;
 static unsigned char *buffer_sdl;
