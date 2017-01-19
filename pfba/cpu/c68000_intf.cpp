@@ -1246,7 +1246,19 @@ INT32 SekScan(INT32 nAction)
             ba.Data = &c68k[i];
             ba.nLen = sizeof(Cyclone);//24 * 4;
             ba.szName = szName;
-            BurnAcb(&ba);
+			if (nAction & ACB_READ) {
+				// Blank pointers
+				c68k[i].IrqCallback = NULL;
+				c68k[i].ResetCallback = NULL;
+			}
+			BurnAcb(&ba);
+			// Re-setup each cpu on read/write
+			if (nAction & ACB_ACCESSMASK) {
+				c68k[i].checkpc = m68k_checkpc;
+				c68k[i].IrqCallback = C68KIRQAcknowledge;
+				c68k[i].ResetCallback = C68KResetCallback;
+				c68k[i].UnrecognizedCallback = C68KUnrecognizedCallback;
+			}
 		} else {
 #endif
 #ifdef EMU_M68K

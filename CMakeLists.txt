@@ -5,7 +5,7 @@ set(CMAKE_SYSTEM_NAME "Generic")
 enable_language(ASM)
 
 # delete cmake cache folder before changing this options
-option(BUILD_PSP2 "Build with PSP2 support" OFF)
+option(BUILD_PSP2 "Build with PSP2 support" ON)
 option(BUILD_RPI "Build with RPI support" OFF)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -327,7 +327,13 @@ if (BUILD_PSP2)
             -DBUILD_C68K -DUSE_FILE32API
             )
     if (BUILD_DEBUG)
-        list(APPEND FLAGS -D__PSP2_DEBUG__)
+        list(APPEND FLAGS -D__PSP2_DEBUG__
+                -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard -ffast-math
+                -fno-asynchronous-unwind-tables -funroll-loops
+                -mword-relocations -fno-unwind-tables -fno-optimize-sibling-calls
+                -mvectorize-with-neon-quad -funsafe-math-optimizations
+                -mlittle-endian -munaligned-access
+                -O3)
     else ()
         list(APPEND FLAGS
                 -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard -ffast-math
