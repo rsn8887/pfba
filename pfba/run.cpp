@@ -67,14 +67,22 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
         && (players[0].state & Input::Key::KEY_START)) {
         bPauseOn = true;
         audio->Pause(1);
+        // set default control scheme
+        gui->UpdateInputMapping(false);
         gui->RunOptionMenu(true);
+        // restore rom control scheme
+        gui->UpdateInputMapping(true);
         audio->Pause(0);
         bPauseOn = false;
     } else if ((players[0].state & Input::Key::KEY_COIN)
                && (players[0].state & Input::Key::KEY_FIRE5)) {
         bPauseOn = true;
         audio->Pause(1);
+        // set default control scheme
+        gui->UpdateInputMapping(false);
         gui->RunStatesMenu();
+        // restore rom control scheme
+        gui->UpdateInputMapping(true);
         audio->Pause(0);
         bPauseOn = false;
     }
@@ -200,9 +208,6 @@ void RunEmulator(Gui *g, int drvnum) {
     printf("Creating video device\n");
     video = new Video(gui->GetRenderer());
 
-    // set per rom input scheme
-    gui->UpdateInputMapping(true);
-
     RunReset();
 
     int now, done = 0, timer = 0, ticks = 0, tick = 0, i = 0, fps = 0;
@@ -262,6 +267,4 @@ void RunEmulator(Gui *g, int drvnum) {
     video = NULL;
     delete (audio);
     audio = NULL;
-
-    gui->UpdateInputMapping(false);
 }

@@ -486,7 +486,6 @@ void Gui::RunOptionMenu(bool isRomConfig) {
             isRomConfig ? config->GetRomOptions() : config->GetGuiOptions();
 
     input->Clear(0);
-    UpdateInputMapping(false);
 
     if (GameLooping) {
 
@@ -686,7 +685,6 @@ void Gui::RunOptionMenu(bool isRomConfig) {
         GameLooping = false;
     }
 
-    UpdateInputMapping(isRomConfig);
     input->Clear(0);
 }
 
@@ -923,8 +921,14 @@ void Gui::RunRom(RomList::Rom *rom) {
     printf("RunRom: config->LoadRom(%s)\n", rom->zip);
     config->Load(rom);
 
+    // set per rom input scheme
+    UpdateInputMapping(true);
+
     printf("RunRom: RunEmulator: start\n");
     RunEmulator(this, nBurnDrvActive);
+
+    // set default input scheme
+    UpdateInputMapping(false);
 
     printf("RunRom: RunEmulator: return\n");
     mode = List;

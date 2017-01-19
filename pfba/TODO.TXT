@@ -1,7 +1,8 @@
 # COMMON
 ========
 
-add per platform input button name/icon in option ui
+fix input button bg background in game
+
 add favorites section in hardware list
 add 1P+2P / dip switch combo button
 add joystick axis input configuration in gui
@@ -10,6 +11,11 @@ fix crash with non working roms (cps2 wrong set, ...) identified as 68K CycloneR
 add help screen
 
 # NEXT RELEASE
+fix default input scheme not restored when exiting game
+fix default input scheme not restored when savestate called with START+L
+add per platform input button name/icon in option ui
+
+# OLD RELEASES
 DONE // fix randrom fire1/fire2 inverted in menu ?!
 DONE // fix "FIT" mode on vertical games
 DONE // fix rom filtering (showAll & showHardware)
@@ -20,7 +26,6 @@ DONE // enable custom input configuration in gui
 DONE // fix input direction when rom rotation is off
 DONE // add joystick deadzone in config menu
 DONE // set asm core enabled by default
-# OLD RELEASES
 DONE // add texture filtering option
 DONE // PSP2/RPI: enable cyclone ASM m68k core by default for CPS1/2/3, NEOGEO, CAVE, IGS
 DONE // GUI: add rom filtering by HARDWARE in general options (START)
