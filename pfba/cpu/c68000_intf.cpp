@@ -1220,6 +1220,8 @@ bool SekDbgSetRegister(SekRegister nRegister, UINT32 nValue)
 // ----------------------------------------------------------------------------
 // Savestate support
 
+UINT8 cyclone_buffer[128];
+
 INT32 SekScan(INT32 nAction)
 {
 	// Scan the 68000 states
@@ -1243,22 +1245,24 @@ INT32 SekScan(INT32 nAction)
 
 #ifdef EMU_C68K
 		if ((nSekCpuCore == SEK_CORE_C68K) && nSekCPUType[i] == 0x68000) {
-            ba.Data = &c68k[i];
-            ba.nLen = sizeof(Cyclone);//24 * 4;
+
+            ba.nLen = 128;
             ba.szName = szName;
-			if (nAction & ACB_READ) {
-				// Blank pointers
-				c68k[i].IrqCallback = NULL;
-				c68k[i].ResetCallback = NULL;
-			}
-			BurnAcb(&ba);
-			// Re-setup each cpu on read/write
-			if (nAction & ACB_ACCESSMASK) {
-				c68k[i].checkpc = m68k_checkpc;
-				c68k[i].IrqCallback = C68KIRQAcknowledge;
-				c68k[i].ResetCallback = C68KResetCallback;
-				c68k[i].UnrecognizedCallback = C68KUnrecognizedCallback;
-			}
+
+            if (nAction & ACB_READ) { // save
+                memset(cyclone_buffer, 0, 128);
+                CyclonePack(&c68k[i], cyclone_buffer);
+                ba.Data = &cyclone_buffer;
+                BurnAcb(&ba);
+            } else if (nAction & ACB_WRITE) { // load
+                memset(cyclone_buffer, 0, 128);
+                ba.Data = &cyclone_buffer;
+                BurnAcb(&ba);
+                int sekActive = nSekActive; // CycloneUnpack needs m68k_checkpc which needs nSekActive set to current cpu
+                nSekActive = i; // CycloneUnpack needs m68k_checkpc which needs nSekActive set to current cpu
+                CycloneUnpack(&c68k[i], cyclone_buffer);
+                nSekActive = sekActive;
+            }
 		} else {
 #endif
 #ifdef EMU_M68K
