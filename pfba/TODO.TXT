@@ -1,14 +1,13 @@
 # COMMON
 ========
 
-fix input button bg background in game
-
 add favorites section in hardware list
 add 1P+2P / dip switch combo button
 add joystick axis input configuration in gui
 add > 1 joystick support
-fix crash with non working roms (cps2 wrong set, ...) identified as 68K CycloneRun crash
 add help screen
+PSP2: fix crash with non working roms (cps2 wrong set, ...) identified as 68K CycloneRun crash
+PSP2: fix input button bg background in game (caused by shader)
 
 # NEXT RELEASE
 fix default input scheme not restored when exiting game

@@ -63,6 +63,10 @@ The linux and rpi3 ports currently run in fullscreen mode, doesn't support filte
 >- make pfba.deps
 >- make pfba
 
+**Developers tips**
+
+>-
+
 -----
 
 **Thanks**
