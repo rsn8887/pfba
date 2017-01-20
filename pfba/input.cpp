@@ -3,11 +3,8 @@
 
 #include "burner.h"
 
-
-//TODO: extern unsigned char ServiceRequest;
-//TODO: extern unsigned char P1P2Start;
-unsigned char ServiceRequest;
-unsigned char P1P2Start;
+unsigned char inputServiceSwitch;
+unsigned char inputP1P2Switch;
 
 #define MAX_INPUT_inp (19)
 
@@ -284,7 +281,7 @@ int InpMake(Input::Player *players) {
     unsigned int i = 0;
     unsigned int down = 0;
     if (ServiceDip) {
-        *(ServiceDip) = ServiceRequest;
+        *(ServiceDip) = inputServiceSwitch;
     }
     int nJoy;
     for (short joyNum = 0; joyNum < PLAYER_COUNT; joyNum++) {
@@ -404,7 +401,7 @@ int InpMake(Input::Player *players) {
             continue;
         *(DIPInfo.DIPData[i].pVal) = DIPInfo.DIPData[i].nConst;
     }
-    if (P1P2Start) {
+    if (inputP1P2Switch) {
         *(P1Start) = *(P2Start) = 1;
     }
     return 0;

@@ -30,6 +30,8 @@ static Gui *gui;
 Video *video;
 Audio *audio;
 
+extern unsigned char inputServiceSwitch;
+extern unsigned char inputP1P2Switch;
 extern int nSekCpuCore;
 struct timeval start;
 
@@ -59,8 +61,9 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
     int rotation = gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION);
     bool rotate = (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) && !rotation;
 
+    inputServiceSwitch = 0;
+    inputP1P2Switch = 0;
     Input::Player *players = gui->GetInput()->Update(rotate);
-    InpMake(players);
 
     // process menu
     if ((players[0].state & Input::Key::KEY_COIN)
@@ -85,7 +88,55 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
         gui->UpdateInputMapping(true);
         audio->Pause(0);
         bPauseOn = false;
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_FIRE3)) {
+        inputServiceSwitch = 1;
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_FIRE4)) {
+        inputP1P2Switch = 1;
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_UP)) {
+        int scaling = gui->GetConfig()->GetRomValue(Option::Index::ROM_SCALING) + 1;
+        if (scaling <= 3) {
+            int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
+                                                       Option::Index::ROM_SCALING);
+            gui->GetConfig()->GetRomOptions()->at(index).value = scaling;
+            video->Scale();
+            gui->GetRenderer()->Delay(500);
+        }
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_DOWN)) {
+        int scaling = gui->GetConfig()->GetRomValue(Option::Index::ROM_SCALING) - 1;
+        if (scaling >= 0) {
+            int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
+                                                       Option::Index::ROM_SCALING);
+            gui->GetConfig()->GetRomOptions()->at(index).value = scaling;
+            video->Scale();
+            gui->GetRenderer()->Delay(500);
+        }
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_RIGHT)) {
+        int shader = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER) + 1;
+        if (shader < gui->GetRenderer()->shaderCount) {
+            int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
+                                                       Option::Index::ROM_SHADER);
+            gui->GetConfig()->GetRomOptions()->at(index).value = shader;
+            gui->GetRenderer()->SetShader(shader);
+            gui->GetRenderer()->Delay(500);
+        }
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_LEFT)) {
+        int shader = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER) - 1;
+        if (shader >= 0) {
+            int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
+                                                       Option::Index::ROM_SHADER);
+            gui->GetConfig()->GetRomOptions()->at(index).value = shader;
+            gui->GetRenderer()->SetShader(shader);
+            gui->GetRenderer()->Delay(500);
+        }
     }
+
+    InpMake(players);
 
     if (!bPauseOn) {
         nFramesEmulated++;
@@ -117,6 +168,7 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
 }
 
 #if defined(__PSP2__) || defined(__RPI__)
+
 static int GetSekCpuCore(Gui *g) {
 
     int sekCpuCore = 0; // SEK_CORE_C68K: USE CYCLONE ARM ASM M68K CORE
@@ -132,7 +184,7 @@ static int GetSekCpuCore(Gui *g) {
             || hardware & HARDWARE_SEGA_FD1094_ENC_CPU2) {
             sekCpuCore = 1; // SEK_CORE_M68K: USE C M68K CORE
             g->MessageBox("ROM IS CRYPTED, USE DECRYPTED ROM (CLONE)\n"
-                                    "TO ENABLE CYCLONE ASM CORE (FASTER)", "OK", NULL);
+                                  "TO ENABLE CYCLONE ASM CORE (FASTER)", "OK", NULL);
         }
     } else if (RomList::IsHardware(hardware, HARDWARE_PREFIX_TOAPLAN)) {
         zipList.push_back("batrider");
@@ -141,7 +193,7 @@ static int GetSekCpuCore(Gui *g) {
     }
 
     std::string zip = BurnDrvGetTextA(DRV_NAME);
-    for(int i=0; i<zipList.size(); i++) {
+    for (int i = 0; i < zipList.size(); i++) {
         if (zipList[i].compare(0, zip.length(), zip) == 0) {
             g->MessageBox("THIS ROM DOESNT SUPPORT THE M68K ASM CORE\n"
                                   "CYCLONE ASM CORE DISABLED", "OK", NULL);
@@ -152,6 +204,7 @@ static int GetSekCpuCore(Gui *g) {
 
     return sekCpuCore;
 }
+
 #endif
 
 void AudioInit(Config *cfg) {

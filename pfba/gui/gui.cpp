@@ -649,8 +649,19 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                 DrawRomList();
             }
 
+            // disable shader for ui transparency
+            int shader = renderer->shaderCurrent;
+            if (GameLooping) {
+                renderer->SetShader(0);
+            }
+
             int end = config->GetOptionPos(options, Option::Index::MENU_KEYBOARD);
             DrawOptions(isRomConfig, options, 0, end);
+
+            // restore shader
+            if (GameLooping) {
+                renderer->SetShader(shader);
+            }
 
             Flip();
             renderer->Delay(INPUT_DELAY);

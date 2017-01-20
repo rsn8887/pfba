@@ -2,19 +2,24 @@
 ========
 
 add favorites section in hardware list
-add 1P+2P / dip switch combo button
 add joystick axis input configuration in gui
 add > 1 joystick support
 add help screen
 PSP2: fix crash with non working roms (cps2 wrong set, ...) identified as 68K CycloneRun crash
-PSP2: fix input button bg background in game (caused by shader)
 
 # NEXT RELEASE
-fix default input scheme not restored when exiting game
-fix default input scheme not restored when savestate called with START+L
-add per platform input button name/icon in option ui
+fix: clear buttons when exiting menu
+add: service button switch (SELECT+SQUARE)
+add: 1P+2P button switch (SELECT+TRIANGLE)
+add: SELECT+LEFT/RIGHT = change shading
+add: SELECT+UP/DOWN = change scaling
+psp2: fix input button bg background in game (caused by shader)
+fix: really fix arm m68k savestates (cyclone) by implenting CyclonePack/Unpack
+fix: default input scheme not restored when exiting game
+fix: default input scheme not restored when savestate called with START+L
 
 # OLD RELEASES
+DONE // add: per platform input button name/icon in option ui
 DONE // fix randrom fire1/fire2 inverted in menu ?!
 DONE // fix "FIT" mode on vertical games
 DONE // fix rom filtering (showAll & showHardware)

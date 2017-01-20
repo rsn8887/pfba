@@ -48,7 +48,8 @@ public:
         lcd3x,
         advanced_aa,
         scale2x,
-        fxaa
+        end
+        //fxaa
         //crt_easymode,
         //gtu,
         //xbr2x,
@@ -59,7 +60,7 @@ public:
 private:
     void StartDrawring();
     bool drawing_started = false;
-    vita2d_shader* shader = NULL;
+    vita2d_shader* shaders[ShaderType::end-1];
 };
 
 #endif //_PSP2_RENDERER_H_

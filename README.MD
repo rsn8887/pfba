@@ -34,8 +34,12 @@ The linux and rpi3 ports currently run in fullscreen mode, doesn't support filte
 >- preview images can be put in "ux0:/data/pfba/previews/rom-name.png"
 >- in the ui: START = gui options + default rom configuration
 >- in the ui: SELECT = selected rom configuration
->- in game: START+SELECT = menu
->- in game: START+L = saves states
+>- in game: SELECT+START = menu
+>- in game: SELECT+L = saves states
+>- in game: SELECT+SQUARE = service switch
+>- in game: SELECT+TRIANGLE = 1P+2P switch
+>- in game: SELECT+LEFT/RIGHT = change shader
+>- in game: SELECT+UP/DOWN = change scaling
 
 -----
 

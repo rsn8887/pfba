@@ -6,6 +6,11 @@
 #include <SDL2/SDL.h>
 #include "sdl2_audio.h"
 
+#ifdef __PSP2_DEBUG__
+#include <psp2shell.h>
+#define printf psp2shell_print
+#endif
+
 static bool use_mutex = false;
 
 static int buf_size;
@@ -101,11 +106,13 @@ SDL2Audio::SDL2Audio(int freq, int fps) : Audio(freq, fps) {
 
     if (SDL_InitSubSystem(SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE)) {
         printf("SDL2Audio: Initialize failed: %s.\n", SDL_GetError());
+        available = false;
         return;
     }
 
     if (SDL_OpenAudio(&aspec, &obtained) < 0) {
         printf("SDL2Audio: Unable to open audio: %s\n", SDL_GetError());
+        available = false;
         return;
     }
 
@@ -129,7 +136,7 @@ SDL2Audio::~SDL2Audio() {
     }
     SDL_PauseAudio(1);
 
-    if(use_mutex) {
+    if (use_mutex) {
         SDL_LockMutex(sound_mutex);
         buffered_bytes = buf_size;
         SDL_CondSignal(sound_cv);
@@ -167,8 +174,8 @@ void SDL2Audio::Pause(int pause) {
     Audio::Pause(pause);
     SDL_PauseAudio(pause);
 
-    if(use_mutex) {
-        if(pause) {
+    if (use_mutex) {
+        if (pause) {
             SDL_LockMutex(sound_mutex);
             buffered_bytes = 0;
             SDL_CondSignal(sound_cv);

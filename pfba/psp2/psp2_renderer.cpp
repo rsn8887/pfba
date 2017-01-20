@@ -47,7 +47,20 @@ PSP2Renderer::PSP2Renderer(int w, int h) : Renderer() {
     vita2d_init();
     vita2d_set_clear_color((unsigned int) RGBA8(color.r, color.g, color.b, color.a));
 
-    shaderCount = 8;
+    shaders[ShaderType::lcd3x] =
+            vita2d_create_shader((SceGxmProgram *) lcd3x_v, (SceGxmProgram *) lcd3x_f);
+    shaders[ShaderType::scale2x] =
+            vita2d_create_shader((SceGxmProgram *) scale2x_v, (SceGxmProgram *) scale2x_f);
+    shaders[ShaderType::advanced_aa] =
+            vita2d_create_shader((SceGxmProgram *) advanced_aa_v, (SceGxmProgram *) advanced_aa_f);
+    shaders[ShaderType::sharp_bilinear] =
+            vita2d_create_shader((SceGxmProgram *) sharp_bilinear_simple_v, (SceGxmProgram *) sharp_bilinear_simple_f);
+    shaders[ShaderType::sharp_bilinear_scanlines] =
+            vita2d_create_shader((SceGxmProgram *) sharp_bilinear_v, (SceGxmProgram *) sharp_bilinear_f);
+    shaders[ShaderType::texture] =
+            vita2d_create_shader((SceGxmProgram *) texture_v, (SceGxmProgram *) texture_f);
+
+    shaderCount = ShaderType::end - 1;
     SetShader(0);
 }
 //////////
@@ -108,7 +121,7 @@ Texture *PSP2Renderer::LoadTexture(const char *file) {
 }
 
 void PSP2Renderer::DrawTexture(Texture *texture, int x, int y, int w, int h, float rotation) {
-    if(texture && ((PSP2Texture *) texture)->tex) {
+    if (texture && ((PSP2Texture *) texture)->tex) {
 
         float sx = (float) w / (float) texture->width;
         float sy = (float) h / (float) texture->height;
@@ -138,42 +151,16 @@ Rect PSP2Renderer::GetWindowSize() {
 
 void PSP2Renderer::SetShader(int shaderType) {
 
-    if (shader != NULL) {
-        vita2d_wait_rendering_done();
-        vita2d_free_shader(shader);
+    if (shaderType == shaderCurrent) {
+        return;
     }
-
-    switch (shaderType) {
-
-        case ShaderType::lcd3x:
-            shader = vita2d_create_shader((SceGxmProgram *) lcd3x_v, (SceGxmProgram *) lcd3x_f);
-            break;
-        case ShaderType::scale2x:
-            shader = vita2d_create_shader((SceGxmProgram *) scale2x_v, (SceGxmProgram *) scale2x_f);
-            break;
-        case ShaderType::advanced_aa:
-            shader = vita2d_create_shader((SceGxmProgram *) advanced_aa_v, (SceGxmProgram *) advanced_aa_f);
-            break;
-        case ShaderType::sharp_bilinear:
-            shader = vita2d_create_shader((SceGxmProgram *) sharp_bilinear_simple_v, (SceGxmProgram *) sharp_bilinear_simple_f);
-            break;
-        case ShaderType::sharp_bilinear_scanlines:
-            shader = vita2d_create_shader((SceGxmProgram *) sharp_bilinear_v, (SceGxmProgram *) sharp_bilinear_f);
-            break;
-        case ShaderType::fxaa:
-            shader = vita2d_create_shader((SceGxmProgram *) fxaa_v, (SceGxmProgram *) fxaa_f);
-            break;
-        default:
-            shader = vita2d_create_shader((SceGxmProgram *) texture_v, (SceGxmProgram *) texture_f);
-            break;
-    }
-
-    vita2d_texture_set_program(shader->vertexProgram, shader->fragmentProgram);
-    vita2d_texture_set_wvp(shader->wvpParam);
-    vita2d_texture_set_vertexInput(&shader->vertexInput);
-    vita2d_texture_set_fragmentInput(&shader->fragmentInput);
 
     shaderCurrent = shaderType;
+
+    vita2d_texture_set_program(shaders[shaderCurrent]->vertexProgram, shaders[shaderCurrent]->fragmentProgram);
+    vita2d_texture_set_wvp(shaders[shaderCurrent]->wvpParam);
+    vita2d_texture_set_vertexInput(&shaders[shaderCurrent]->vertexInput);
+    vita2d_texture_set_fragmentInput(&shaders[shaderCurrent]->fragmentInput);
 }
 
 void PSP2Renderer::DrawLine(int x1, int y1, int x2, int y2, Color *_color) {
@@ -227,8 +214,8 @@ void PSP2Renderer::Delay(unsigned int ms) {
 PSP2Renderer::~PSP2Renderer() {
     vita2d_wait_rendering_done();
     vita2d_fini();
-    if (shader != NULL) {
-        vita2d_free_shader(shader);
+    for (int i = 0; i < shaderCount; i++) {
+        vita2d_free_shader(shaders[i]);
     }
 }
 
