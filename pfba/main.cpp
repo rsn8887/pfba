@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     scePowerSetArmClockFrequency(444);
     scePowerSetBusClockFrequency(222);
     scePowerSetGpuClockFrequency(222);
-    scePowerSetGpuXbarClockFrequency(222);
+    scePowerSetGpuXbarClockFrequency(166);
 
     // create needed directories
     sceIoMkdir("ux0:/data/pfba", 0777);
@@ -143,10 +143,10 @@ int main(int argc, char **argv) {
     delete (inp);
 
 #ifdef __PSP2__
-    scePowerSetArmClockFrequency(333);
+    scePowerSetArmClockFrequency(266);
     scePowerSetBusClockFrequency(166);
     scePowerSetGpuClockFrequency(166);
-    scePowerSetGpuXbarClockFrequency(166);
+    scePowerSetGpuXbarClockFrequency(111);
 #endif
 
     return 0;
