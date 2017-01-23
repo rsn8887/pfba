@@ -298,7 +298,7 @@ set(FLAGS
         "-DINLINE=static inline" "-DSH2_INLINE=static inline"
         )
 if (BUILD_DEBUG)
-    list(APPEND FLAGS -O0 -g -DDEBUG)
+    list(APPEND FLAGS -g -DDEBUG)
 else ()
     list(APPEND FLAGS -O3 -DNDEBUG)
 endif (BUILD_DEBUG)
@@ -324,17 +324,18 @@ if (BUILD_PSP2)
             pfba/cpu/cyclone/Cyclone.s
             )
     list(APPEND SRC_PFBA ${SRC_PSP2})
-    list(APPEND FLAGS
-            -Wl,-q -D__PSP2__
-            -DBUILD_C68K -DUSE_FILE32API
-            -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard -ffast-math
-            -fno-asynchronous-unwind-tables -funroll-loops
-            -mword-relocations -fno-unwind-tables -fno-optimize-sibling-calls
-            -mvectorize-with-neon-quad -funsafe-math-optimizations
-            -mlittle-endian -munaligned-access
-            )
+    list(APPEND FLAGS -Wl,-q -D__PSP2__ -DBUILD_C68K -DUSE_FILE32API)
     if (BUILD_DEBUG)
-        list(APPEND FLAGS -D__PSP2_DEBUG__ -O3) # cyclone doesn't work without optimisations
+        list(APPEND FLAGS -D__PSP2_DEBUG__ -O1
+                -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a)
+    else ()
+        list(APPEND FLAGS
+                -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard -ffast-math
+                -fno-asynchronous-unwind-tables -funroll-loops
+                -mword-relocations -fno-unwind-tables -fno-optimize-sibling-calls
+                -mvectorize-with-neon-quad -funsafe-math-optimizations
+                -mlittle-endian -munaligned-access
+                )
     endif (BUILD_DEBUG)
     set(LDFLAGS
             SDL2
