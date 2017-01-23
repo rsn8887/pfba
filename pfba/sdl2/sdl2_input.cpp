@@ -4,7 +4,7 @@
 
 #include "sdl2_input.h"
 
-static int key_id[Input::Key::KEY_COUNT] {
+static int key_id[Input::Key::KEY_COUNT]{
         Input::Key::KEY_UP,
         Input::Key::KEY_DOWN,
         Input::Key::KEY_LEFT,
@@ -22,7 +22,7 @@ static int key_id[Input::Key::KEY_COUNT] {
 SDL2Input::SDL2Input() {
 
     if (SDL_WasInit(SDL_INIT_JOYSTICK) == 0) {
-        printf("SDL2Input: SDL_InitSubSystem\n");
+        printf("SDL2Input: SDL_INIT_JOYSTICK\n");
         SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     }
 
@@ -36,24 +36,25 @@ SDL2Input::SDL2Input() {
         for (int i = 0; i < joystick_count; i++) {
             printf("Joystick: %i\n", i);
             players[i].data = SDL_JoystickOpen(i);
+            players[i].id = i;
             players[i].enabled = true;
-            printf("Name: %s\n", SDL_JoystickName((SDL_Joystick *)players[i].data));
-            printf("Hats %d\n", SDL_JoystickNumHats((SDL_Joystick *)players[i].data));
-            printf("Buttons %d\n", SDL_JoystickNumButtons((SDL_Joystick *)players[i].data));
-            printf("Axis %d\n", SDL_JoystickNumAxes((SDL_Joystick *)players[i].data));
+            printf("Name: %s\n", SDL_JoystickName((SDL_Joystick *) players[i].data));
+            printf("Hats %d\n", SDL_JoystickNumHats((SDL_Joystick *) players[i].data));
+            printf("Buttons %d\n", SDL_JoystickNumButtons((SDL_Joystick *) players[i].data));
+            printf("Axis %d\n", SDL_JoystickNumAxes((SDL_Joystick *) players[i].data));
         }
     } else {
         // allow keyboard mapping to player1
         players[0].enabled = true;
     }
 
-    for(int i=0; i<PLAYER_COUNT; i++) {
-        for(int k=0; k<KEY_COUNT; k++) {
+    for (int i = 0; i < PLAYER_COUNT; i++) {
+        for (int k = 0; k < KEY_COUNT; k++) {
             players[i].mapping[k] = 0;
         }
     }
 
-    for(int i=0; i<KEY_COUNT; i++) {
+    for (int i = 0; i < KEY_COUNT; i++) {
         keyboard.mapping[i] = 0;
     }
 }
@@ -85,17 +86,17 @@ Input::Player *SDL2Input::Update(bool rotate) {
         players[i].state = 0;
     }
 
-
     SDL_Event event;
-    SDL_PollEvent(&event);
-    if (event.type == SDL_QUIT) {
-        players[0].state |= KEY_QUIT;
-        return players;
+    while(SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            players[0].state |= KEY_QUIT;
+            return players;
+        }
     }
 
-    for(int i=0; i<PLAYER_COUNT; i++) {
+    for (int i = 0; i < PLAYER_COUNT; i++) {
 
-        if(!players[i].enabled) {
+        if (!players[i].enabled) {
             continue;
         }
 
@@ -115,9 +116,9 @@ Input::Player *SDL2Input::Update(bool rotate) {
     return players;
 }
 
-void SDL2Input::process_axis(Input::Player& player, bool rotate) {
+void SDL2Input::process_axis(Input::Player &player, bool rotate) {
 
-    if(!player.enabled || !player.data) {
+    if (!player.enabled || !player.data) {
         return;
     }
 
@@ -140,9 +141,9 @@ void SDL2Input::process_axis(Input::Player& player, bool rotate) {
     }
 }
 
-void SDL2Input::process_hat(Input::Player& player, bool rotate) {
+void SDL2Input::process_hat(Input::Player &player, bool rotate) {
 
-    if(!player.enabled || !player.data) {
+    if (!player.enabled || !player.data) {
         return;
     }
 
@@ -172,11 +173,11 @@ void SDL2Input::process_hat(Input::Player& player, bool rotate) {
 
 void SDL2Input::process_buttons(Input::Player &player, bool rotate) {
 
-    if(!player.enabled || !player.data) {
+    if (!player.enabled || !player.data) {
         return;
     }
 
-    for(int i=0; i<KEY_COUNT; i++) {
+    for (int i = 0; i < KEY_COUNT; i++) {
 
         int mapping = player.mapping[i];
 
@@ -218,11 +219,11 @@ void SDL2Input::process_buttons(Input::Player &player, bool rotate) {
     }
 }
 
-void SDL2Input::process_keyboard(Input::Player& player, bool rotate) {
+void SDL2Input::process_keyboard(Input::Player &player, bool rotate) {
 
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
-    for(int i=0; i<KEY_COUNT; i++) {
+    for (int i = 0; i < KEY_COUNT; i++) {
         if (keys[keyboard.mapping[i]]) {
             if (rotate && key_id[i] == Input::Key::KEY_UP) {
                 player.state |= Input::Key::KEY_RIGHT;

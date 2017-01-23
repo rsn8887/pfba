@@ -67,18 +67,17 @@ Renderer::DrawFont(Font *font, Rect *dst, Color *color, bool centerX, bool cente
     }
 
     // cut message "properly" instead of clip
-    char *msg_new = msg;
-    while (font->GetWidth(msg_new) > dst->w) {
-        int len = strlen(msg_new);
+    while (font->GetWidth(msg) > dst->w) {
+        int len = strlen(msg);
         if (len == 0) {
             break;
         }
-        msg_new[strlen(msg_new) - 1] = 0;
+        msg[strlen(msg) - 1] = 0;
     }
 
     Color c = font->color;
     font->color = *color;
-    DrawFont(font, rect.x, rect.y, msg_new);
+    DrawFont(font, rect.x, rect.y, msg);
     font->color = c;
 }
 

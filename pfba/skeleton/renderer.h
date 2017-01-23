@@ -66,8 +66,10 @@ public:
 
 #ifdef __PSP2__
 #include "psp2_renderer.h"
-#else
+#elif __SDL2__
 #include "sdl2_renderer.h"
+#elif __SFML__
+#include "sfml_renderer.h"
 #endif
 
 #endif //_RENDERER_H_

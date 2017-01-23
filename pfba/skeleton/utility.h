@@ -11,15 +11,8 @@
 class Utility {
 
 public:
-    virtual bool FileExist(const char *file) {
-        printf("Utility::FileExist: not implemented\n");
-        return false;
-    };
-
-    virtual std::vector<std::string> GetFileList(const char *path) {
-        printf("Utility::GetFileList: not implemented\n");
-        return std::vector<std::string>();
-    };
+    virtual bool FileExist(const char *file);
+    virtual std::vector<std::string> GetFileList(const char *path);
 };
 
 #endif //FBA_UTILITY_H

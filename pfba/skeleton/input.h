@@ -41,6 +41,7 @@ public:
         int dead_zone = 8000;
         bool enabled = false;
         void *data = NULL;
+        int id = 0;
     };
 
     // map keyboard to player 0

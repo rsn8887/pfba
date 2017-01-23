@@ -1,18 +1,20 @@
 //
-// Created by cpasjuste on 19/12/16.
+// Created by cpasjuste on 23/01/17.
 //
+
+#ifndef __PSP2__
 
 #include <sys/stat.h>
 #include <dirent.h>
-#include "sdl2_utility.h"
+#include "utility.h"
 
-bool SDL2Utility::FileExist(const char *file) {
+bool Utility::FileExist(const char *file) {
 
     struct stat buf;
     return (stat(file, &buf) == 0);
 }
 
-std::vector<std::string> SDL2Utility::GetFileList(const char *path) {
+std::vector<std::string> Utility::GetFileList(const char *path) {
 
     std::vector<std::string> files;
     DIR *dir;
@@ -29,3 +31,5 @@ std::vector<std::string> SDL2Utility::GetFileList(const char *path) {
 
     return files;
 }
+
+#endif

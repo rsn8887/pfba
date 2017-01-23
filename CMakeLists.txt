@@ -5,6 +5,8 @@ set(CMAKE_SYSTEM_NAME "Generic")
 enable_language(ASM)
 
 # delete cmake cache folder before changing this options
+option(BUILD_SDL2 "Build with SDL2 support" ON)
+option(BUILD_SFML "Build with SFML support" OFF)
 option(BUILD_PSP2 "Build with PSP2 support" OFF)
 option(BUILD_RPI "Build with RPI support" OFF)
 
@@ -299,7 +301,7 @@ if (BUILD_DEBUG)
     list(APPEND FLAGS -O0 -g -DDEBUG)
 else ()
     list(APPEND FLAGS -O3 -DNDEBUG)
-endif(BUILD_DEBUG)
+endif (BUILD_DEBUG)
 
 #################
 # PSP2 (ps vita)
@@ -325,23 +327,14 @@ if (BUILD_PSP2)
     list(APPEND FLAGS
             -Wl,-q -D__PSP2__
             -DBUILD_C68K -DUSE_FILE32API
+            -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard -ffast-math
+            -fno-asynchronous-unwind-tables -funroll-loops
+            -mword-relocations -fno-unwind-tables -fno-optimize-sibling-calls
+            -mvectorize-with-neon-quad -funsafe-math-optimizations
+            -mlittle-endian -munaligned-access
             )
     if (BUILD_DEBUG)
-        list(APPEND FLAGS -D__PSP2_DEBUG__
-                -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard -ffast-math
-                -fno-asynchronous-unwind-tables -funroll-loops
-                -mword-relocations -fno-unwind-tables -fno-optimize-sibling-calls
-                -mvectorize-with-neon-quad -funsafe-math-optimizations
-                -mlittle-endian -munaligned-access
-                -O3)
-    else ()
-        list(APPEND FLAGS
-                -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard -ffast-math
-                -fno-asynchronous-unwind-tables -funroll-loops
-                -mword-relocations -fno-unwind-tables -fno-optimize-sibling-calls
-                -mvectorize-with-neon-quad -funsafe-math-optimizations
-                -mlittle-endian -munaligned-access
-                )
+        list(APPEND FLAGS -D__PSP2_DEBUG__ -O3) # cyclone doesn't work without optimisations
     endif (BUILD_DEBUG)
     set(LDFLAGS
             SDL2
@@ -365,15 +358,24 @@ else ()
     ##############
     # SDL2
     ##############
-    list(APPEND INC
-            pfba/sdl2
-            )
-    file(GLOB SRC_SDL2
-            pfba/sdl2/*.c*
-            )
-    list(APPEND SRC_PFBA ${SRC_SDL2})
-    list(APPEND FLAGS )
-    set(LDFLAGS SDL2 SDL2_image SDL2_ttf png z)
+    if (BUILD_SDL2)
+        list(APPEND FLAGS -D__SDL2__)
+        list(APPEND INC pfba/sdl2)
+        file(GLOB SRC_SDL2 pfba/sdl2/*.c*)
+        list(APPEND SRC_PFBA ${SRC_SDL2})
+        set(LDFLAGS SDL2 SDL2_image SDL2_ttf png z)
+        ##############
+        # SFML
+        ##############
+    elseif (BUILD_SFML)
+        list(APPEND FLAGS -D__SFML__)
+        list(APPEND INC pfba/sfml)
+        file(GLOB SRC_SFML
+                pfba/sdl2/sdl2_audio.cpp # TODO: get rid of sdl2, use sdl2 audio for now
+                pfba/sfml/*.c*)
+        list(APPEND SRC_PFBA ${SRC_SFML})
+        list(APPEND LDFLAGS SDL2 GL sfml-graphics sfml-window sfml-system png z)
+    endif (BUILD_SDL2)
     ##############
     # RPI
     ##############
@@ -416,9 +418,9 @@ endif (BUILD_PSP2)
 # source files
 set(SRC ${SRC_PFBA} ${SRC_CPU} ${SRC_DRV} ${SRC_BURN} ${SRC_BURNER} ${SRC_INTF} ${SRC_7Z} ${SRC_LIBCONFIG})
 
-#####################
-# SDL2 (unix) target
-#####################
+##########################
+# SDL2/SFML (unix) target
+##########################
 add_executable(${PROJECT_NAME} ${SRC} ${CMAKE_BINARY_DIR}/deps/m68kops.c)
 target_compile_options(${PROJECT_NAME} PRIVATE ${FLAGS})
 target_include_directories(${PROJECT_NAME} PRIVATE ${INC})

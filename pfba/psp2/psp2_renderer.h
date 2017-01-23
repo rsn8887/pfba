@@ -49,12 +49,6 @@ public:
         advanced_aa,
         scale2x,
         end
-        //fxaa
-        //crt_easymode,
-        //gtu,
-        //xbr2x,
-        //xbr2x_fast,
-        //bicubic,
     };
 
 private:

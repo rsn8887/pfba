@@ -18,19 +18,16 @@
  */
 
 #include <gui/gui.h>
-#include <sdl2/sdl2_input.h>
 
 #ifdef __PSP2__
 #include <psp2/power.h>
 #include <psp2/io/dirent.h>
 #include <psp2/psp2_utility.h>
 int _newlib_heap_size_user = 192 * 1024 * 1024;
-#elif __RPI__
-#include <sdl2/sdl2_utility.h>
-#else
-
-#include <sdl2/sdl2_utility.h>
-
+#elif __SDL2__
+#include <sdl2/sdl2_input.h>
+#elif __SFML__
+#include <sfml/sfml_input.h>
 #endif
 
 Renderer *renderer;
@@ -93,12 +90,12 @@ int main(int argc, char **argv) {
 
     renderer = (Renderer *) new PSP2Renderer(960, 544);
     utility = (Utility*)new PSP2Utility();
-#elif __RPI__
-    renderer = (Renderer *) new SDL2Renderer(0, 0);
-    utility = (Utility*)new SDL2Utility();
-#else
+#elif __SDL2__
     renderer = (Renderer *) new SDL2Renderer(960, 544);
-    utility = (Utility *) new SDL2Utility();
+    utility = new Utility();
+#elif __SFML__
+    renderer = (Renderer *) new SFMLRenderer(960, 544);
+    utility = new Utility();
 #endif
 
     BurnPathsInit();
@@ -109,15 +106,13 @@ int main(int argc, char **argv) {
     cfgPath += "/pfba.cfg";
     config = new Config(cfgPath);
 
+    // init input
 #ifdef __PSP2__
-    // init input
     inp = (Input *) new SDL2Input();
-#elif __RPI__
-    // init input
+#elif __SDL2__
     inp = (Input *) new SDL2Input();
-#else
-    // init input
-    inp = (Input *) new SDL2Input();
+#elif __SFML__
+    inp = (Input *) new SFMLInput((SFMLRenderer*)renderer);
 #endif
 
     // build/init roms list
