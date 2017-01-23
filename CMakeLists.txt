@@ -5,9 +5,9 @@ set(CMAKE_SYSTEM_NAME "Generic")
 enable_language(ASM)
 
 # delete cmake cache folder before changing this options
-option(BUILD_SDL2 "Build with SDL2 support" ON)
+option(BUILD_SDL2 "Build with SDL2 support" OFF)
 option(BUILD_SFML "Build with SFML support" OFF)
-option(BUILD_PSP2 "Build with PSP2 support" OFF)
+option(BUILD_PSP2 "Build with PSP2 support" ON)
 option(BUILD_RPI "Build with RPI support" OFF)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
