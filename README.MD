@@ -47,7 +47,7 @@ The linux and rpi3 ports currently run in fullscreen mode, doesn't support filte
 
 >- mkdir cmake-build
 >- cd cmake-build
->- cmake -DCMAKE_BUILD_TYPE=Release ..
+>- cmake -DBUILD_SDL2=ON -DCMAKE_BUILD_TYPE=Release ..
 >- make pfba.deps
 >- make pfba
 
@@ -63,7 +63,7 @@ The linux and rpi3 ports currently run in fullscreen mode, doesn't support filte
 
 >- mkdir cmake-build
 >- cd cmake-build
->- cmake -DBUILD_RPI=ON -DCMAKE_BUILD_TYPE=Release ..
+>- cmake -DBUILD_RPI=ON -DBUILD_SDL2=ON -DCMAKE_BUILD_TYPE=Release ..
 >- make pfba.deps
 >- make pfba
 

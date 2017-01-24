@@ -60,99 +60,95 @@ int RunReset() {
     return 0;
 }
 
-
 int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
 
     inputServiceSwitch = 0;
     inputP1P2Switch = 0;
 
-    if (bDraw) {
+    int rotation = gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION);
+    bool rotate = (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) && !rotation;
+    Input::Player *players = gui->GetInput()->Update(rotate);
 
-        int rotation = gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION);
-        bool rotate = (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) && !rotation;
-        Input::Player *players = gui->GetInput()->Update(rotate);
-
-        // process menu
-        if ((players[0].state & Input::Key::KEY_COIN)
-            && (players[0].state & Input::Key::KEY_START)) {
-            bPauseOn = true;
-            if (audio) {
-                audio->Pause(1);
-            }
-            // set default control scheme
-            gui->UpdateInputMapping(false);
-            gui->RunOptionMenu(true);
-            // restore rom control scheme
-            gui->UpdateInputMapping(true);
-            if (audio) {
-                audio->Pause(0);
-            }
-            bPauseOn = false;
-        } else if ((players[0].state & Input::Key::KEY_COIN)
-                   && (players[0].state & Input::Key::KEY_FIRE5)) {
-            bPauseOn = true;
-            if (audio) {
-                audio->Pause(1);
-            }
-            // set default control scheme
-            gui->UpdateInputMapping(false);
-            gui->RunStatesMenu();
-            // restore rom control scheme
-            gui->UpdateInputMapping(true);
-            if (audio) {
-                audio->Pause(0);
-            }
-            bPauseOn = false;
-        } else if ((players[0].state & Input::Key::KEY_COIN)
-                   && (players[0].state & Input::Key::KEY_FIRE3)) {
-            inputServiceSwitch = 1;
-        } else if ((players[0].state & Input::Key::KEY_COIN)
-                   && (players[0].state & Input::Key::KEY_FIRE4)) {
-            inputP1P2Switch = 1;
-        } else if ((players[0].state & Input::Key::KEY_COIN)
-                   && (players[0].state & Input::Key::KEY_UP)) {
-            int scaling = gui->GetConfig()->GetRomValue(Option::Index::ROM_SCALING) + 1;
-            if (scaling <= 3) {
-                int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
-                                                           Option::Index::ROM_SCALING);
-                gui->GetConfig()->GetRomOptions()->at(index).value = scaling;
-                video->Scale();
-                gui->GetRenderer()->Delay(500);
-            }
-        } else if ((players[0].state & Input::Key::KEY_COIN)
-                   && (players[0].state & Input::Key::KEY_DOWN)) {
-            int scaling = gui->GetConfig()->GetRomValue(Option::Index::ROM_SCALING) - 1;
-            if (scaling >= 0) {
-                int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
-                                                           Option::Index::ROM_SCALING);
-                gui->GetConfig()->GetRomOptions()->at(index).value = scaling;
-                video->Scale();
-                gui->GetRenderer()->Delay(500);
-            }
-        } else if ((players[0].state & Input::Key::KEY_COIN)
-                   && (players[0].state & Input::Key::KEY_RIGHT)) {
-            int shader = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER) + 1;
-            if (shader < gui->GetRenderer()->shaderCount) {
-                int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
-                                                           Option::Index::ROM_SHADER);
-                gui->GetConfig()->GetRomOptions()->at(index).value = shader;
-                gui->GetRenderer()->SetShader(shader);
-                gui->GetRenderer()->Delay(500);
-            }
-        } else if ((players[0].state & Input::Key::KEY_COIN)
-                   && (players[0].state & Input::Key::KEY_LEFT)) {
-            int shader = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER) - 1;
-            if (shader >= 0) {
-                int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
-                                                           Option::Index::ROM_SHADER);
-                gui->GetConfig()->GetRomOptions()->at(index).value = shader;
-                gui->GetRenderer()->SetShader(shader);
-                gui->GetRenderer()->Delay(500);
-            }
+    // process menu
+    if ((players[0].state & Input::Key::KEY_COIN)
+        && (players[0].state & Input::Key::KEY_START)) {
+        bPauseOn = true;
+        if (audio) {
+            audio->Pause(1);
         }
-
-        InpMake(players);
+        // set default control scheme
+        gui->UpdateInputMapping(false);
+        gui->RunOptionMenu(true);
+        // restore rom control scheme
+        gui->UpdateInputMapping(true);
+        if (audio) {
+            audio->Pause(0);
+        }
+        bPauseOn = false;
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_FIRE5)) {
+        bPauseOn = true;
+        if (audio) {
+            audio->Pause(1);
+        }
+        // set default control scheme
+        gui->UpdateInputMapping(false);
+        gui->RunStatesMenu();
+        // restore rom control scheme
+        gui->UpdateInputMapping(true);
+        if (audio) {
+            audio->Pause(0);
+        }
+        bPauseOn = false;
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_FIRE3)) {
+        inputServiceSwitch = 1;
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_FIRE4)) {
+        inputP1P2Switch = 1;
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_UP)) {
+        int scaling = gui->GetConfig()->GetRomValue(Option::Index::ROM_SCALING) + 1;
+        if (scaling <= 3) {
+            int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
+                                                       Option::Index::ROM_SCALING);
+            gui->GetConfig()->GetRomOptions()->at(index).value = scaling;
+            video->Scale();
+            gui->GetRenderer()->Delay(500);
+        }
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_DOWN)) {
+        int scaling = gui->GetConfig()->GetRomValue(Option::Index::ROM_SCALING) - 1;
+        if (scaling >= 0) {
+            int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
+                                                       Option::Index::ROM_SCALING);
+            gui->GetConfig()->GetRomOptions()->at(index).value = scaling;
+            video->Scale();
+            gui->GetRenderer()->Delay(500);
+        }
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_RIGHT)) {
+        int shader = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER) + 1;
+        if (shader < gui->GetRenderer()->shaderCount) {
+            int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
+                                                       Option::Index::ROM_SHADER);
+            gui->GetConfig()->GetRomOptions()->at(index).value = shader;
+            gui->GetRenderer()->SetShader(shader);
+            gui->GetRenderer()->Delay(500);
+        }
+    } else if ((players[0].state & Input::Key::KEY_COIN)
+               && (players[0].state & Input::Key::KEY_LEFT)) {
+        int shader = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER) - 1;
+        if (shader >= 0) {
+            int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
+                                                       Option::Index::ROM_SHADER);
+            gui->GetConfig()->GetRomOptions()->at(index).value = shader;
+            gui->GetRenderer()->SetShader(shader);
+            gui->GetRenderer()->Delay(500);
+        }
     }
+
+    InpMake(players);
 
     if (!bPauseOn) {
         nFramesEmulated++;
@@ -286,29 +282,56 @@ void RunEmulator(Gui *g, int drvnum) {
 
     RunReset();
 
-    int timer = 0, tick = 0, fps = 0;
-
-    GameLooping = true;
-    StartTicks();
+    int frame_limit = nBurnFPS / 100, frametime = 100000000 / nBurnFPS;
+    int now = 0, done = 0, timer = 0, tick = 0, ticks = 0, fps = 0;
 
     printf("---- PFBA EMU START ----\n\n");
 
+    StartTicks(); // no frameskip
+
+    GameLooping = true;
     while (GameLooping) {
 
         int showFps = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHOW_FPS);
+        int frameSkip = gui->GetConfig()->GetRomValue(Option::Index::ROM_FRAMESKIP);
 
-        if (showFps) {
-            timer = GetTicks();
-            if (timer - tick > 1000000) {
+        if (frameSkip) {
+            timer = GetTicks() / frametime;
+            if (timer - tick > frame_limit && showFps) {
                 fps = nFramesRendered;
                 nFramesRendered = 0;
                 tick = timer;
             }
-        }
-
-        RunOneFrame(true, showFps, fps);
-        if(audio) {
-            audio->Play();
+            now = timer;
+            ticks = now - done;
+            if (ticks < 1) continue;
+            if (ticks > 10) ticks = 10;
+            for (int i = 0; i < ticks - 1; i++) {
+                RunOneFrame(false, showFps, fps);
+                if (audio) {
+                    audio->Play();
+                }
+            }
+            if (ticks >= 1) {
+                RunOneFrame(true, showFps, fps);
+                if (audio) {
+                    audio->Play();
+                }
+            }
+            done = now;
+        } else {
+            if (showFps) {
+                timer = GetTicks();
+                if (timer - tick > 1000000) {
+                    fps = nFramesRendered;
+                    nFramesRendered = 0;
+                    tick = timer;
+                }
+            }
+            RunOneFrame(true, showFps, fps);
+            if (audio) {
+                audio->Play();
+            }
         }
     }
 

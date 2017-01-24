@@ -92,6 +92,7 @@ SDL2Audio::SDL2Audio(int freq, int fps) : Audio(freq, fps) {
     for (sample_size = 512; sample_size < (buffer_len * 2); sample_size <<= 1);
     buf_size = sample_size * channels * 2 * 8;
     buffer_sdl = (unsigned char *) malloc((size_t) buf_size);
+    memset(buffer_sdl, 0, (size_t) buf_size);
 
     buffered_bytes = 0;
     buf_read_pos = 0;

@@ -294,11 +294,12 @@ set(FLAGS
         -DBUILD_SDL -DBUILD_M68K
         -DTOAPLAN_SOUND_SAMPLES_HACK
         -Wno-write-strings -Wno-narrowing
-        -D_fastcall= -D__fastcall= -D__fastcall__=
+        -fforce-addr -fcheck-new -finline-limit=1200
+        -DFASTCALL -U__fastcall -D_fastcall= -D__fastcall= -D__fastcall__=
         "-DINLINE=static inline" "-DSH2_INLINE=static inline"
         )
 if (BUILD_DEBUG)
-    list(APPEND FLAGS -g -DDEBUG)
+    list(APPEND FLAGS -g -O0 -DDEBUG)
 else ()
     list(APPEND FLAGS -O3 -DNDEBUG)
 endif (BUILD_DEBUG)
@@ -324,17 +325,21 @@ if (BUILD_PSP2)
             pfba/cpu/cyclone/Cyclone.s
             )
     list(APPEND SRC_PFBA ${SRC_PSP2})
-    list(APPEND FLAGS -Wl,-q -D__PSP2__ -DBUILD_C68K -DUSE_FILE32API)
+    list(APPEND FLAGS
+            -Wl,-q -D__PSP2__
+            -DBUILD_C68K -DUSE_FILE32API)
     if (BUILD_DEBUG)
-        list(APPEND FLAGS -D__PSP2_DEBUG__ -O1
-                -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a)
-    else ()
         list(APPEND FLAGS
+                -D__PSP2_DEBUG__ -D__ARM__  # TODO: cyclone arm asm core not working without O2/O3
+                )
+    else ()
+        list(APPEND FLAGS -D__ARM__
                 -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard -ffast-math
                 -fno-asynchronous-unwind-tables -funroll-loops
                 -mword-relocations -fno-unwind-tables -fno-optimize-sibling-calls
                 -mvectorize-with-neon-quad -funsafe-math-optimizations
                 -mlittle-endian -munaligned-access
+                -fsingle-precision-constant
                 )
     endif (BUILD_DEBUG)
     set(LDFLAGS
@@ -393,7 +398,7 @@ else ()
         list(APPEND SRC_PFBA ${SRC_RPI})
         # rpi3 compile flags
         list(APPEND FLAGS
-                -D__RPI__ -DBUILD_C68K -DUSE_FILE32API
+                -D__RPI__ -D__ARM__ -DBUILD_C68K -DUSE_FILE32API
                 -march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53 -mfpu=neon-fp-armv8
                 -mfloat-abi=hard -mvectorize-with-neon-quad -funsafe-math-optimizations
                 -ffast-math -mlittle-endian -munaligned-access
@@ -434,7 +439,7 @@ add_custom_target(${PROJECT_NAME}.vpk
         DEPENDS ${PROJECT_NAME}
         COMMAND rm -rf vpk && mkdir -p vpk/sce_sys
         COMMAND ${VITASDK}/bin/vita-elf-create ${PROJECT_NAME} ${PROJECT_NAME}.velf
-        COMMAND ${VITASDK}/bin/vita-make-fself -c ${PROJECT_NAME}.velf vpk/eboot.bin
+        COMMAND ${VITASDK}/bin/vita-make-fself -c -s ${PROJECT_NAME}.velf vpk/eboot.bin
         COMMAND ${VITASDK}/bin/vita-mksfoex -s TITLE_ID=${TITLE_ID} "${PROJECT_NAME}" vpk/sce_sys/param.sfo
         COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/gui/skin vpk/
         COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/psp2/data/* vpk

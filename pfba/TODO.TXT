@@ -1,6 +1,10 @@
 # COMMON
 ========
 
+add analog inputs (Super Hang-On, Outrun, Turbo Outrun, Power Drift...)
+PSP2: load roms from ur0: ?
+PSP2: add "disable right stick" option
+add "EnableHiscores" option
 add favorites section in hardware list
 add joystick axis input configuration in gui
 add > 1 joystick support
@@ -8,17 +12,19 @@ add help screen
 PSP2: fix crash with non working roms (cps2 wrong set, ...) identified as 68K CycloneRun crash
 
 # NEXT RELEASE
-fix: clear buttons when exiting menu
-add: service button switch (SELECT+SQUARE)
-add: 1P+2P button switch (SELECT+TRIANGLE)
-add: SELECT+LEFT/RIGHT = change shading
-add: SELECT+UP/DOWN = change scaling
-psp2: fix input button bg background in game (caused by shader)
-fix: really fix arm m68k savestates (cyclone) by implenting CyclonePack/Unpack
-fix: default input scheme not restored when exiting game
-fix: default input scheme not restored when savestate called with START+L
+ARM: fix nec cpu (irem, raiden...)
+add frameskip as a menu option
 
 # OLD RELEASES
+DONE // fix: clear buttons when exiting menu
+DONE // add: service button switch (SELECT+SQUARE)
+DONE // add: 1P+2P button switch (SELECT+TRIANGLE)
+DONE // add: SELECT+LEFT/RIGHT = change shading
+DONE // add: SELECT+UP/DOWN = change scaling
+DONE // psp2: fix input button bg background in game (caused by shader)
+DONE // fix: really fix arm m68k savestates (cyclone) by implenting CyclonePack/Unpack
+DONE // fix: default input scheme not restored when exiting game
+DONE // fix: default input scheme not restored when savestate called with START+L
 DONE // add: per platform input button name/icon in option ui
 DONE // fix randrom fire1/fire2 inverted in menu ?!
 DONE // fix "FIT" mode on vertical games
@@ -41,9 +47,6 @@ DONE // EMU: add rotation option
 DONE // EMU: add disable audio option
 DONE // GUI: hide rotation option if not needed
 DONE // GUI: fix screenshot dismiss on gui option return
-
-# PSP2
-=====================
 
 
 # RPI (raspbian jessy)

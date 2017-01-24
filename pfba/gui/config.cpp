@@ -80,6 +80,7 @@ Config::Config(const std::string &cfgPath) {
             Option("SHADER", {"NONE", "SHARP", "SHARP+SCAN", "LCD3X", "AAA", "SCALE2X"}, 2, Option::Index::ROM_SHADER));
     options_gui.push_back(Option("ROTATION", {"OFF", "ON"}, 0, Option::Index::ROM_ROTATION));
     options_gui.push_back(Option("SHOW_FPS", {"NO", "YES"}, 0, Option::Index::ROM_SHOW_FPS));
+    options_gui.push_back(Option("FRAMESKIP", {"OFF", "ON"}, 0, Option::Index::ROM_FRAMESKIP));
     //options_gui.push_back(Option("M68K", {"ASM", "C"}, 0, Option::Index::ROM_M68K));
     options_gui.push_back(Option("FORCE_60HZ", {"OFF", "ON"}, 0, Option::Index::ROM_FORCE_60HZ));
     options_gui.push_back(
