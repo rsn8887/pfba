@@ -129,6 +129,20 @@ void Video::Scale() {
             }
             break;
 
+        case 5: // fit 3:4
+            if(rotation == 0 || rotation == 180) {
+                scale.h = window.h;
+                scale.w = (int) (((float) scale.h * 3.0) / 4.0);
+                if(scale.w > window.w) {
+                    scale.w = window.w;
+                    scale.h = (int) (((float) scale.w * 4.0) / 3.0);
+                }
+            } else {
+                scale.w = window.h;
+                scale.h = (int) (((float) scale.w * 3.0) / 4.0);
+            }
+            break;
+
         default:
             break;
     }
