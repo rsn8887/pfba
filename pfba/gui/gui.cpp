@@ -998,19 +998,23 @@ void Gui::UpdateInputMapping(bool isRomConfig) {
     if (isRomConfig) {
         input->SetKeyboardMapping(config->GetRomPlayerInputKeys(0));
         int deadzone = 2000 + config->GetRomValue(Option::Index::JOY_DEADZONE) * 2000;
-        input->SetJoystickMapping(0, config->GetRomPlayerInputButtons(0), deadzone);
-        input->players[0].axis_lx = config->GetRomValue(Option::Index::JOY_AXIS_LX);
-        input->players[0].axis_ly = config->GetRomValue(Option::Index::JOY_AXIS_LY);
-        input->players[0].axis_rx = config->GetRomValue(Option::Index::JOY_AXIS_RX);
-        input->players[0].axis_ry = config->GetRomValue(Option::Index::JOY_AXIS_RY);
+        for (int i=0; i<PLAYER_COUNT; i++) {
+            input->SetJoystickMapping(i, config->GetRomPlayerInputButtons(i), deadzone);
+            input->players[i].axis_lx = config->GetRomValue(Option::Index::JOY_AXIS_LX);
+            input->players[i].axis_ly = config->GetRomValue(Option::Index::JOY_AXIS_LY);
+            input->players[i].axis_rx = config->GetRomValue(Option::Index::JOY_AXIS_RX);
+            input->players[i].axis_ry = config->GetRomValue(Option::Index::JOY_AXIS_RY);
+        }
     } else {
         input->SetKeyboardMapping(config->GetGuiPlayerInputKeys(0));
         int deadzone = 2000 + config->GetGuiValue(Option::Index::JOY_DEADZONE) * 2000;
-        input->SetJoystickMapping(0, config->GetGuiPlayerInputButtons(0), deadzone);
-        input->players[0].axis_lx = config->GetGuiValue(Option::Index::JOY_AXIS_LX);
-        input->players[0].axis_ly = config->GetGuiValue(Option::Index::JOY_AXIS_LY);
-        input->players[0].axis_rx = config->GetGuiValue(Option::Index::JOY_AXIS_RX);
-        input->players[0].axis_ry = config->GetGuiValue(Option::Index::JOY_AXIS_RY);
+        for (int i=0; i<PLAYER_COUNT; i++) {
+            input->SetJoystickMapping(i, config->GetGuiPlayerInputButtons(i), deadzone);
+            input->players[i].axis_lx = config->GetGuiValue(Option::Index::JOY_AXIS_LX);
+            input->players[i].axis_ly = config->GetGuiValue(Option::Index::JOY_AXIS_LY);
+            input->players[i].axis_rx = config->GetGuiValue(Option::Index::JOY_AXIS_RX);
+            input->players[i].axis_ry = config->GetGuiValue(Option::Index::JOY_AXIS_RY);
+        }
     }
 }
 
