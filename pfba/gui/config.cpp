@@ -73,9 +73,9 @@ Config::Config(const std::string &cfgPath) {
 
     // default rom config
     options_gui.push_back(Option("ROM", {"ROM"}, 0, Option::Index::MENU_ROM_OPTIONS, Option::Type::MENU));
-    options_gui.push_back(Option("SCALING", {"NONE", "2X", "FIT", "FULL"}, 1, Option::Index::ROM_SCALING));
+    options_gui.push_back(Option("SCALING", {"NONE", "2X", "FIT", "FULL", "FIT 4:3", "FIT 3:4"}, 5, Option::Index::ROM_SCALING));
     options_gui.push_back(
-            Option("FILTER", {"POINT", "LINEAR"}, 0, Option::Index::ROM_FILTER));
+            Option("FILTER", {"POINT", "LINEAR"}, 1, Option::Index::ROM_FILTER));
     options_gui.push_back(
             Option("SHADER", {"NONE", "SHARP", "SHARP+SCAN", "LCD3X", "AAA", "SCALE2X"}, 2, Option::Index::ROM_SHADER));
     options_gui.push_back(Option("ROTATION", {"OFF", "ON"}, 0, Option::Index::ROM_ROTATION));

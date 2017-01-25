@@ -109,7 +109,7 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
     } else if ((players[0].state & Input::Key::KEY_COIN)
                && (players[0].state & Input::Key::KEY_UP)) {
         int scaling = gui->GetConfig()->GetRomValue(Option::Index::ROM_SCALING) + 1;
-        if (scaling <= 3) {
+        if (scaling <= 5) {
             int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
                                                        Option::Index::ROM_SCALING);
             gui->GetConfig()->GetRomOptions()->at(index).value = scaling;
