@@ -5,12 +5,12 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-#include <skeleton/utility.h>
+#include "skeleton/utility.h"
 
 #include "burner.h"
 #include "romlist.h"
 
-RomList::RomList(Utility *utility, std::vector<Hardware> *hwList, const std::vector<std::string> &paths) {
+RomList::RomList(std::vector<Hardware> *hwList, const std::vector<std::string> &paths) {
 
     hardwareList = hwList;
 
@@ -20,7 +20,7 @@ RomList::RomList(Utility *utility, std::vector<Hardware> *hwList, const std::vec
     std::vector<std::string> files[DIRS_MAX];
     for (unsigned int i = 0; i < paths.size(); i++) {
         if (!paths[i].empty()) {
-            files[i] = utility->GetFileList(paths[i].c_str());
+            files[i] = Utility::GetFileList(paths[i].c_str());
             printf("RomList: found %i files in `%s`\n", (int) files[i].size(), paths[i].c_str());
         }
     }
@@ -95,12 +95,14 @@ RomList::RomList(Utility *utility, std::vector<Hardware> *hwList, const std::vec
         list.push_back(rom);
     }
 
+    /*
     for(int i=0; i<hardwareList->size(); i++) {
         printf("[%s] roms: %i/%i | clones: %i/%i)\n",
                hardwareList->at(i).name.c_str(),
                hardwareList->at(i).available_count, hardwareList->at(i).supported_count,
                hardwareList->at(i).available_clone_count, hardwareList->at(i).clone_count);
     }
+    */
 
     for (int i = 0; i < DIRS_MAX; i++) {
         files[i].clear();

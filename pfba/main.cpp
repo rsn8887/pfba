@@ -28,11 +28,12 @@ int _newlib_heap_size_user = 192 * 1024 * 1024;
 #elif __SDL2__
 #include <sdl2/sdl2_input.h>
 #elif __SFML__
+
 #include <sfml/sfml_input.h>
+
 #endif
 
 Renderer *renderer;
-Utility *utility;
 Config *config;
 RomList *romList;
 Gui *gui;
@@ -54,6 +55,9 @@ void wav_exit() {}
 int bRunPause;
 
 int main(int argc, char **argv) {
+
+    BurnPathsInit();
+    BurnLibInit();
 
     std::vector<Skin::Button> buttons;
 #ifdef __PSP2__
@@ -90,22 +94,18 @@ int main(int argc, char **argv) {
     buttons.push_back({11, "START"});
 
     renderer = (Renderer *) new PSP2Renderer(960, 544);
-    utility = (Utility*)new PSP2Utility();
 #elif __SDL2__
     renderer = (Renderer *) new SDL2Renderer(960, 544);
-    utility = new Utility();
 #elif __SFML__
-    renderer = (Renderer *) new SFMLRenderer(960, 544);
-    utility = new Utility();
+    std::string shaderPath = szAppHomePath;
+    shaderPath += "shaders/sfml";
+    renderer = (Renderer *) new SFMLRenderer(0, 0, shaderPath);
 #endif
-
-    BurnPathsInit();
-    BurnLibInit();
 
     // load configuration
     std::string cfgPath = szAppHomePath;
-    cfgPath += "/pfba.cfg";
-    config = new Config(cfgPath);
+    cfgPath += "pfba.cfg";
+    config = new Config(cfgPath, renderer);
 
     // init input
 #ifdef __PSP2__
@@ -113,17 +113,17 @@ int main(int argc, char **argv) {
 #elif __SDL2__
     inp = (Input *) new SDL2Input();
 #elif __SFML__
-    inp = (Input *) new SFMLInput((SFMLRenderer*)renderer);
+    inp = (Input *) new SFMLInput((SFMLRenderer *) renderer);
 #endif
 
     // build/init roms list
-    romList = new RomList(utility, &config->hardwareList, config->GetRomPaths());
+    romList = new RomList(&config->hardwareList, config->GetRomPaths());
 
     // skin
     Skin *skin = new Skin(renderer, szAppSkinPath, buttons);
 
     // run gui
-    gui = new Gui(renderer, skin, utility, romList, config, inp);
+    gui = new Gui(renderer, skin, romList, config, inp);
 #ifdef __PSP2__ // prevent rom list scrolling lag on psp2
     gui->SetTitleLoadDelay(500);
 #endif
@@ -132,7 +132,6 @@ int main(int argc, char **argv) {
     BurnLibExit();
 
     delete (gui);
-    delete (utility);
     delete (romList);
     delete (renderer);
     delete (config);

@@ -28,6 +28,7 @@ public:
         GUI_SHOW_ALL,
         GUI_SHOW_CLONES,
         GUI_SHOW_HARDWARE,
+        GUI_FULLSCREEN,
         MENU_ROM_OPTIONS,
         ROM_SCALING,
         ROM_FILTER,

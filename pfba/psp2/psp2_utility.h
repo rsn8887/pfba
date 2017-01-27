@@ -5,15 +5,16 @@
 #ifndef FBA_PSP2_UTILITY_H
 #define FBA_PSP2_UTILITY_H
 
-#include <skeleton/utility.h>
+#include <string>
+#include <vector>
 
-class PSP2Utility : Utility {
+class Utility {
 
 public:
+    static bool FileExist(const char *file);
 
-    bool FileExist(const char *file);
+    static std::vector<std::string> GetFileList(const char *path);
 
-    std::vector<std::string> GetFileList(const char *path);
 };
 
 #endif //FBA_PSP2_UTILITY_H

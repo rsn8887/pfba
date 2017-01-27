@@ -6,32 +6,7 @@
 #include <psp2_renderer.h>
 #include "psp2_font.h"
 #include "psp2_texture.h"
-
-#include "lcd3x_v.h"
-#include "lcd3x_f.h"
-#include "gtu_v.h"
-#include "gtu_f.h"
-#include "texture_v.h"
-#include "texture_f.h"
-#include "opaque_v.h"
-#include "bicubic_f.h"
-#include "xbr_2x_v.h"
-#include "xbr_2x_f.h"
-#include "xbr_2x_fast_v.h"
-#include "xbr_2x_fast_f.h"
-#include "advanced_aa_v.h"
-#include "advanced_aa_f.h"
-#include "scale2x_f.h"
-#include "scale2x_v.h"
-#include "sharp_bilinear_f.h"
-#include "sharp_bilinear_v.h"
-#include "sharp_bilinear_simple_f.h"
-#include "sharp_bilinear_simple_v.h"
-//#include "xbr_2x_noblend_f.h"
-//#include "xbr_2x_noblend_v.h"
-#include "fxaa_v.h"
-#include "fxaa_f.h"
-#include "crt_easymode_f.h"
+#include "psp2_shaders.h"
 
 //////////
 // INIT //
@@ -47,20 +22,7 @@ PSP2Renderer::PSP2Renderer(int w, int h) : Renderer() {
     vita2d_init();
     vita2d_set_clear_color((unsigned int) RGBA8(color.r, color.g, color.b, color.a));
 
-    shaders[ShaderType::lcd3x] =
-            vita2d_create_shader((SceGxmProgram *) lcd3x_v, (SceGxmProgram *) lcd3x_f);
-    shaders[ShaderType::scale2x] =
-            vita2d_create_shader((SceGxmProgram *) scale2x_v, (SceGxmProgram *) scale2x_f);
-    shaders[ShaderType::advanced_aa] =
-            vita2d_create_shader((SceGxmProgram *) advanced_aa_v, (SceGxmProgram *) advanced_aa_f);
-    shaders[ShaderType::sharp_bilinear] =
-            vita2d_create_shader((SceGxmProgram *) sharp_bilinear_simple_v, (SceGxmProgram *) sharp_bilinear_simple_f);
-    shaders[ShaderType::sharp_bilinear_scanlines] =
-            vita2d_create_shader((SceGxmProgram *) sharp_bilinear_v, (SceGxmProgram *) sharp_bilinear_f);
-    shaders[ShaderType::texture] =
-            vita2d_create_shader((SceGxmProgram *) texture_v, (SceGxmProgram *) texture_f);
-
-    shaderCount = ShaderType::end - 1;
+    this->shaders = (Shaders *) new PSP2Shaders("");
     SetShader(0);
 }
 //////////
@@ -89,7 +51,7 @@ void PSP2Renderer::DrawFont(Font *font, int x, int y, const char *fmt, ...) {
     vsnprintf(msg, MAX_PATH, fmt, args);
     va_end(args);
 
-    int height = vita2d_pgf_text_height(((PSP2Font *) font)->font, 1, msg) - 2; // fixme (-3)
+    int height = vita2d_pgf_text_height(((PSP2Font *) font)->font, 1, msg) - 2; // fixme (-2)
 
     StartDrawring();
     vita2d_pgf_draw_text(((PSP2Font *) font)->font, x, y + height,
@@ -134,7 +96,7 @@ void PSP2Renderer::DrawTexture(Texture *texture, int x, int y, int w, int h, flo
     }
 }
 
-int PSP2Renderer::LockTexture(Texture *texture, const Rect *rect, void **pixels, int *pitch) {
+int PSP2Renderer::LockTexture(Texture *texture, const Rect &rect, void **pixels, int *pitch) {
     *pixels = vita2d_texture_get_datap(((PSP2Texture *) texture)->tex);
     *pitch = vita2d_texture_get_stride(((PSP2Texture *) texture)->tex);
     return 0;
@@ -144,49 +106,52 @@ int PSP2Renderer::LockTexture(Texture *texture, const Rect *rect, void **pixels,
 // TEXTURE //
 /////////////
 
-Rect PSP2Renderer::GetWindowSize() {
+const Rect PSP2Renderer::GetWindowSize() {
     Rect rect{0, 0, 960, 544};
     return rect;
 }
 
-void PSP2Renderer::SetShader(int shaderType) {
+void PSP2Renderer::SetShader(int index) {
 
-    if (shaderType == shaderCurrent) {
+    if (index == shaders->current || index >= shaders->Count()) {
         return;
     }
+    shaders->current = index;
 
-    shaderCurrent = shaderType;
-
-    vita2d_texture_set_program(shaders[shaderCurrent]->vertexProgram, shaders[shaderCurrent]->fragmentProgram);
-    vita2d_texture_set_wvp(shaders[shaderCurrent]->wvpParam);
-    vita2d_texture_set_vertexInput(&shaders[shaderCurrent]->vertexInput);
-    vita2d_texture_set_fragmentInput(&shaders[shaderCurrent]->fragmentInput);
-}
-
-void PSP2Renderer::DrawLine(int x1, int y1, int x2, int y2, Color *_color) {
-    StartDrawring();
-    vita2d_draw_line(x1, y1, x2, y2,
-                     RGBA8(_color->r, _color->g, _color->b, _color->a));
-}
-
-void PSP2Renderer::DrawRect(Rect *rect, Color *_color, bool fill) {
-    StartDrawring();
-    if (fill) {
-        vita2d_draw_rectangle(rect->x, rect->y, rect->w, rect->h,
-                              RGBA8(_color->r, _color->g, _color->b, _color->a));
-    } else {
-        DrawLine(rect->x, rect->y + 1, rect->x + rect->w, rect->y + 1, _color);               // top
-        DrawLine(rect->x + 1, rect->y, rect->x + 1, rect->y + rect->h, _color);               // left
-        DrawLine(rect->x, rect->y + rect->h, rect->x + rect->w, rect->y + rect->h, _color);   // bottom
-        DrawLine(rect->x + rect->w, rect->y, rect->x + rect->w, rect->y + rect->h, _color);   // right
+    vita2d_shader *shader = (vita2d_shader *) shaders->Get()->data;
+    if(shader != NULL) {
+        vita2d_texture_set_program(shader->vertexProgram, shader->fragmentProgram);
+        vita2d_texture_set_wvp(shader->wvpParam);
+        vita2d_texture_set_vertexInput(&shader->vertexInput);
+        vita2d_texture_set_fragmentInput(&shader->fragmentInput);
     }
 }
 
-void PSP2Renderer::Clip(Rect *rect) {
+void PSP2Renderer::DrawLine(int x1, int y1, int x2, int y2, const Color &c) {
+    StartDrawring();
+    vita2d_draw_line(x1, y1, x2, y2,
+                     RGBA8(c.r, c.g, c.b, c.a));
+}
 
-    if (rect) {
+void PSP2Renderer::DrawRect(const Rect &rect, const Color &c, bool fill) {
+    StartDrawring();
+    if (fill) {
+        vita2d_draw_rectangle(rect.x, rect.y, rect.w, rect.h,
+                              RGBA8(c.r, c.g, c.b, c.a));
+    } else {
+        DrawLine(rect.x, rect.y + 1, rect.x + rect.w, rect.y + 1, c);               // top
+        DrawLine(rect.x + 1, rect.y, rect.x + 1, rect.y + rect.h, c);               // left
+        DrawLine(rect.x, rect.y + rect.h, rect.x + rect.w, rect.y + rect.h, c);   // bottom
+        DrawLine(rect.x + rect.w, rect.y, rect.x + rect.w, rect.y + rect.h, c);   // right
+    }
+}
+
+void PSP2Renderer::Clip(const Rect &rect) {
+
+    // vita2d_set_region_clip doesn't work correctly
+    if (rect.x != 0 || rect.y != 0 || rect.w != 0 || rect.h != 0) {
         vita2d_set_region_clip(SCE_GXM_REGION_CLIP_OUTSIDE,
-                               rect->x, rect->y, rect->x + rect->w, rect->y + rect->h);
+                               rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
     } else {
         vita2d_set_region_clip(SCE_GXM_REGION_CLIP_NONE, 0, 0, 0, 0);
     }
@@ -200,7 +165,6 @@ void PSP2Renderer::Clear() {
 void PSP2Renderer::Flip() {
     if (drawing_started) {
         vita2d_end_drawing();
-        //if (shaderCurrent != ShaderType::texture) // screen tearing on some games
         vita2d_wait_rendering_done();
         vita2d_swap_buffers();
         drawing_started = false;
@@ -214,9 +178,7 @@ void PSP2Renderer::Delay(unsigned int ms) {
 PSP2Renderer::~PSP2Renderer() {
     vita2d_wait_rendering_done();
     vita2d_fini();
-    for (int i = 0; i < shaderCount; i++) {
-        vita2d_free_shader(shaders[i]);
-    }
+    delete(shaders);
 }
 
 void PSP2Renderer::StartDrawring() {

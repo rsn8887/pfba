@@ -31,7 +31,7 @@ public:
         }
     };
 
-    RomList(Utility *utility, std::vector<Hardware> *hwList,
+    RomList(std::vector<Hardware> *hwList,
             const std::vector<std::string> &paths);
     ~RomList();
 

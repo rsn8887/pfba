@@ -52,7 +52,7 @@ class Config {
 
 public:
 
-    Config(const std::string &cfgPath);
+    Config(const std::string &cfgPath, Renderer *renderer);
     ~Config() {};
 
     void Load(RomList::Rom *rom = NULL);
@@ -84,8 +84,8 @@ private:
     std::string configPath;
     bool done = false;
 
-    int keyboard_keys[Input::KEY_COUNT];
-    int joystick_keys[Input::KEY_COUNT];
+    int keyboard_keys[KEY_COUNT];
+    int joystick_keys[KEY_COUNT];
 };
 
 #endif //_CONFIG_H_

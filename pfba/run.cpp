@@ -129,7 +129,7 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
     } else if ((players[0].state & Input::Key::KEY_COIN)
                && (players[0].state & Input::Key::KEY_RIGHT)) {
         int shader = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER) + 1;
-        if (shader < gui->GetRenderer()->shaderCount) {
+        if (shader < gui->GetRenderer()->shaders->Count()) {
             int index = gui->GetConfig()->GetOptionPos(gui->GetConfig()->GetRomOptions(),
                                                        Option::Index::ROM_SHADER);
             gui->GetConfig()->GetRomOptions()->at(index).value = shader;
@@ -146,6 +146,8 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
             gui->GetRenderer()->SetShader(shader);
             gui->GetRenderer()->Delay(500);
         }
+    } else if (players[0].state & EV_RESIZE) {
+        video->Scale();
     }
 
     InpMake(players);

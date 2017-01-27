@@ -19,7 +19,7 @@ class Gui {
 
 public:
 
-    Gui(Renderer *rdr, Skin *skin, Utility *util, RomList *rList, Config *cfg, Input *input);
+    Gui(Renderer *rdr, Skin *skin, RomList *rList, Config *cfg, Input *input);
 
     ~Gui();
 
@@ -37,6 +37,11 @@ public:
     int TitleLoad(RomList::Rom *rom);
     void TitleFree();
     void SetTitleLoadDelay(int delay);
+
+    const Rect GetRectTitle();
+    const Rect GetRectRomList();
+    const Rect GetRectRomPreview();
+    const Rect GetRectRomInfo();
 
     void UpdateInputMapping(bool isRomCfg);
 
@@ -56,7 +61,6 @@ private:
     GuiMode mode = List;
     Config *config = NULL;
     Renderer *renderer = NULL;
-    Utility *utility = NULL;
     Skin *skin = NULL;
     Input *input = NULL;
 
@@ -68,11 +72,6 @@ private:
     std::vector<RomList::Rom> roms;
     RomList::Rom *romSelected = NULL;
     void FilterRoms();
-
-    Rect rectTitle;
-    Rect rectRomList;
-    Rect rectRomInfo;
-    Rect rectRomPreview;
 
     bool quit = false;
 };

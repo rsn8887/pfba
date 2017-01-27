@@ -23,10 +23,10 @@ Video::Video(Renderer *renderer) {
     BurnDrvGetFullSize(&VideoBufferWidth, &VideoBufferHeight);
     printf("game resolution: %ix%i\n", VideoBufferWidth, VideoBufferHeight);
 
-    if(BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
+    if (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
         printf("game orientation: vertical\n");
     }
-    if(BurnDrvGetFlags() & BDF_ORIENTATION_FLIPPED) {
+    if (BurnDrvGetFlags() & BDF_ORIENTATION_FLIPPED) {
         printf("game orientation: flipped\n");
     }
 
@@ -37,7 +37,7 @@ Video::Video(Renderer *renderer) {
     nBurnBpp = 2;
     BurnHighCol = myHighCol16;
     BurnRecalcPal();
-    renderer->LockTexture(screen, NULL, (void **) &pBurnDraw, &nBurnPitch);
+    renderer->LockTexture(screen, Rect(), (void **) &pBurnDraw, &nBurnPitch);
     renderer->UnlockTexture(screen);
 
     renderer->SetShader(gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER));
@@ -48,29 +48,29 @@ Video::Video(Renderer *renderer) {
 void Video::Filter(int filter) {
     screen->SetFiltering(filter);
     // SDL2 needs to regenerate a texture, so update burn buffer
-    renderer->LockTexture(screen, NULL, (void **) &pBurnDraw, &nBurnPitch);
+    renderer->LockTexture(screen, Rect(), (void **) &pBurnDraw, &nBurnPitch);
     renderer->UnlockTexture(screen);
 }
 
 void Video::Scale() {
 
     Rect window = renderer->GetWindowSize();
-    printf("window: %ix%i\n", window.w, window.h);
+    //printf("window: %ix%i\n", window.w, window.h);
 
     int scaling = gui->GetConfig()->GetRomValue(Option::Index::ROM_SCALING);
     rotation = 0;
 
     // TODO: force right to left orientation on psp2,
     // should add platform specific code
-    if(!gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION)
-                  && BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
-        if(!(BurnDrvGetFlags() & BDF_ORIENTATION_FLIPPED)) {
+    if (!gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION)
+        && BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
+        if (!(BurnDrvGetFlags() & BDF_ORIENTATION_FLIPPED)) {
             rotation = 180;
         }
     } else {
-        if(BurnDrvGetFlags() & BDF_ORIENTATION_FLIPPED) {
+        if (BurnDrvGetFlags() & BDF_ORIENTATION_FLIPPED) {
             rotation = 90;
-        } else if(BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
+        } else if (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
             rotation = -90;
         } else {
             rotation = 0;
@@ -79,7 +79,7 @@ void Video::Scale() {
     // TODO: force right to left orientation on psp2,
     // should add platform specific code
 
-    printf("rotation: %i\n", rotation);
+    //printf("rotation: %i\n", rotation);
 
     scale.w = VideoBufferWidth;
     scale.h = VideoBufferHeight;
@@ -92,10 +92,10 @@ void Video::Scale() {
             break;
 
         case 2: // fit
-            if(rotation == 0 || rotation == 180) {
+            if (rotation == 0 || rotation == 180) {
                 scale.h = window.h;
-                scale.w = (int) ((float) scale.w *((float) scale.h / (float) VideoBufferHeight));
-                if(scale.w > window.w) {
+                scale.w = (int) ((float) scale.w * ((float) scale.h / (float) VideoBufferHeight));
+                if (scale.w > window.w) {
                     scale.w = window.w;
                     scale.h = (int) ((float) scale.w * ((float) VideoBufferHeight / (float) VideoBufferWidth));
                 }
@@ -105,21 +105,11 @@ void Video::Scale() {
             }
             break;
 
-        case 3: // fullscreen
-            if(rotation == 0 || rotation == 180) {
-                scale.h = window.h;
-                scale.w = window.w;
-            } else {
-                scale.h = window.w;
-                scale.w = window.h;
-            }
-            break;
-
-        case 4: // fit 4:3
-            if(rotation == 0 || rotation == 180) {
+        case 3: // fit 4:3
+            if (rotation == 0 || rotation == 180) {
                 scale.h = window.h;
                 scale.w = (int) (((float) scale.h * 4.0) / 3.0);
-                if(scale.w > window.w) {
+                if (scale.w > window.w) {
                     scale.w = window.w;
                     scale.h = (int) (((float) scale.w * 3.0) / 4.0);
                 }
@@ -129,17 +119,27 @@ void Video::Scale() {
             }
             break;
 
-        case 5: // fit 3:4
-            if(rotation == 0 || rotation == 180) {
+        case 4: // fit 3:4
+            if (rotation == 0 || rotation == 180) {
                 scale.h = window.h;
                 scale.w = (int) (((float) scale.h * 3.0) / 4.0);
-                if(scale.w > window.w) {
+                if (scale.w > window.w) {
                     scale.w = window.w;
                     scale.h = (int) (((float) scale.w * 4.0) / 3.0);
                 }
             } else {
                 scale.w = window.h;
                 scale.h = (int) (((float) scale.w * 3.0) / 4.0);
+            }
+            break;
+
+        case 5: // fullscreen
+            if (rotation == 0 || rotation == 180) {
+                scale.h = window.h;
+                scale.w = window.w;
+            } else {
+                scale.h = window.w;
+                scale.w = window.h;
             }
             break;
 
@@ -150,8 +150,7 @@ void Video::Scale() {
     scale.x = (window.w - scale.w) / 2;
     scale.y = (window.h - scale.h) / 2;
 
-    printf("scale: %ix%i\n", scale.w, scale.h);
-
+    //printf("scale: x=%i y=%i %ix%i\n", scale.x, scale.y, scale.w, scale.h);
     for(int i=0; i<3; i++) {
         Clear();
         Flip();
@@ -163,7 +162,7 @@ void Video::Clear() {
 }
 
 void Video::Lock() {
-    renderer->LockTexture(screen, NULL, (void **) &pBurnDraw, &nBurnPitch);
+    renderer->LockTexture(screen, Rect(), (void **) &pBurnDraw, &nBurnPitch);
 }
 
 void Video::Unlock() {
@@ -171,7 +170,7 @@ void Video::Unlock() {
 }
 
 void Video::Render() {
-    if(pBurnDraw != NULL) {
+    if (pBurnDraw != NULL) {
         renderer->DrawTexture(screen, scale.x, scale.y, scale.w, scale.h, rotation);
     }
 }

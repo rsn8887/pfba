@@ -6,6 +6,7 @@
 extern Gui *gui;
 int bDrvOkay = 0;                        // 1 if the Driver has been initted okay, and it's okay to use the BurnDrv functions
 static bool bSaveRAM = false;
+
 static int ProgressCreate();
 
 static int DoLibInit()                    // Do Init of Burn library driver
@@ -16,7 +17,7 @@ static int DoLibInit()                    // Do Init of Burn library driver
 
     nRet = BzipOpen(false);
     printf("DoLibInit: BzipOpen = %i\n", nRet);
-    if(nRet) {
+    if (nRet) {
         BzipClose();
         return 1;
     }
@@ -121,46 +122,46 @@ int DrvExit() {
 }
 
 static double nProgressPosBurn = 0;
+
 static int ProgressCreate() {
     nProgressPosBurn = 0;
     return 0;
 }
 
-int ProgressUpdateBurner(double dProgress, const TCHAR* pszText, bool bAbs)
-{
+int ProgressUpdateBurner(double dProgress, const TCHAR *pszText, bool bAbs) {
     gui->Clear();
     gui->DrawBg();
     gui->DrawRomList();
 
-    Rect window {
-            gui->GetRenderer()->GetWindowSize().w/4,
-            gui->GetRenderer()->GetWindowSize().h/4,
-            gui->GetRenderer()->GetWindowSize().w/2,
-            gui->GetRenderer()->GetWindowSize().h/2
+    Rect window{
+            gui->GetRenderer()->GetWindowSize().w / 4,
+            gui->GetRenderer()->GetWindowSize().h / 4,
+            gui->GetRenderer()->GetWindowSize().w / 2,
+            gui->GetRenderer()->GetWindowSize().h / 2
     };
 
-    gui->GetRenderer()->DrawRect(&window, &GRAY);
-    gui->GetRenderer()->DrawBorder(&window, &GREEN);
+    gui->GetRenderer()->DrawRect(window, GRAY);
+    gui->GetRenderer()->DrawBorder(window, GREEN);
 
-    if(pszText) {
+    if (pszText) {
         nProgressPosBurn += dProgress;
 
-        Rect r = { window.x + 16, window.y + 32, window.w-32, 32 };
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font, &r, &WHITE, false, true, BurnDrvGetTextA(DRV_FULLNAME));
+        Rect r = {window.x + 16, window.y + 32, window.w - 32, 32};
+        gui->GetRenderer()->DrawFont(gui->GetSkin()->font, r, WHITE, false, true, BurnDrvGetTextA(DRV_FULLNAME));
         r.y += 64;
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font, &r, &WHITE, false, true, "Please wait...");
+        gui->GetRenderer()->DrawFont(gui->GetSkin()->font, r, WHITE, false, true, "Please wait...");
         r.y += 32;
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font, &r, &WHITE, false, true, "%s", pszText);
+        gui->GetRenderer()->DrawFont(gui->GetSkin()->font, r, WHITE, false, true, "%s", pszText);
 
-        int x = window.x+16;
-        int w = window.w-32;
-        gui->GetRenderer()->DrawRect(x-1, window.y+window.h - 65, w+2, 34, 255, 255, 255, 255, false);
+        int x = window.x + 16;
+        int w = window.w - 32;
+        gui->GetRenderer()->DrawRect(x - 1, window.y + window.h - 65, w + 2, 34, 255, 255, 255, 255, false);
 
-        int progress_y = (int)(nProgressPosBurn*(double)w);
-        if(progress_y > w) {
+        int progress_y = (int) (nProgressPosBurn * (double) w);
+        if (progress_y > w) {
             progress_y = w;
         }
-        gui->GetRenderer()->DrawRect(x, window.y+window.h - 64, progress_y, 32, 255, 255, 0, 255);
+        gui->GetRenderer()->DrawRect(x, window.y + window.h - 64, progress_y, 32, 255, 255, 0, 255);
     } else {
         gui->GetRenderer()->DrawFont(gui->GetSkin()->font, window.x + 16, window.y + 96, "Please wait...");
     }
@@ -169,7 +170,7 @@ int ProgressUpdateBurner(double dProgress, const TCHAR* pszText, bool bAbs)
     return 0;
 }
 
-int AppError(TCHAR* szText, int bWarning) {
+int AppError(TCHAR *szText, int bWarning) {
 
     gui->GetRenderer()->Delay(500);
 
@@ -180,26 +181,26 @@ int AppError(TCHAR* szText, int bWarning) {
             gui->GetRenderer()->GetWindowSize().h / 2
     };
 
-    while(!gui->GetInput()->Update()[0].state) {
+    while (!gui->GetInput()->Update()[0].state) {
 
         gui->DrawRomList();
 
-        gui->GetRenderer()->DrawRect(&window, &GRAY);
-        gui->GetRenderer()->DrawBorder(&window, &GREEN);
+        gui->GetRenderer()->DrawRect(window, GRAY);
+        gui->GetRenderer()->DrawBorder(window, GREEN);
 
         Rect dst = window;
-        int height = window.h/3;
+        int height = window.h / 3;
         dst.h = height;
 
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font, &dst, &WHITE, true, true, "WARNING");
+        gui->GetRenderer()->DrawFont(gui->GetSkin()->font, dst, WHITE, true, true, "WARNING");
         dst.y += height;
 
-        if(szText) {
-            gui->GetRenderer()->DrawFont(gui->GetSkin()->font, &dst, &WHITE, true, true, "%s", szText);
+        if (szText) {
+            gui->GetRenderer()->DrawFont(gui->GetSkin()->font, dst, WHITE, true, true, "%s", szText);
             dst.y += height;
         }
 
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font, &dst, &WHITE, true, true, "PRESS A KEY TO CONTINUE", szText);
+        gui->GetRenderer()->DrawFont(gui->GetSkin()->font, dst, WHITE, true, true, "PRESS A KEY TO CONTINUE", szText);
 
         gui->Flip();
     }

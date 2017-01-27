@@ -2,28 +2,37 @@
 // Created by cpasjuste on 21/11/16.
 //
 
+#include "GL/gl.h"
 #include "sfml_renderer.h"
 #include "sfml_font.h"
-#include "GL/gl.h"
 #include "sfml_texture.h"
 
 //////////
 // INIT //
 //////////
-SFMLRenderer::SFMLRenderer(int w, int h) : Renderer() {
+SFMLRenderer::SFMLRenderer(int w, int h, const std::string &shaderPath) : Renderer() {
 
-    window.create(sf::VideoMode(w, h), "LIBCROSS2D");
+    sf::ContextSettings settings(16, 0, 0);
+    mode = sf::VideoMode::getDesktopMode();
+    sf::Uint32 style = sf::Style::Fullscreen;
+
+    // windowed
+    if (w != 0 && h != 0) {
+        mode.width = (unsigned int) w;
+        mode.height = (unsigned int) h;
+        style = sf::Style::Default;
+    }
+
+    window.create(mode, "SFMLRenderer", style, settings);
     window.setVerticalSyncEnabled(true);
 
-    if (sf::Shader::isAvailable()) {
-        //shaders[ShaderType::lcd3x].loadFromMemory(lcd3x_v, lcd3x_f);
-        //shaders[ShaderType::scale2x].loadFromMemory(scale2x_v, scale2x_f);
-        //shaders[ShaderType::advanced_aa].loadFromMemory(advanced_aa_v, advanced_aa_f);
-        //shaders[ShaderType::sharp_bilinear].loadFromMemory(sharp_bilinear_simple_v, sharp_bilinear_simple_f);
-        //shaders[ShaderType::sharp_bilinear_scanlines].loadFromMemory(sharp_bilinear_v, sharp_bilinear_f);
-        //shaders[ShaderType::texture].loadFromMemory(texture_v, texture_f);
-        //shaders[ShaderType::texture].loadFromFile("s.v", "s.f");
-    }
+    printf("SFMLRenderer: %i x %i @ %i bpp\n", mode.width, mode.height, mode.bitsPerPixel);
+    const unsigned char *glversion = glGetString(GL_VERSION);
+    printf("SFMLRenderer: glversion: %s\n", glversion);
+    const unsigned char *glslversion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+    printf("SFMLRenderer: glslversion: %s\n", glslversion);
+
+    this->shaders = (Shaders *) new SFMLShaders(shaderPath);
 }
 //////////
 // INIT //
@@ -53,13 +62,14 @@ void SFMLRenderer::DrawFont(Font *font, int x, int y, const char *fmt, ...) {
     sf::Text text;
     text.setFont(fnt->font);
     text.setString(msg);
-    text.setCharacterSize(font->size);
+    text.setCharacterSize((unsigned int) font->size);
     text.setFillColor(sf::Color(
             font->color.r, font->color.g,
             font->color.b, font->color.a));
     text.setOutlineColor(sf::Color::Black);
     text.setOutlineThickness(2);
-    text.setPosition(x, y);
+    int height = font->GetHeight(msg) / 2 - 2;
+    text.setPosition(x, y - height);
     window.draw(text);
 }
 
@@ -87,25 +97,40 @@ Texture *SFMLRenderer::LoadTexture(const char *file) {
 }
 
 void SFMLRenderer::DrawTexture(Texture *texture, int x, int y, int w, int h, float rotation) {
+
+    sf::RenderStates states;
+
     sf::Sprite sprite = ((SFMLTexture *) texture)->sprite;
+
+    // set sprite position
     sprite.setPosition(x, y);
 
+    // set sprite scaling
     float scaleX = (float) w / (float) texture->width;
     float scaleY = (float) h / (float) texture->height;
     sprite.setScale(scaleX, scaleY);
 
+    // set sprite rotation
     sf::Transform transform;
     transform.rotate(rotation, {x + w / 2, y + h / 2});
-    //shaders[ShaderType::texture].setUniform("rubyTexture", sf::Shader::CurrentTexture);
-    //shaders[ShaderType::texture].setUniform("rubyTextureSize", sf::Glsl::Vec2(w, h));
-
-    sf::RenderStates states;
-    //states.shader = &shaders[ShaderType::texture];
     states.transform = transform;
+
+    // set sprite shader
+    sf::Shader *shader = (sf::Shader *) shaders->Get()->data;
+    if (shader) {
+        shader->setUniform("Texture", ((SFMLTexture *) texture)->texture);
+        shader->setUniform("MVPMatrix", sf::Glsl::Mat4(window.getView().getTransform().getMatrix()));
+        shader->setUniform("TextureSize", sf::Glsl::Vec2(texture->width, texture->height));
+        shader->setUniform("InputSize", sf::Glsl::Vec2(w, h));
+        shader->setUniform("OutputSize", sf::Glsl::Vec2(w, h));
+        states.shader = shader;
+    }
+
+    // draw sprite
     window.draw(sprite, states);
 }
 
-int SFMLRenderer::LockTexture(Texture *texture, const Rect *rect, void **pixels, int *pitch) {
+int SFMLRenderer::LockTexture(Texture *texture, const Rect &rect, void **pixels, int *pitch) {
     *pixels = ((SFMLTexture *) texture)->pixels;
     *pitch = texture->width * 2;
     return 0;
@@ -117,28 +142,28 @@ void SFMLRenderer::UnlockTexture(Texture *texture) {
     sf::Texture::bind(&((SFMLTexture *) texture)->texture);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texture->width, texture->height,
                     GL_RGB, GL_UNSIGNED_SHORT_5_6_5, ((SFMLTexture *) texture)->pixels);
-    glBindTexture(GL_TEXTURE_2D, textureBinding);
+    glBindTexture(GL_TEXTURE_2D, (GLuint) textureBinding);
 }
 
 /////////////
 // TEXTURE //
 /////////////
 
-Rect SFMLRenderer::GetWindowSize() {
+const Rect SFMLRenderer::GetWindowSize() {
     Rect rect{0, 0, window.getSize().x, window.getSize().y};
     return rect;
 }
 
-void SFMLRenderer::SetShader(int shaderType) {
-    if (shaderType == shaderCurrent) {
+void SFMLRenderer::SetShader(int index) {
+    if (index == shaders->current || index >= shaders->Count()) {
         return;
     }
-    shaderCurrent = shaderType;
+    shaders->current = index;
 }
 
-void SFMLRenderer::DrawLine(int x1, int y1, int x2, int y2, Color *c) {
+void SFMLRenderer::DrawLine(int x1, int y1, int x2, int y2, const Color &c) {
 
-    sf::Color col(c->r, c->g, c->b, c->a);
+    sf::Color col(c.r, c.g, c.b, c.a);
 
     sf::Vertex line[] = {
             sf::Vertex(sf::Vector2f(x1, y1), col),
@@ -148,13 +173,13 @@ void SFMLRenderer::DrawLine(int x1, int y1, int x2, int y2, Color *c) {
     window.draw(line, 2, sf::Lines);
 }
 
-void SFMLRenderer::DrawRect(Rect *rect, Color *c, bool fill) {
+void SFMLRenderer::DrawRect(const Rect &rect, const Color &c, bool fill) {
 
-    sf::Color col(c->r, c->g, c->b, c->a);
-    sf::RectangleShape rectangle(sf::Vector2f(rect->w, rect->h));
+    sf::Color col(c.r, c.g, c.b, c.a);
+    sf::RectangleShape rectangle(sf::Vector2f(rect.w, rect.h));
     rectangle.setOutlineColor(col);
     rectangle.setOutlineThickness(1);
-    rectangle.setPosition(rect->x, rect->y);
+    rectangle.setPosition(rect.x, rect.y);
     if (fill) {
         rectangle.setFillColor(col);
     } else {
@@ -163,7 +188,7 @@ void SFMLRenderer::DrawRect(Rect *rect, Color *c, bool fill) {
     window.draw(rectangle);
 }
 
-void SFMLRenderer::Clip(Rect *rect) {
+void SFMLRenderer::Clip(const Rect &rect) {
 }
 
 void SFMLRenderer::Clear() {
@@ -180,5 +205,6 @@ void SFMLRenderer::Delay(unsigned int ms) {
 }
 
 SFMLRenderer::~SFMLRenderer() {
+    delete(shaders);
     window.close();
 }

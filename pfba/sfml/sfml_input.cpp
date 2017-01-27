@@ -5,7 +5,7 @@
 #include <SFML/Window/Event.hpp>
 #include "sfml_input.h"
 
-static int key_id[Input::Key::KEY_COUNT]{
+static int key_id[KEY_COUNT]{
         Input::Key::KEY_UP,
         Input::Key::KEY_DOWN,
         Input::Key::KEY_LEFT,
@@ -82,14 +82,23 @@ Input::Player *SFMLInput::Update(bool rotate) {
     sf::Event event;
     while (renderer->window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
-            players[0].state |= KEY_QUIT;
+            players[0].state |= EV_QUIT;
             return players;
         }
-        if(event.type == sf::Event::KeyPressed) {
-            printf("%i\n", (int)event.key.code);
+
+        if (event.type == sf::Event::Resized) {
+            sf::View v = sf::View(
+                    sf::FloatRect(0.f, 0.f, renderer->window.getSize().x, renderer->window.getSize().y));
+            renderer->window.setView(v);
+            players[0].state |= EV_RESIZE;
+            return players;
         }
-        if(event.type == sf::Event::JoystickButtonPressed) {
-            printf("%i\n", (int)event.joystickButton.button);
+
+        if (event.type == sf::Event::KeyPressed) {
+            printf("%i\n", (int) event.key.code);
+        }
+        if (event.type == sf::Event::JoystickButtonPressed) {
+            printf("%i\n", (int) event.joystickButton.button);
         }
     }
 
@@ -179,7 +188,7 @@ void SFMLInput::process_buttons(Input::Player &player, bool rotate) {
     for (int i = 0; i < KEY_COUNT; i++) {
 
         int mapping = player.mapping[i];
-        if(mapping < 0)
+        if (mapping < 0)
             mapping = 0;
 
         if (sf::Joystick::isButtonPressed(player.id, mapping)) {
@@ -201,7 +210,7 @@ void SFMLInput::process_buttons(Input::Player &player, bool rotate) {
 void SFMLInput::process_keyboard(Input::Player &player, bool rotate) {
 
     for (int i = 0; i < KEY_COUNT; i++) {
-        sf::Keyboard::Key key ((sf::Keyboard::Key)keyboard.mapping[i]);
+        sf::Keyboard::Key key((sf::Keyboard::Key) keyboard.mapping[i]);
         if (sf::Keyboard::isKeyPressed(key)) {
             if (rotate && key_id[i] == Input::Key::KEY_UP) {
                 player.state |= Input::Key::KEY_RIGHT;

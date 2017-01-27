@@ -7,7 +7,7 @@
 #include <burner.h>
 #include "config.h"
 
-Config::Config(const std::string &cfgPath) {
+Config::Config(const std::string &cfgPath, Renderer *renderer) {
 
     configPath = cfgPath;
 
@@ -70,14 +70,15 @@ Config::Config(const std::string &cfgPath) {
     options_gui.push_back(Option("SHOW_ALL", {"WORKING", "ALL"}, 1, Option::Index::GUI_SHOW_ALL));
     options_gui.push_back(Option("SHOW_CLONES", {"NO", "YES"}, 0, Option::Index::GUI_SHOW_CLONES));
     options_gui.push_back(Option("SHOW_HARDWARE", hardware_names, 0, Option::Index::GUI_SHOW_HARDWARE));
+    options_gui.push_back(Option("FULLSCREEN", {"NO", "YES"}, 1, Option::Index::GUI_FULLSCREEN, Option::Type::HIDDEN));
 
     // default rom config
     options_gui.push_back(Option("ROM", {"ROM"}, 0, Option::Index::MENU_ROM_OPTIONS, Option::Type::MENU));
-    options_gui.push_back(Option("SCALING", {"NONE", "2X", "FIT", "FULL", "FIT 4:3", "FIT 3:4"}, 5, Option::Index::ROM_SCALING));
+    options_gui.push_back(Option("SCALING", {"NONE", "2X", "FIT", "FIT 4:3", "FIT 3:4", "FULL"}, 1, Option::Index::ROM_SCALING));
     options_gui.push_back(
-            Option("FILTER", {"POINT", "LINEAR"}, 1, Option::Index::ROM_FILTER));
+            Option("FILTER", {"POINT", "LINEAR"}, 0, Option::Index::ROM_FILTER));
     options_gui.push_back(
-            Option("SHADER", {"NONE", "SHARP", "SHARP+SCAN", "LCD3X", "AAA", "SCALE2X"}, 2, Option::Index::ROM_SHADER));
+            Option("SHADER", renderer->shaders->GetNames(), 0, Option::Index::ROM_SHADER));
     options_gui.push_back(Option("ROTATION", {"OFF", "ON"}, 0, Option::Index::ROM_ROTATION));
     options_gui.push_back(Option("SHOW_FPS", {"NO", "YES"}, 0, Option::Index::ROM_SHOW_FPS));
     options_gui.push_back(Option("FRAMESKIP", {"OFF", "ON"}, 0, Option::Index::ROM_FRAMESKIP));
@@ -172,8 +173,8 @@ void Config::Load(RomList::Rom *rom) {
 
     if (config_read_file(&cfg, path.c_str())) {
 
-        printf("###########################\n");
-        printf("CFG FOUND: %s\n", path.c_str());
+        //printf("###########################\n");
+        //printf("CFG FOUND: %s\n", path.c_str());
 
         config_setting_t *settings_root = config_lookup(&cfg, "FBA_CONFIG");
         if (settings_root) {
@@ -184,22 +185,22 @@ void Config::Load(RomList::Rom *rom) {
                 settings = config_setting_lookup(settings_root, "ROMS_PATHS");
                 if (settings) {
                     for (int i = 0; i < roms_paths.size(); i++) {
-                        char path[MAX_PATH];
-                        snprintf(path, MAX_PATH, "ROMS_PATH%i", i);
+                        char p[MAX_PATH];
+                        snprintf(p, MAX_PATH, "ROMS_PATH%i", i);
                         const char *value;
-                        if (config_setting_lookup_string(settings, path, &value)) {
+                        if (config_setting_lookup_string(settings, p, &value)) {
                             roms_paths[i] = value;
                             if (!roms_paths[i].empty() && roms_paths[i].back() != '/')
                                 roms_paths[i] += '/';
-                            printf("%s: %s\n", path, value);
+                            printf("%s: %s\n", p, value);
                         }
                     }
                 } else {
-                    printf("rom_paths setting not found\n");
+                    //printf("rom_paths setting not found\n");
                 }
             }
 
-            for (int i = 0; i < options->size(); i++) {
+            for (unsigned long i = 0; i < options->size(); i++) {
                 if (options->at(i).type == Option::Type::MENU) {
                     settings = config_setting_lookup(settings_root, options->at(i).GetName());
                 }
@@ -207,12 +208,12 @@ void Config::Load(RomList::Rom *rom) {
                     int value = 0;
                     if (config_setting_lookup_int(settings, options->at(i).GetName(), &value)) {
                         options->at(i).value = value;
-                        printf("%s: %i\n", options->at(i).GetName(), value);
+                        //printf("%s: %i\n", options->at(i).GetName(), value);
                     }
                 }
             }
         }
-        printf("###########################\n");
+        //printf("###########################\n");
     } else {
         // no need to save default rom config
         if (!isRomCfg) {
@@ -260,7 +261,7 @@ void Config::Save(RomList::Rom *rom) {
         }
     }
 
-    for (int i = 0; i < options->size(); i++) {
+    for (unsigned long i = 0; i < options->size(); i++) {
         if (options->at(i).index == Option::Index::END) {
             continue;
         }

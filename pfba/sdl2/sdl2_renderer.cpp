@@ -16,7 +16,7 @@ SDL2Renderer::SDL2Renderer(int w, int h) : Renderer() {
     }
 
     Uint32 flags = SDL_WINDOW_OPENGL;
-    if(!w || !h) { // force fullscreen if window size == 0
+    if (!w || !h) { // force fullscreen if window size == 0
         flags |= SDL_WINDOW_FULLSCREEN;
     }
 
@@ -38,7 +38,7 @@ SDL2Renderer::SDL2Renderer(int w, int h) : Renderer() {
         return;
     }
 
-    SetShader(0);
+    this->shaders = new Shaders("");
 }
 //////////
 // INIT //
@@ -110,9 +110,9 @@ void SDL2Renderer::DrawTexture(Texture *texture, int x, int y, int w, int h, flo
     SDL_RenderCopyEx(renderer, ((SDL2Texture *) texture)->tex, NULL, &rect, rotation, NULL, SDL_FLIP_NONE);
 }
 
-int SDL2Renderer::LockTexture(Texture *texture, const Rect *rect, void **pixels, int *pitch) {
-    if (rect != NULL) {
-        SDL_Rect r{rect->x, rect->y, rect->w, rect->h};
+int SDL2Renderer::LockTexture(Texture *texture, const Rect &rect, void **pixels, int *pitch) {
+    if (rect.x != 0 || rect.y != 0 || rect.w != 0 || rect.h != 0) {
+        SDL_Rect r{rect.x, rect.y, rect.w, rect.h};
         return SDL_LockTexture(((SDL2Texture *) texture)->tex, &r, pixels, pitch);
     } else {
         return SDL_LockTexture(((SDL2Texture *) texture)->tex, NULL, pixels, pitch);
@@ -126,7 +126,7 @@ void SDL2Renderer::UnlockTexture(Texture *texture) {
 // TEXTURE //
 /////////////
 
-Rect SDL2Renderer::GetWindowSize() {
+const Rect SDL2Renderer::GetWindowSize() {
     Rect rect;
     SDL_GetWindowSize(window, &rect.w, &rect.h);
     return rect;
@@ -136,49 +136,47 @@ void SDL2Renderer::SetShader(int shader) {
     // TODO
 }
 
-void SDL2Renderer::DrawLine(int x1, int y1, int x2, int y2, Color *color) {
+void SDL2Renderer::DrawLine(int x1, int y1, int x2, int y2, const Color &c) {
 
-    if (color->a < 255) {
+    if (c.a < 255) {
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     }
 
-    SDL_Color old_color;
-    SDL_GetRenderDrawColor(renderer, &old_color.r, &old_color.g, &old_color.b, &old_color.a);
-    SDL_SetRenderDrawColor(renderer, color->r, color->g, color->b, color->a);
+    SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
 
     SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
-    if (color->a < 255) {
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
-    }
-
-    SDL_SetRenderDrawColor(renderer, old_color.r, old_color.g, old_color.b, old_color.a);
-}
-
-void SDL2Renderer::DrawRect(Rect *rect, Color *_color, bool fill) {
-
-    SDL_Rect r{rect->x, rect->y, rect->w, rect->h};
-    if (_color->a < 255) {
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    }
-
-    SDL_SetRenderDrawColor(renderer, _color->r, _color->g, _color->b, _color->a);
-
-    if (fill) {
-        SDL_RenderFillRect(renderer, &r);
-    } else {
-        SDL_RenderDrawRect(renderer, &r);
-    }
-    if (_color->a < 255) {
+    if (c.a < 255) {
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
     }
 
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 }
 
-void SDL2Renderer::Clip(Rect *rect) {
+void SDL2Renderer::DrawRect(const Rect &rect, const Color &c, bool fill) {
 
-    if (rect) {
-        SDL_Rect r{rect->x, rect->y, rect->w, rect->h};
+    SDL_Rect r{rect.x, rect.y, rect.w, rect.h};
+    if (c.a < 255) {
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    }
+
+    SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
+
+    if (fill) {
+        SDL_RenderFillRect(renderer, &r);
+    } else {
+        SDL_RenderDrawRect(renderer, &r);
+    }
+    if (c.a < 255) {
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    }
+
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+}
+
+void SDL2Renderer::Clip(const Rect &rect) {
+
+    if (rect.x != 0 || rect.y != 0 || rect.w != 0 || rect.h != 0) {
+        SDL_Rect r{rect.x, rect.y, rect.w, rect.h};
         SDL_RenderSetClipRect(renderer, &r);
     } else {
         SDL_RenderSetClipRect(renderer, NULL);

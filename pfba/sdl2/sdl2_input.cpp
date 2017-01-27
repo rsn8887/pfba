@@ -4,7 +4,7 @@
 
 #include "sdl2_input.h"
 
-static int key_id[Input::Key::KEY_COUNT]{
+static int key_id[KEY_COUNT]{
         Input::Key::KEY_UP,
         Input::Key::KEY_DOWN,
         Input::Key::KEY_LEFT,
@@ -89,7 +89,7 @@ Input::Player *SDL2Input::Update(bool rotate) {
     SDL_Event event;
     while(SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            players[0].state |= KEY_QUIT;
+            players[0].state |= EV_QUIT;
             return players;
         }
     }

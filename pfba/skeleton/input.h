@@ -9,6 +9,10 @@
 #include <vector>
 
 #define PLAYER_COUNT 4
+#define KEY_COUNT 12
+
+#define EV_RESIZE 0x1000
+#define EV_QUIT 0x2000
 
 class Input {
 
@@ -26,9 +30,7 @@ public:
         KEY_FIRE3 = 0x0100,
         KEY_FIRE4 = 0x0200,
         KEY_FIRE5 = 0x0400,
-        KEY_FIRE6 = 0x0800,
-        KEY_QUIT = 0x1000,
-        KEY_COUNT = 12 // don't parse KEY_QUIT
+        KEY_FIRE6 = 0x0800
     };
 
     struct Player {

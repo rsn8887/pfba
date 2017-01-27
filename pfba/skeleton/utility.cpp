@@ -3,23 +3,17 @@
 //
 
 #ifndef __PSP2__
+
 #include <sys/stat.h>
 #include <dirent.h>
-#endif
-
 #include "utility.h"
 
 bool Utility::FileExist(const char *file) {
-#ifndef __PSP2__
     struct stat buf;
     return (stat(file, &buf) == 0);
-#else
-    return false;
-#endif
 }
 
 std::vector<std::string> Utility::GetFileList(const char *path) {
-#ifndef __PSP2__
     std::vector<std::string> files;
     DIR *dir;
     struct dirent *ent;
@@ -33,7 +27,6 @@ std::vector<std::string> Utility::GetFileList(const char *path) {
         closedir(dir);
     }
     return files;
-#else
-    return std::vector<std::string>();
-#endif
 }
+
+#endif //__PSP2__

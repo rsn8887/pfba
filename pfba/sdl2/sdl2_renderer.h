@@ -25,15 +25,15 @@ public:
     virtual Texture *CreateTexture(int w, int h);
     virtual Texture *LoadTexture(const char *file);
     virtual void DrawTexture(Texture *texture, int x, int y, int w, int h, float rotation);
-    virtual int LockTexture(Texture * texture, const Rect * rect, void **pixels, int *pitch);
+    virtual int LockTexture(Texture * texture, const Rect &rect, void **pixels, int *pitch);
     virtual void UnlockTexture(Texture * texture);
 
-    virtual void DrawLine(int x1, int y1, int x2, int y2, Color *color);
-    virtual void DrawRect(Rect *rect, Color *color, bool fill = true);
+    virtual void DrawLine(int x1, int y1, int x2, int y2, const Color &color);
+    virtual void DrawRect(const Rect &rect, const Color &color, bool fill = true);
 
-    virtual void Clip(Rect *rect);
+    virtual void Clip(const Rect &rect);
 
-    virtual Rect GetWindowSize();
+    virtual const Rect GetWindowSize();
 
     virtual void Clear();
     virtual void Flip();

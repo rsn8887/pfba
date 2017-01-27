@@ -4,18 +4,28 @@
 add analog inputs (Super Hang-On, Outrun, Turbo Outrun, Power Drift...)
 PSP2: load roms from ur0: ?
 PSP2: add "disable right stick" option
-add "EnableHiscores" option
 add favorites section in hardware list
-add joystick axis input configuration in gui
 add > 1 joystick support
 add help screen
-PSP2: fix crash with non working roms (cps2 wrong set, ...) identified as 68K CycloneRun crash
+add "EnableHiscores" option
+add joystick axis input configuration in gui ?
+PSP2: fix crash on some games with missing roms (cps2 wrong set, ...) identified as 68K CycloneRun crash
 
 # NEXT RELEASE
-ARM: fix nec cpu (irem, raiden...)
-add frameskip as a menu option
+
+COMMON: improve shader handling
+COMMON: allow real time ui resizing
+COMMON: new input events (EV_QUIT/EV_RESIZE)
+COMMIN: change functions args to const when applicable
+COMMON: simplify utility class (static)
+COMMON: new shader class
+SFML: add shader support
+SFML: add fullscreen/windowed mode support (todo: add config support)
+
 
 # OLD RELEASES
+DONE // ARM: fix nec cpu (irem, raiden...)
+DONE // add frameskip as a menu option
 DONE // fix: clear buttons when exiting menu
 DONE // add: service button switch (SELECT+SQUARE)
 DONE // add: 1P+2P button switch (SELECT+TRIANGLE)

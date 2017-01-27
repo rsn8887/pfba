@@ -25,14 +25,14 @@ public:
     Texture *CreateTexture(int w, int h);
     Texture *LoadTexture(const char *file);
     void DrawTexture(Texture *texture, int x, int y, int w, int h, float rotation);
-    int LockTexture(Texture * texture, const Rect * rect, void **pixels, int *pitch);
+    int LockTexture(Texture * texture, const Rect &rect, void **pixels, int *pitch);
     
-    void DrawLine(int x1, int y1, int x2, int y2, Color *color);
-    void DrawRect(Rect *rect, Color *color, bool fill = true);
+    void DrawLine(int x1, int y1, int x2, int y2, const Color &color);
+    void DrawRect(const Rect &rect, const Color &color, bool fill = true);
 
-    void Clip(Rect *rect);
+    void Clip(const Rect &rect);
 
-    Rect GetWindowSize();
+    const Rect GetWindowSize();
 
     void Clear();
     void Flip();
@@ -41,20 +41,9 @@ public:
 
     void SetShader(int shader);
 
-    enum ShaderType {
-        texture = 0,
-        sharp_bilinear,
-        sharp_bilinear_scanlines,
-        lcd3x,
-        advanced_aa,
-        scale2x,
-        end
-    };
-
 private:
     void StartDrawring();
     bool drawing_started = false;
-    vita2d_shader* shaders[ShaderType::end-1];
 };
 
 #endif //_PSP2_RENDERER_H_
