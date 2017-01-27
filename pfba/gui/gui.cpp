@@ -255,84 +255,6 @@ void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, in
     }
 }
 
-int Gui::MessageBox(const char *message, const char *choice1, const char *choice2) {
-
-    int first = 1;
-    int index = 0;
-    int max_choice = choice2 == NULL ? 1 : 2;
-
-    Rect win{
-            renderer->GetWindowSize().w / 4,
-            renderer->GetWindowSize().h / 4,
-            renderer->GetWindowSize().w / 2,
-            renderer->GetWindowSize().h / 2
-    };
-
-    Rect buttons[2]{
-            {win.x + 16,               win.y + win.h - 64, (win.w / 2) - 32, 32},
-            {win.x + (win.w / 2) + 16, win.y + win.h - 64, (win.w / 2) - 32, 32}
-    };
-
-    if (choice2 == NULL) {
-        buttons[0].x = win.x + (win.w / 2) - (buttons[0].w / 2);
-    }
-
-    input->Clear(0);
-
-    while (true) {
-
-        int key = input->Update()[0].state;
-        if (key > 0 || first) {
-
-            first = 0;
-
-            if (key & Input::Key::KEY_UP) {
-            } else if (key & Input::Key::KEY_DOWN) {
-            } else if (key & Input::Key::KEY_LEFT) {
-                index--;
-                if (index < 0)
-                    index = max_choice - 1;
-            } else if (key & Input::Key::KEY_RIGHT) {
-                index++;
-                if (index > max_choice - 1)
-                    index = 0;
-            } else if (key & Input::Key::KEY_FIRE1) {
-                return index;
-            } else if (key & Input::Key::KEY_FIRE2) {
-                return -1;
-            }
-
-            Clear();
-            // video should always be initialized here
-            video->Render();
-
-            renderer->DrawRect(win, GRAY);
-            renderer->DrawBorder(win, GREEN);
-
-            Rect r_msg = win;
-            r_msg.y -= skin->font->GetHeight(message);
-            renderer->DrawFont(skin->font, r_msg, WHITE, true, true, message);
-
-            renderer->DrawRect(buttons[0], GRAY_LIGHT);
-            renderer->DrawBorder(buttons[0], BLACK, false);
-            renderer->DrawFont(skin->font, buttons[0], WHITE, true, true, choice1);
-
-            if (max_choice > 1) {
-                renderer->DrawRect(buttons[1], GRAY_LIGHT);
-                renderer->DrawBorder(buttons[1], BLACK, false);
-                renderer->DrawFont(skin->font, buttons[1], WHITE, true, true, choice2);
-            }
-
-            renderer->DrawBorder(buttons[index], ORANGE);
-
-            Flip();
-            renderer->Delay(INPUT_DELAY);
-        }
-    }
-
-    input->Clear(0);
-}
-
 void Gui::RunStatesMenu() {
 
     int first = 1;
@@ -989,6 +911,85 @@ Config *Gui::GetConfig() {
 
 void Gui::SetTitleLoadDelay(int delay) {
     title_delay = delay;
+}
+
+int Gui::MessageBox(const char *message, const char *choice1, const char *choice2) {
+
+    int first = 1;
+    int index = 0;
+    int max_choice = choice2 == NULL ? 1 : 2;
+
+    Rect win{
+            renderer->GetWindowSize().w / 4,
+            renderer->GetWindowSize().h / 4,
+            renderer->GetWindowSize().w / 2,
+            renderer->GetWindowSize().h / 2
+    };
+
+    Rect buttons[2]{
+            {win.x + 16,               win.y + win.h - 64, (win.w / 2) - 32, 32},
+            {win.x + (win.w / 2) + 16, win.y + win.h - 64, (win.w / 2) - 32, 32}
+    };
+
+    if (choice2 == NULL) {
+        buttons[0].x = win.x + (win.w / 2) - (buttons[0].w / 2);
+    }
+
+    input->Clear(0);
+
+    while (true) {
+
+        int key = input->Update()[0].state;
+        if (key > 0 || first) {
+
+            first = 0;
+
+            if (key & Input::Key::KEY_UP) {
+            } else if (key & Input::Key::KEY_DOWN) {
+            } else if (key & Input::Key::KEY_LEFT) {
+                index--;
+                if (index < 0)
+                    index = max_choice - 1;
+            } else if (key & Input::Key::KEY_RIGHT) {
+                index++;
+                if (index > max_choice - 1)
+                    index = 0;
+            } else if (key & Input::Key::KEY_FIRE1) {
+                return index;
+            } else if (key & Input::Key::KEY_FIRE2) {
+                return -1;
+            }
+
+            Clear();
+            if(video) {
+                video->Render();
+            }
+
+            renderer->DrawRect(win, GRAY);
+            renderer->DrawBorder(win, GREEN);
+
+            Rect r_msg = win;
+            r_msg.y -= skin->font->GetHeight(message);
+            renderer->DrawFont(skin->font, r_msg, WHITE, true, true, message);
+
+            renderer->DrawRect(buttons[0], GRAY_LIGHT);
+            renderer->DrawBorder(buttons[0], BLACK, false);
+            renderer->DrawFont(skin->font, buttons[0], WHITE, true, true, choice1);
+
+            if (max_choice > 1) {
+                renderer->DrawRect(buttons[1], GRAY_LIGHT);
+                renderer->DrawBorder(buttons[1], BLACK, false);
+                renderer->DrawFont(skin->font, buttons[1], WHITE, true, true, choice2);
+            }
+
+            renderer->DrawBorder(buttons[index], ORANGE);
+
+            Flip();
+            renderer->Delay(INPUT_DELAY);
+        }
+    }
+
+    input->Clear(0);
 }
 
 int Gui::GetButton() {
