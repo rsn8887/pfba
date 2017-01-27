@@ -7,7 +7,7 @@ enable_language(ASM)
 # delete cmake cache folder before changing this options
 set(BUILD_SFML OFF CACHE BOOL "Build with SFML support")
 set(BUILD_SDL2 OFF CACHE BOOL "Build with SDL2 support")
-set(BUILD_PSP2 OFF CACHE BOOL "Build with PSP2 support")
+set(BUILD_PSP2 ON CACHE BOOL "Build with PSP2 support")
 set(BUILD_RPI OFF CACHE BOOL "Build with RPI support")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -421,8 +421,8 @@ add_custom_target(${PROJECT_NAME}.vpk
         COMMAND ${VITASDK}/bin/vita-elf-create ${PROJECT_NAME}.elf ${PROJECT_NAME}.velf
         COMMAND ${VITASDK}/bin/vita-make-fself -c -s ${PROJECT_NAME}.velf vpk/eboot.bin
         COMMAND ${VITASDK}/bin/vita-mksfoex -s TITLE_ID=${TITLE_ID} "${PROJECT_NAME}" vpk/sce_sys/param.sfo
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/gui/skin vpk/
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/psp2/data/* vpk
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/data/skin vpk/
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/data/psp2/* vpk
         COMMAND cd vpk && zip -r ../${PROJECT_NAME}-${BUILD_DATE}.vpk . && cd ..
         )
 
