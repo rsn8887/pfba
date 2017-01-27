@@ -12,17 +12,13 @@ PFBA: Portable Final Burn Alpha
 >- easy updates of fba core (no modifications to the original sources)
 >- use arm asm m68k ([cyclone](https://github.com/notaz/cyclone68000)) core on arm devices
 
-The portability of the project is one of the main concerns, but while it's already in a good shape (few rendering functions to implement), some code would still need a better implementation.
-
 -----
 
 **Currently supported devices**
 
->- Linux (sdl2, wip)
->- RPI 3 (sdl2, wip)
+>- Linux (sfml, sdl2)
+>- RPI 3 (sfml, sdl2, wip)
 >- Ps Vita (vita2d)
-
-The linux and rpi3 ports currently run in fullscreen mode, doesn't support filtering (shaders, wip), and only one joypad. This is something easily fixable and will be done sometime in the future.
 
 -----
 
@@ -47,7 +43,7 @@ The linux and rpi3 ports currently run in fullscreen mode, doesn't support filte
 
 >- mkdir cmake-build
 >- cd cmake-build
->- cmake -DBUILD_SDL2=ON -DCMAKE_BUILD_TYPE=Release ..
+>- cmake -DBUILD_SFML=ON -DCMAKE_BUILD_TYPE=Release ..
 >- make pfba.deps
 >- make pfba
 
