@@ -112,7 +112,7 @@ void SFMLRenderer::DrawTexture(Texture *texture, int x, int y, int w, int h, flo
 
     // set sprite rotation
     sf::Transform transform;
-    transform.rotate(rotation, {x + w / 2, y + h / 2});
+    transform.rotate(rotation, {(float) (x + w / 2), (float) (y + h / 2)});
     states.transform = transform;
 
     // set sprite shader
@@ -150,7 +150,7 @@ void SFMLRenderer::UnlockTexture(Texture *texture) {
 /////////////
 
 const Rect SFMLRenderer::GetWindowSize() {
-    Rect rect{0, 0, window.getSize().x, window.getSize().y};
+    Rect rect{0, 0, (int)window.getSize().x, (int)window.getSize().y};
     return rect;
 }
 
@@ -205,6 +205,6 @@ void SFMLRenderer::Delay(unsigned int ms) {
 }
 
 SFMLRenderer::~SFMLRenderer() {
-    delete(shaders);
+    delete (shaders);
     window.close();
 }

@@ -2,7 +2,7 @@
 // Created by cpasjuste on 27/01/17.
 //
 
-#include <psp2/libvita2d/include/vita2d.h>
+#include "psp2/libvita2d/include/vita2d.h"
 #include "psp2_shaders.h"
 
 #include "lcd3x_v.h"

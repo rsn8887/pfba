@@ -7,7 +7,7 @@
 
 #include <skeleton/renderer.h>
 #include <skeleton/font.h>
-#include <sdl2_fontcache.h>
+#include <sdl2/sdl2_fontcache.h>
 
 class SDL2Font : Font {
 

@@ -5,10 +5,10 @@ set(CMAKE_SYSTEM_NAME "Generic")
 enable_language(ASM)
 
 # delete cmake cache folder before changing this options
-option(BUILD_SFML "Build with SFML support" OFF)
-option(BUILD_SDL2 "Build with SDL2 support" OFF)
-option(BUILD_PSP2 "Build with PSP2 support" ON)
-option(BUILD_RPI "Build with RPI support" OFF)
+set(BUILD_SFML OFF CACHE BOOL "Build with SFML support")
+set(BUILD_SDL2 OFF CACHE BOOL "Build with SDL2 support")
+set(BUILD_PSP2 OFF CACHE BOOL "Build with PSP2 support")
+set(BUILD_RPI OFF CACHE BOOL "Build with RPI support")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(BUILD_DEBUG true CACHE BOOL "Debug build")
@@ -34,6 +34,10 @@ elseif (BUILD_RPI)
 endif (BUILD_PSP2)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=gnu++11 -fpermissive" CACHE STRING "C++ flags")
+
+# add cross2d library. If you want to port pfba to another platform,
+# you should (may) only need to port this library.
+add_subdirectory (pfba/deps/libcross2d)
 
 project(pfba)
 
@@ -257,7 +261,6 @@ set(PFBA_DIRS
 file(GLOB SRC_PFBA
         pfba/*.c*
         pfba/gui/*.c*
-        pfba/skeleton/*.c*
         )
 
 ##############
@@ -310,17 +313,9 @@ endif (BUILD_DEBUG)
 if (BUILD_PSP2)
     list(REMOVE_ITEM SRC_CPU ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/m68000_intf.cpp)
     list(APPEND INC
-            pfba/psp2
-            pfba/psp2/libvita2d/include
-            pfba/psp2/vita-shader-collection/includes
             pfba/cpu/cyclone
-            ${VITASDK}/arm-vita-eabi/include/freetype2
             )
     file(GLOB SRC_PSP2
-            pfba/psp2/*.c*
-            pfba/psp2/libvita2d/source/*.c
-            pfba/sdl2/sdl2_audio.cpp # TODO: get rid of sdl2, use sdl2 audio for now
-            pfba/sdl2/sdl2_input.cpp # TODO: get rid of sdl2, use sdl2 input for now
             pfba/cpu/c68000_intf.cpp
             pfba/cpu/cyclone/Cyclone.s
             )
@@ -343,15 +338,7 @@ if (BUILD_PSP2)
                 )
     endif (BUILD_DEBUG)
     set(LDFLAGS
-            SDL2
-            ${CMAKE_SOURCE_DIR}/pfba/psp2/vita-shader-collection/lib/libvitashaders.a
-            ${CMAKE_SOURCE_DIR}/pfba/psp2/libvita2d/shader/compiled/clear_f_gxp.o
-            ${CMAKE_SOURCE_DIR}/pfba/psp2/libvita2d/shader/compiled/clear_v_gxp.o
-            ${CMAKE_SOURCE_DIR}/pfba/psp2/libvita2d/shader/compiled/color_f_gxp.o
-            ${CMAKE_SOURCE_DIR}/pfba/psp2/libvita2d/shader/compiled/color_v_gxp.o
-            ${CMAKE_SOURCE_DIR}/pfba/psp2/libvita2d/shader/compiled/texture_f_gxp.o
-            ${CMAKE_SOURCE_DIR}/pfba/psp2/libvita2d/shader/compiled/texture_v_gxp.o
-            ${CMAKE_SOURCE_DIR}/pfba/psp2/libvita2d/shader/compiled/texture_tint_f_gxp.o
+            cross2d SDL2
             SceDisplay_stub SceGxm_stub SceSysmodule_stub
             SceCtrl_stub ScePgf_stub ScePower_stub SceCommonDialog_stub
             SceAudio_stub
@@ -366,21 +353,13 @@ else ()
     ##############
     if (BUILD_SDL2)
         list(APPEND FLAGS -D__SDL2__)
-        list(APPEND INC pfba/sdl2)
-        file(GLOB SRC_SDL2 pfba/sdl2/*.c*)
-        list(APPEND SRC_PFBA ${SRC_SDL2})
-        set(LDFLAGS SDL2 SDL2_image SDL2_ttf png z)
+        set(LDFLAGS cross2d SDL2 SDL2_image SDL2_ttf png z)
         ##############
         # SFML
         ##############
     elseif (BUILD_SFML)
         list(APPEND FLAGS -D__SFML__)
-        list(APPEND INC pfba/sfml)
-        file(GLOB SRC_SFML
-                pfba/sdl2/sdl2_audio.cpp # TODO: get rid of sdl2, use sdl2 audio for now
-                pfba/sfml/*.c*)
-        list(APPEND SRC_PFBA ${SRC_SFML})
-        list(APPEND LDFLAGS SDL2 GL sfml-graphics sfml-window sfml-system png z)
+        list(APPEND LDFLAGS cross2d SDL2 sfml-graphics sfml-window sfml-system GL png z)
     endif (BUILD_SDL2)
     ##############
     # RPI
@@ -411,6 +390,7 @@ else ()
                 -s
                 -Xlinker -rpath-link=${RPISDK}/sysroot/lib
                 -L${RPISDK}/sysroot/lib
+                cross2d
                 ${RPISDK}/sysroot/lib/libSDL2.a
                 ${RPISDK}/sysroot/lib/libSDL2_image.a
                 ${RPISDK}/sysroot/lib/libSDL2_ttf.a
@@ -425,20 +405,20 @@ endif (BUILD_PSP2)
 set(SRC ${SRC_PFBA} ${SRC_CPU} ${SRC_DRV} ${SRC_BURN} ${SRC_BURNER} ${SRC_INTF} ${SRC_7Z} ${SRC_LIBCONFIG})
 
 ##########################
-# SDL2/SFML (unix) target
+# main target
 ##########################
-add_executable(${PROJECT_NAME} ${SRC} ${CMAKE_BINARY_DIR}/deps/m68kops.c)
-target_compile_options(${PROJECT_NAME} PRIVATE ${FLAGS})
-target_include_directories(${PROJECT_NAME} PRIVATE ${INC})
-target_link_libraries(${PROJECT_NAME} ${LDFLAGS})
+add_executable(${PROJECT_NAME}.elf ${SRC} ${CMAKE_BINARY_DIR}/deps/m68kops.c)
+target_compile_options(${PROJECT_NAME}.elf PRIVATE ${FLAGS})
+target_include_directories(${PROJECT_NAME}.elf PRIVATE ${INC})
+target_link_libraries(${PROJECT_NAME}.elf cross2d ${LDFLAGS})
 
 #####################
 # PSP2 (vita) vpk
 #####################
 add_custom_target(${PROJECT_NAME}.vpk
-        DEPENDS ${PROJECT_NAME}
+        DEPENDS ${PROJECT_NAME}.elf
         COMMAND rm -rf vpk && mkdir -p vpk/sce_sys
-        COMMAND ${VITASDK}/bin/vita-elf-create ${PROJECT_NAME} ${PROJECT_NAME}.velf
+        COMMAND ${VITASDK}/bin/vita-elf-create ${PROJECT_NAME}.elf ${PROJECT_NAME}.velf
         COMMAND ${VITASDK}/bin/vita-make-fself -c -s ${PROJECT_NAME}.velf vpk/eboot.bin
         COMMAND ${VITASDK}/bin/vita-mksfoex -s TITLE_ID=${TITLE_ID} "${PROJECT_NAME}" vpk/sce_sys/param.sfo
         COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/gui/skin vpk/
