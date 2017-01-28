@@ -409,16 +409,12 @@ void Gui::RunOptionMenu(bool isRomConfig) {
     input->Clear(0);
 
     if (GameLooping) {
-
+        // if frameskip is enabled, we may get a black buffer,
+        // force a frame to be drawn
         if (pBurnDraw == NULL) {
-            printf("RunOptionMenu: force redraw: RunOneFrame\n");
-            // force a frame to be drawn to fba buffer
             bPauseOn = false;
             RunOneFrame(true, 0, 0);
             bPauseOn = true;
-            if (pBurnDraw == NULL) {
-                printf("RunOptionMenu: pBurnDraw == NULL\n");
-            }
         }
 
         options->insert(options->begin(), Option("EXIT", {"GO"}, 0, OPTION_EXIT));

@@ -66,4 +66,12 @@ public:
     Keyboard keyboard;
 };
 
+#ifdef __PSP2__
+#include "sdl2/sdl2_input.h"
+#elif __SDL2__
+#include "sdl2/sdl2_input.h"
+#elif __SFML__
+#include "sfml/sfml_input.h"
+#endif
+
 #endif //_INPUT_H

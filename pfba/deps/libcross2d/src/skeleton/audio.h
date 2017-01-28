@@ -26,4 +26,12 @@ public:
     int available = 0;
 };
 
+#ifdef __PSP2__
+#include "sdl2/sdl2_audio.h"
+#elif __SDL2__
+#include "sdl2/sdl2_audio.h"
+#elif __SFML__
+#include "sdl2/sdl2_audio.h"
+#endif
+
 #endif //_AUDIO_H_

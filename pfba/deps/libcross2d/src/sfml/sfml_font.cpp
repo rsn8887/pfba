@@ -34,6 +34,8 @@ int SFMLFont::GetWidth(const char *fmt, ...) {
 
 int SFMLFont::GetHeight(const char *fmt, ...) {
 
+    return size;
+    /*
     char msg[MAX_PATH];
     memset(msg, 0, MAX_PATH);
     va_list args;
@@ -47,4 +49,5 @@ int SFMLFont::GetHeight(const char *fmt, ...) {
     t.setCharacterSize(size);
 
     return (int)t.getLocalBounds().height;
+    */
 }

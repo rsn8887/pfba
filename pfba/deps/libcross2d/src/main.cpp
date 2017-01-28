@@ -4,7 +4,6 @@
 
 #include <skeleton/renderer.h>
 #include <skeleton/input.h>
-#include <sdl2/sdl2_input.h>
 
 #ifdef __PSP2_DEBUG__
 #include <psp2shell.h>

@@ -5,8 +5,8 @@
 #ifndef _SFML_INPUT_H
 #define _SFML_INPUT_H
 
-#include <skeleton/input.h>
-#include "sfml_renderer.h"
+#include "skeleton/input.h"
+class SFMLRenderer;
 
 class SFMLInput : Input {
 
@@ -18,10 +18,10 @@ public:
     virtual int GetButton(int player);
 
 private:
-    virtual void process_axis(Input::Player& player, bool rotate = false);
-    virtual void process_hat(Input::Player& player, bool rotate = false);
-    virtual void process_buttons(Input::Player &player, bool rotate = false);
-    virtual void process_keyboard(Input::Player& player, bool rotate = false);
+    virtual void process_axis(Player& player, bool rotate = false);
+    virtual void process_hat(Player& player, bool rotate = false);
+    virtual void process_buttons(Player &player, bool rotate = false);
+    virtual void process_keyboard(Player& player, bool rotate = false);
 
     SFMLRenderer *renderer;
 };

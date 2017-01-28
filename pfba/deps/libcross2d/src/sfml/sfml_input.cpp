@@ -3,6 +3,7 @@
 //
 
 #include <SFML/Window/Event.hpp>
+#include "sfml_renderer.h"
 #include "sfml_input.h"
 
 static int key_id[KEY_COUNT]{
