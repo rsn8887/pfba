@@ -6,7 +6,7 @@
 
 #ifdef __PSP2__
 #include <psp2/io/dirent.h>
-char szAppHomePath[MAX_PATH] = "ux0:/data/pfba";
+char szAppHomePath[MAX_PATH] = "ux0:/data/pfba/";
 char szAppSavePath[MAX_PATH] = "ux0:/data/pfba/saves";
 char szAppConfigPath[MAX_PATH] = "ux0:/data/pfba/configs";
 char szAppHiscorePath[MAX_PATH] = "ux0:/data/pfba/hiscore";
