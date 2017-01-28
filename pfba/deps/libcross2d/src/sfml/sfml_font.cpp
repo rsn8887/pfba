@@ -5,10 +5,12 @@
 #include "sfml_font.h"
 
 SFMLFont::SFMLFont(const char *path, int size) : Font(path, size) {
+
     this->size = size;
 
     if (!font.loadFromFile(path)) {
         printf("SFMLFont: load font error\n");
+        return;
     }
 }
 
@@ -31,6 +33,15 @@ int SFMLFont::GetWidth(const char *fmt, ...) {
 
 int SFMLFont::GetHeight(const char *fmt, ...) {
 
+    // hack: return same height for every lines of text
+    sf::Text t;
+    t.setFont(font);
+    t.setCharacterSize((unsigned int) size);
+    t.setString("HpljA");
+
+    return (int) ((t.getLocalBounds().height/2) * (t.getLocalBounds().height/t.getLocalBounds().top));
+
+    /*
     char msg[MAX_PATH];
     memset(msg, 0, MAX_PATH);
     va_list args;
@@ -42,6 +53,6 @@ int SFMLFont::GetHeight(const char *fmt, ...) {
     t.setFont(font);
     t.setCharacterSize((unsigned int) size);
     t.setString(msg);
-
     return (int) ((t.getLocalBounds().height/2) * (t.getLocalBounds().height/t.getLocalBounds().top));
+    */
 }
