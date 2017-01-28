@@ -12,7 +12,7 @@
 class SFMLRenderer : Renderer {
 
 public:
-    SFMLRenderer(int w, int h, const std::string &shaderPath);
+    SFMLRenderer(int w, int h, const std::string &shaderPath = "");
 
     virtual ~SFMLRenderer();
 

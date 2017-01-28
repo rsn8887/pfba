@@ -69,7 +69,10 @@ void SDL2Renderer::DrawFont(Font *font, int x, int y, const char *fmt, ...) {
     va_end(args);
 
     SDL_Color c{font->color.r, font->color.g, font->color.b, font->color.a};
-    FC_DrawColor(((SDL2Font *) font)->font, renderer, x, y, c, msg);
+    FC_Effect effect = FC_MakeEffect(
+            FC_AlignEnum::FC_ALIGN_LEFT,
+            FC_Scale{font->scaling, font->scaling}, c);
+    FC_DrawEffect(((SDL2Font *) font)->font, renderer, x, y, effect, msg);
 }
 
 //////////

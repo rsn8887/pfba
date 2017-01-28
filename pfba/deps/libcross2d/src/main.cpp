@@ -7,6 +7,7 @@
 
 #ifdef __PSP2_DEBUG__
 #include <psp2shell.h>
+#define printf psp2shell_print
 #endif
 
 #define SCRW 960
@@ -24,9 +25,9 @@ int main() {
 #endif
     renderer = (Renderer *) new PSP2Renderer(SCRW, SCRH);
     input = (Input *) new SDL2Input();
-    font = renderer->LoadFont("app0:/skin/default.pgf", 21);
+    font = renderer->LoadFont("app0:/default.pgf", 21);
 #elif __SFML__
-    renderer = (Renderer *) new SFMLRenderer(SCRW, SCRH, "");
+    renderer = (Renderer *) new SFMLRenderer(SCRW, SCRH);
     input = (Input *) new SFMLInput((SFMLRenderer*)renderer);
     font = renderer->LoadFont("/home/cpasjuste/dev/psvita/libcross2d/src/res/default.ttf", 60);
 #else
@@ -66,6 +67,14 @@ int main() {
 
     while (true) {
 
+        Input::Player player = input->Update()[0];
+        if(player.state) {
+            if(player.state & EV_QUIT)
+                break;
+            printf("state: %i\n", player.state);
+            renderer->Delay(100);
+        }
+
         renderer->Clear();
 
         // window
@@ -87,33 +96,27 @@ int main() {
         renderer->DrawLine(0, rect.h/2, rect.w, rect.h/2); // X
         renderer->DrawLine(rect.w/2, 0, rect.w/2, rect.h); // Y
 
-        // ...
+        // top left text
         renderer->DrawFont(font, 0, 0, "HELLO WORLD");
 
-        // ...
+        // centered text
         Rect r{ rect.w/2, rect.h/2, 0, 0 };
+        font->scaling = 2;
         r.w = font->GetWidth("HELLO WORLD");
         r.h = font->GetHeight("HELLO WORLD");
         r.x -= r.w/2;
         r.y -= r.h/2;
         renderer->DrawRect(r, RED, false);
         renderer->DrawFont(font, r, WHITE, true, true, "HELLO WORLD");
+        font->scaling = 1;
 
-        // truncate text
+        // y centered and truncated text
         rect.x = 0;
         rect.y = 0;
-        rect.w = 50;
+        rect.w = 100;
         renderer->DrawFont(font, rect, WHITE, false, true, "HELLO WORLD");
 
         renderer->Flip();
-        //renderer->Delay(100);
-
-        Input::Player player = input->Update()[0];
-        if(player.state) {
-            if(player.state & EV_QUIT)
-                break;
-            printf("state: %i\n", player.state);
-        }
     }
 
     delete (font);

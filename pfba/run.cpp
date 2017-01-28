@@ -23,7 +23,6 @@
 #include "burner.h"
 #include "run.h"
 #include <skeleton/audio.h>
-#include <sdl2/sdl2_audio.h>
 #include <video.h>
 
 static Gui *gui;

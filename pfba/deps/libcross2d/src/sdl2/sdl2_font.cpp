@@ -29,7 +29,7 @@ int SDL2Font::GetWidth(const char *fmt, ...) {
     vsnprintf(msg, MAX_PATH, fmt, args);
     va_end(args);
 
-    return FC_GetWidth(font, msg);
+    return (int) (FC_GetWidth(font, msg) * scaling);
 }
 
 int SDL2Font::GetHeight(const char *fmt, ...) {
@@ -41,5 +41,5 @@ int SDL2Font::GetHeight(const char *fmt, ...) {
     vsnprintf(msg, MAX_PATH, fmt, args);
     va_end(args);
 
-    return FC_GetHeight(font, msg);
+    return (int) (FC_GetHeight(font, msg) * scaling);
 }

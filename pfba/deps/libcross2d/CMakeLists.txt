@@ -58,7 +58,7 @@ if (BUILD_PSP2)
             src/psp2/libvita2d/shader/compiled/*.o
             src/psp2/vita-shader-collection/lib/*.o
             )
-    list(APPEND FLAGS -Wl,-q -O3 -D__PSP2__)
+    list(APPEND FLAGS -Wl,-q -O3 -D__PSP2__ -D__PSP2_DEBUG__)
 elseif (BUILD_SDL2)
     set(PLATFORM_DIRS src/sdl2)
     file(GLOB PLATFORM_SRC src/sdl2/*.c*)
@@ -113,6 +113,10 @@ target_link_libraries(${PROJECT_NAME}.psp2
 add_dependencies(${PROJECT_NAME}.psp2 ${PROJECT_NAME})
 add_custom_target(${PROJECT_NAME}.vpk
         DEPENDS ${PROJECT_NAME}.psp2
+        COMMAND rm -rf vpk && mkdir -p vpk/sce_sys
         COMMAND ${VITASDK}/bin/vita-elf-create ${PROJECT_NAME}.psp2 ${PROJECT_NAME}.velf
-        COMMAND ${VITASDK}/bin/vita-make-fself -c ${PROJECT_NAME}.velf eboot.bin
+        COMMAND ${VITASDK}/bin/vita-make-fself -c ${PROJECT_NAME}.velf vpk/eboot.bin
+        COMMAND ${VITASDK}/bin/vita-mksfoex -s TITLE_ID=${TITLE_ID} "${PROJECT_NAME}" vpk/sce_sys/param.sfo
+        COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/src/res/* vpk/
+        COMMAND cd vpk && zip -r ../${PROJECT_NAME}-${BUILD_DATE}.vpk . && cd ..
         )

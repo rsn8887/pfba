@@ -19,6 +19,7 @@ public:
 
     Color color {255, 255, 255, 255};
     int size = 20;
+    float scaling = 1;
 };
 
 #endif //_FONT_H

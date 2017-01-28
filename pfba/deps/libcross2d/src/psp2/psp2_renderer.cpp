@@ -51,11 +51,13 @@ void PSP2Renderer::DrawFont(Font *font, int x, int y, const char *fmt, ...) {
     vsnprintf(msg, MAX_PATH, fmt, args);
     va_end(args);
 
-    int height = vita2d_pgf_text_height(((PSP2Font *) font)->font, 1, msg) - 2; // fixme (-2)
+    int height = vita2d_pgf_text_height(((PSP2Font *) font)->font, font->scaling, msg) - 2; // fixme (-2)
 
     StartDrawring();
     vita2d_pgf_draw_text(((PSP2Font *) font)->font, x, y + height,
-                         (unsigned int) RGBA8(font->color.r, font->color.g, font->color.b, font->color.a), 1, msg);
+                         (unsigned int) RGBA8(font->color.r, font->color.g,
+                                              font->color.b, font->color.a),
+                         font->scaling, msg);
 }
 //////////
 // FONT //
@@ -119,7 +121,7 @@ void PSP2Renderer::SetShader(int index) {
     shaders->current = index;
 
     vita2d_shader *shader = (vita2d_shader *) shaders->Get()->data;
-    if(shader != NULL) {
+    if (shader != NULL) {
         vita2d_texture_set_program(shader->vertexProgram, shader->fragmentProgram);
         vita2d_texture_set_wvp(shader->wvpParam);
         vita2d_texture_set_vertexInput(&shader->vertexInput);
@@ -178,7 +180,7 @@ void PSP2Renderer::Delay(unsigned int ms) {
 PSP2Renderer::~PSP2Renderer() {
     vita2d_wait_rendering_done();
     vita2d_fini();
-    delete(shaders);
+    delete (shaders);
 }
 
 void PSP2Renderer::StartDrawring() {

@@ -71,6 +71,7 @@ void SFMLRenderer::DrawFont(Font *font, int x, int y, const char *fmt, ...) {
     text.setOutlineThickness(2);
 
     text.setOrigin(text.getLocalBounds().left, text.getLocalBounds().top);
+    text.scale(font->scaling, font->scaling);
     text.setPosition(x, y);
 
     window.draw(text);

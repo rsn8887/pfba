@@ -30,7 +30,7 @@ int PSP2Font::GetWidth(const char *fmt, ...) {
     vsnprintf(msg, MAX_PATH, fmt, args);
     va_end(args);
 
-    return vita2d_pgf_text_width(font, 1, msg);
+    return (int) vita2d_pgf_text_width(font, scaling, msg);
 }
 
 int PSP2Font::GetHeight(const char *fmt, ...) {
@@ -42,5 +42,5 @@ int PSP2Font::GetHeight(const char *fmt, ...) {
     vsnprintf(msg, MAX_PATH, fmt, args);
     va_end(args);
 
-    return vita2d_pgf_text_height(font, 1, msg);
+    return (int) vita2d_pgf_text_height(font, scaling, msg);
 }

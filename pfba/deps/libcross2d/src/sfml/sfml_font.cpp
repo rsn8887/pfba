@@ -28,7 +28,7 @@ int SFMLFont::GetWidth(const char *fmt, ...) {
     t.setCharacterSize((unsigned int) size);
     t.setString(msg);
 
-    return (int) t.getLocalBounds().width + (int)(t.getLocalBounds().left/2.0f);
+    return (int) (scaling * (int) t.getLocalBounds().width + (int) (t.getLocalBounds().left / 2.0f));
 }
 
 int SFMLFont::GetHeight(const char *fmt, ...) {
@@ -39,7 +39,8 @@ int SFMLFont::GetHeight(const char *fmt, ...) {
     t.setCharacterSize((unsigned int) size);
     t.setString("HpljA");
 
-    return (int) ((t.getLocalBounds().height/2) * (t.getLocalBounds().height/t.getLocalBounds().top));
+    int h = (int) ((t.getLocalBounds().height / 2) * (t.getLocalBounds().height / t.getLocalBounds().top));
+    return (int) (h * scaling);
 
     /*
     char msg[MAX_PATH];
