@@ -15,8 +15,6 @@ class SFMLFont : Font {
 public:
     SFMLFont(const char *path, int size);
 
-    ~SFMLFont();
-
     virtual int GetWidth(const char *fmt, ...);
     virtual int GetHeight(const char *fmt, ...);
 

@@ -63,13 +63,16 @@ void SFMLRenderer::DrawFont(Font *font, int x, int y, const char *fmt, ...) {
     text.setFont(fnt->font);
     text.setString(msg);
     text.setCharacterSize((unsigned int) font->size);
+
     text.setFillColor(sf::Color(
             font->color.r, font->color.g,
             font->color.b, font->color.a));
     text.setOutlineColor(sf::Color::Black);
     text.setOutlineThickness(2);
-    int height = font->GetHeight(msg) / 2 - 2;
-    text.setPosition(x, y - height);
+
+    text.setOrigin(text.getLocalBounds().left, text.getLocalBounds().top);
+    text.setPosition(x, y);
+
     window.draw(text);
 }
 
@@ -176,10 +179,10 @@ void SFMLRenderer::DrawLine(int x1, int y1, int x2, int y2, const Color &c) {
 void SFMLRenderer::DrawRect(const Rect &rect, const Color &c, bool fill) {
 
     sf::Color col(c.r, c.g, c.b, c.a);
-    sf::RectangleShape rectangle(sf::Vector2f(rect.w, rect.h));
+    sf::RectangleShape rectangle(sf::Vector2f(rect.w-2, rect.h-2));
     rectangle.setOutlineColor(col);
     rectangle.setOutlineThickness(1);
-    rectangle.setPosition(rect.x, rect.y);
+    rectangle.setPosition(rect.x+1, rect.y+1);
     if (fill) {
         rectangle.setFillColor(col);
     } else {

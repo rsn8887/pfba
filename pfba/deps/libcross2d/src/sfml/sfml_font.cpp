@@ -8,11 +8,8 @@ SFMLFont::SFMLFont(const char *path, int size) : Font(path, size) {
     this->size = size;
 
     if (!font.loadFromFile(path)) {
-       printf("SFMLFont: load font error\n");
+        printf("SFMLFont: load font error\n");
     }
-}
-
-SFMLFont::~SFMLFont() {
 }
 
 int SFMLFont::GetWidth(const char *fmt, ...) {
@@ -26,16 +23,14 @@ int SFMLFont::GetWidth(const char *fmt, ...) {
 
     sf::Text t;
     t.setFont(font);
+    t.setCharacterSize((unsigned int) size);
     t.setString(msg);
-    t.setCharacterSize(size);
 
-    return (int)t.getLocalBounds().width;
+    return (int) t.getLocalBounds().width + (int)(t.getLocalBounds().left/2.0f);
 }
 
 int SFMLFont::GetHeight(const char *fmt, ...) {
 
-    return size;
-    /*
     char msg[MAX_PATH];
     memset(msg, 0, MAX_PATH);
     va_list args;
@@ -45,9 +40,8 @@ int SFMLFont::GetHeight(const char *fmt, ...) {
 
     sf::Text t;
     t.setFont(font);
+    t.setCharacterSize((unsigned int) size);
     t.setString(msg);
-    t.setCharacterSize(size);
 
-    return (int)t.getLocalBounds().height;
-    */
+    return (int) ((t.getLocalBounds().height/2) * (t.getLocalBounds().height/t.getLocalBounds().top));
 }

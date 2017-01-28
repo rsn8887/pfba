@@ -28,11 +28,11 @@ int main() {
 #elif __SFML__
     renderer = (Renderer *) new SFMLRenderer(SCRW, SCRH, "");
     input = (Input *) new SFMLInput((SFMLRenderer*)renderer);
-    font = renderer->LoadFont("/home/cpasjuste/dev/psvita/libcross2d/src/res/default.ttf", 21);
+    font = renderer->LoadFont("/home/cpasjuste/dev/psvita/libcross2d/src/res/default.ttf", 60);
 #else
     renderer = (Renderer *) new SDL2Renderer(SCRW, SCRH);
     input = (Input *) new SDL2Input();
-    font = renderer->LoadFont("/home/cpasjuste/dev/psvita/libcross2d/src/res/default.ttf", 21);
+    font = renderer->LoadFont("/home/cpasjuste/dev/psvita/libcross2d/src/res/default.ttf", 60);
 #endif
 
     int sdl_keyboard_keys[] {
@@ -90,12 +90,23 @@ int main() {
         // ...
         renderer->DrawFont(font, 0, 0, "HELLO WORLD");
 
+        // ...
+        Rect r{ rect.w/2, rect.h/2, 0, 0 };
+        r.w = font->GetWidth("HELLO WORLD");
+        r.h = font->GetHeight("HELLO WORLD");
+        r.x -= r.w/2;
+        r.y -= r.h/2;
+        renderer->DrawRect(r, RED, false);
+        renderer->DrawFont(font, r, WHITE, true, true, "HELLO WORLD");
+
         // truncate text
+        rect.x = 0;
+        rect.y = 0;
         rect.w = 50;
         renderer->DrawFont(font, rect, WHITE, false, true, "HELLO WORLD");
 
         renderer->Flip();
-        renderer->Delay(100);
+        //renderer->Delay(100);
 
         Input::Player player = input->Update()[0];
         if(player.state) {

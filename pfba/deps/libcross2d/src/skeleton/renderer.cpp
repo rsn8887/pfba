@@ -56,6 +56,15 @@ Renderer::DrawFont(Font *font, const Rect &dst, const Color &c, bool centerX, bo
     vsnprintf(msg, MAX_PATH, fmt, args);
     va_end(args);
 
+    // cut message "properly" instead of clip
+    while (font->GetWidth(msg) > dst.w) {
+        int len = strlen(msg);
+        if (len == 0) {
+            break;
+        }
+        msg[strlen(msg) - 1] = 0;
+    }
+
     Rect rect{dst.x, dst.y, dst.w, dst.h};
 
     if (centerY) {
@@ -64,15 +73,6 @@ Renderer::DrawFont(Font *font, const Rect &dst, const Color &c, bool centerX, bo
 
     if (centerX) {
         rect.x = dst.x + (dst.w / 2) - font->GetWidth(msg) / 2;
-    }
-
-    // cut message "properly" instead of clip
-    while (font->GetWidth(msg) > dst.w) {
-        int len = strlen(msg);
-        if (len == 0) {
-            break;
-        }
-        msg[strlen(msg) - 1] = 0;
     }
 
     Color old_col = font->color;
