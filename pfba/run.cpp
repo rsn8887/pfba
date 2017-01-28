@@ -204,6 +204,15 @@ static int GetSekCpuCore(Gui *g) {
         zipList.push_back("batrider");
         zipList.push_back("bbakraid");
         zipList.push_back("bgaregga");
+    } else if (RomList::IsHardware(hardware, HARDWARE_PREFIX_SNK)) {
+        zipList.push_back("kof97");
+        zipList.push_back("kof98");
+        zipList.push_back("kof99");
+        zipList.push_back("kof2000");
+        zipList.push_back("kof2001");
+        zipList.push_back("kof2002");
+        zipList.push_back("kf2k3pcb");
+        //zipList.push_back("kof2003"); // WORKS
     }
 
     std::string zip = BurnDrvGetTextA(DRV_NAME);
