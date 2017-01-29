@@ -90,7 +90,6 @@ SDL2Audio::SDL2Audio(int freq, int fps) : Audio(freq, fps) {
 
     // Find the value which is slighly bigger than buffer_len*2
     for (sample_size = 512; sample_size < (buffer_len * 2); sample_size <<= 1);
-    sample_size /= 4; // fix audio delay
     buf_size = sample_size * channels * 2 * 8;
     buffer_sdl = (unsigned char *) malloc((size_t) buf_size);
     memset(buffer_sdl, 0, (size_t) buf_size);
