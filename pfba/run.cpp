@@ -260,8 +260,11 @@ void RunEmulator(Gui *g, int drvnum) {
 #if defined(__PSP2__) || defined(__RPI__)
     nSekCpuCore = GetSekCpuCore(gui);
 #endif
-    bForce60Hz = gui->GetConfig()->GetRomValue(Option::Index::ROM_FORCE_60HZ) == 1;
-    nBurnSoundRate = gui->GetConfig()->GetRomAudioFrequency();
+    bForce60Hz = true;
+    nBurnSoundRate = 0;
+    if(gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO_ENABLED) ) {
+        nBurnSoundRate = 48000;
+    }
 
     InpInit();
     InpDIP();

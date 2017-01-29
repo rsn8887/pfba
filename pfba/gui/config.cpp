@@ -83,8 +83,7 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
     options_gui.push_back(Option("SHOW_FPS", {"NO", "YES"}, 0, Option::Index::ROM_SHOW_FPS));
     options_gui.push_back(Option("FRAMESKIP", {"OFF", "ON"}, 0, Option::Index::ROM_FRAMESKIP));
     //options_gui.push_back(Option("M68K", {"ASM", "C"}, 0, Option::Index::ROM_M68K));
-    options_gui.push_back(Option("FORCE_60HZ", {"OFF", "ON"}, 0, Option::Index::ROM_FORCE_60HZ));
-    options_gui.push_back(Option("AUDIO_FREQ", {"OFF", "11025", "22050", "44100", "48000"}, 4, Option::Index::ROM_AUDIO_FREQ));
+    options_gui.push_back(Option("AUDIO_ENABLED", {"OFF", "ON"}, 1, Option::Index::ROM_AUDIO_ENABLED));
 
     // joystick
     options_gui.push_back(Option("JOYPAD", {"JOYPAD"}, 0, Option::Index::MENU_JOYPAD, Option::Type::MENU));
@@ -302,22 +301,6 @@ int Config::GetRomValue(int index) {
     }
 
     return 0;
-}
-
-int Config::GetRomAudioFrequency() {
-
-    switch (GetRomValue(Option::Index::ROM_AUDIO_FREQ)) {
-        case 0:
-            return 0;
-        case 1:
-            return 11025;
-        case 2:
-            return 22050;
-        case 4:
-            return 48000;
-        default:
-            return 48000;
-    }
 }
 
 const char *Config::GetRomPath(int n) {
