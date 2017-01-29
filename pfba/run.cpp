@@ -231,10 +231,12 @@ static int GetSekCpuCore(Gui *g) {
 
 void AudioInit(Config *cfg) {
 
-    nInterpolation =
-            cfg->GetRomValue(Option::Index::ROM_AUDIO_INTERPOLATION) == 0 ? 1 : 3;
-    nFMInterpolation =
-            cfg->GetRomValue(Option::Index::ROM_AUDIO_FMINTERPOLATION) == 0 ? 0 : 3;
+    // disable interpolation as it produce "cracking" sound
+    // on some games (cps1 (SF2), cave ...)
+    nInterpolation = 1;
+    //cfg->GetRomValue(Option::Index::ROM_AUDIO_INTERPOLATION) == 0 ? 1 : 3;
+    nFMInterpolation = 0;
+    //cfg->GetRomValue(Option::Index::ROM_AUDIO_FMINTERPOLATION) == 0 ? 0 : 3;
 
     audio = (Audio *) new SDL2Audio(nBurnSoundRate, nBurnFPS);
     if (audio->available) {

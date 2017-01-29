@@ -25,7 +25,7 @@ Audio::Audio(int freq, int fps) {
     memset(buffer, 0, (size_t) buffer_size);
     available = true;
 
-    printf("Audio: rate = %i, buffer size = %i\n", freq, buffer_size);
+    printf("Audio: rate = %i, buf size = %i, buf len = %i\n", freq, buffer_size, buffer_len);
 }
 
 void Audio::Pause(int pause) {
