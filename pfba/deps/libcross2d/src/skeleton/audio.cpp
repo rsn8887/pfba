@@ -14,7 +14,7 @@ Audio::Audio(int freq, int fps) {
         return;
     }
 
-    buffer_len = ((freq * 100) / fps) + 1;
+    buffer_len = ((freq * 100) / fps);
     buffer_size = buffer_len * channels * 2;
     buffer = (short *) malloc((size_t) buffer_size);
     memset(buffer, 0, (size_t) buffer_size);

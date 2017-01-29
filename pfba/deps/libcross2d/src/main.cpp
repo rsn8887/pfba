@@ -14,7 +14,8 @@
 #define SCRH 544
 
 Renderer *renderer;
-Font *font;
+Font *font_small;
+Font *font_large;
 Input *input;
 
 int main() {
@@ -25,7 +26,8 @@ int main() {
 #endif
     renderer = (Renderer *) new PSP2Renderer(SCRW, SCRH);
     input = (Input *) new SDL2Input();
-    font = renderer->LoadFont("app0:/default.pgf", 40); // 40 = pgf font size
+    font_small = renderer->LoadFont("app0:/default-20.pgf", 20); // 20 = pgf font size
+    font_large = renderer->LoadFont("app0:/default-40.pgf", 40); // 40 = pgf font size
 #elif __SFML__
     renderer = (Renderer *) new SFMLRenderer(SCRW, SCRH);
     input = (Input *) new SFMLInput((SFMLRenderer*)renderer);
@@ -96,30 +98,34 @@ int main() {
         renderer->DrawLine(0, rect.h/2, rect.w, rect.h/2); // X
         renderer->DrawLine(rect.w/2, 0, rect.w/2, rect.h); // Y
 
+        // top middle text
+        renderer->DrawFont(font_large, rect.w/2, 0, "HELLO WORLD");
+
         // top left text
-        renderer->DrawFont(font, 0, 0, "HELLO WORLD");
+        renderer->DrawFont(font_small, 0, 0, "HELLO WORLD");
 
         // centered text
         Rect r{ rect.w/2, rect.h/2, 0, 0 };
-        font->scaling = 0.8;
-        r.w = font->GetWidth("HELLO WORLD");
-        r.h = font->GetHeight("HELLO WORLD");
+        font_small->scaling = 0.8;
+        r.w = font_small->GetWidth("HELLO WORLD");
+        r.h = font_small->GetHeight("HELLO WORLD");
         r.x -= r.w/2;
         r.y -= r.h/2;
         renderer->DrawRect(r, RED, false);
-        renderer->DrawFont(font, r, WHITE, true, true, "HELLO WORLD");
-        font->scaling = 1;
+        renderer->DrawFont(font_small, r, WHITE, true, true, "HELLO WORLD");
+        font_small->scaling = 1;
 
         // y centered and truncated text
         rect.x = 0;
         rect.y = 0;
         rect.w = 100;
-        renderer->DrawFont(font, rect, WHITE, false, true, "HELLO WORLD");
+        renderer->DrawFont(font_small, rect, WHITE, false, true, "HELLO WORLD");
 
         renderer->Flip();
     }
 
-    delete (font);
+    delete (font_small);
+    delete (font_large);
     delete (renderer);
     delete (input);
 }

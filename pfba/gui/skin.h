@@ -15,6 +15,7 @@ public:
         std::string name;
         int id = -1;
         Texture *texture = NULL;
+
         Button(int i, const std::string &n) {
             id = i;
             name = n;
@@ -22,13 +23,15 @@ public:
     };
 
     Skin(Renderer *renderer, char *skinPath, std::vector<Button> btns);
+
     ~Skin();
 
     Button *GetButton(int id);
 
     Texture *tex_bg;
     Texture *tex_title;
-    Font *font;
+    Font *font_small;
+    Font *font_large;
     std::vector<Button> buttons;
 };
 

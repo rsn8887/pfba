@@ -42,5 +42,6 @@ int PSP2Font::GetHeight(const char *fmt, ...) {
     vsnprintf(msg, MAX_PATH, fmt, args);
     va_end(args);
 
-    return (int) (vita2d_pgf_text_height(font, scaling, msg) + ((size * scaling) / 2));
+    float ratio = size / 20;
+    return (int) ((float) vita2d_pgf_text_height(font, scaling, msg) * ratio - (3 * ratio));
 }

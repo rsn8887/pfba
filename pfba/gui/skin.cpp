@@ -18,11 +18,14 @@ Skin::Skin(Renderer *renderer, char *skinPath, std::vector<Button> btns) {
 
     memset(str, 0, MAX_PATH);
 #ifdef __PSP2__
-    snprintf(str, MAX_PATH, "%s/default.pgf", skinPath);
+    snprintf(str, MAX_PATH, "%s/default-40.pgf", skinPath);
+    font_large = renderer->LoadFont(str, 40);
+    snprintf(str, MAX_PATH, "%s/default-20.pgf", skinPath);
 #else
     snprintf(str, MAX_PATH, "%s/default.ttf", skinPath);
+    font_large = renderer->LoadFont(str, 40);
 #endif
-    font = renderer->LoadFont(str, 22);
+    font_small = renderer->LoadFont(str, 20);
 
     // load buttons textures
     buttons = btns;
@@ -48,6 +51,8 @@ Skin::~Skin() {
         delete (tex_bg);
     if (tex_title)
         delete (tex_title);
-    if (font)
-        delete (font);
+    if (font_small)
+        delete (font_small);
+    if (font_large)
+        delete (font_large);
 }
