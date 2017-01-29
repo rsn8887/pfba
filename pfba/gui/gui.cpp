@@ -114,7 +114,7 @@ void Gui::DrawRomInfo(RomList::Rom *rom) {
 
 void Gui::DrawRomList() {
 
-    int font_height = skin->font_small->size;
+    int font_height = skin->font_small->size + 4;
     max_lines = GetRectRomList().h / font_height;
     int page = rom_index / max_lines;
 
