@@ -262,7 +262,7 @@ void RunEmulator(Gui *g, int drvnum) {
 #endif
     bForce60Hz = true;
     nBurnSoundRate = 0;
-    if(gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO_ENABLED) ) {
+    if(gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO) ) {
         nBurnSoundRate = 48000;
     }
 

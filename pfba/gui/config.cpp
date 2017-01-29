@@ -83,7 +83,7 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
     options_gui.push_back(Option("SHOW_FPS", {"NO", "YES"}, 0, Option::Index::ROM_SHOW_FPS));
     options_gui.push_back(Option("FRAMESKIP", {"OFF", "ON"}, 0, Option::Index::ROM_FRAMESKIP));
     //options_gui.push_back(Option("M68K", {"ASM", "C"}, 0, Option::Index::ROM_M68K));
-    options_gui.push_back(Option("AUDIO_ENABLED", {"OFF", "ON"}, 1, Option::Index::ROM_AUDIO_ENABLED));
+    options_gui.push_back(Option("AUDIO", {"OFF", "ON"}, 1, Option::Index::ROM_AUDIO));
 
     // joystick
     options_gui.push_back(Option("JOYPAD", {"JOYPAD"}, 0, Option::Index::MENU_JOYPAD, Option::Type::MENU));

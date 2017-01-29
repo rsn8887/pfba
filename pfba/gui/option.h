@@ -37,7 +37,7 @@ public:
         ROM_SHOW_FPS,
         //ROM_M68K,
         ROM_FRAMESKIP,
-        ROM_AUDIO_ENABLED,
+        ROM_AUDIO,
         MENU_JOYPAD,
         JOY_UP,
         JOY_DOWN,
