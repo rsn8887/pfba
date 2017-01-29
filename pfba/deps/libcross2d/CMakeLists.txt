@@ -60,7 +60,10 @@ if (BUILD_PSP2)
             src/psp2/libvita2d/shader/compiled/*.o
             src/psp2/vita-shader-collection/lib/*.o
             )
-    list(APPEND FLAGS -Wl,-q -O3 -D__PSP2__ -D__PSP2_DEBUG__)
+    list(APPEND FLAGS -Wl,-q -O3 -D__PSP2__)
+    if (BUILD_DEBUG)
+        list(APPEND FLAGS -D__PSP2_DEBUG__)
+    endif (BUILD_DEBUG)
 elseif (BUILD_SDL2)
     set(PLATFORM_DIRS src/sdl2)
     file(GLOB PLATFORM_SRC src/sdl2/*.c*)

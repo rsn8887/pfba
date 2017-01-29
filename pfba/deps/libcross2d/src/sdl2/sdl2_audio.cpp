@@ -27,13 +27,13 @@ static void write_buffer(unsigned char *data, int len) {
     if (use_mutex) {
         SDL_LockMutex(sound_mutex);
     } else {
-        SDL_LockAudio();
+        //SDL_LockAudio();
     }
 
     for (int i = 0; i < len; i += 4) {
         if (!use_mutex) {
             if (buffered_bytes == buf_size) {
-                SDL_UnlockAudio();
+                //SDL_UnlockAudio();
                 return; // drop samples
             }
         } else {
@@ -51,7 +51,7 @@ static void write_buffer(unsigned char *data, int len) {
         SDL_CondSignal(sound_cv);
         SDL_UnlockMutex(sound_mutex);
     } else {
-        SDL_UnlockAudio();
+        //SDL_UnlockAudio();
     }
 }
 
