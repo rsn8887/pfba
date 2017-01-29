@@ -27,13 +27,13 @@ static void write_buffer(unsigned char *data, int len) {
     if (use_mutex) {
         SDL_LockMutex(sound_mutex);
     } else {
-        //SDL_LockAudio();
+        SDL_LockAudio();
     }
 
     for (int i = 0; i < len; i += 4) {
         if (!use_mutex) {
             if (buffered_bytes == buf_size) {
-                //SDL_UnlockAudio();
+                SDL_UnlockAudio();
                 return; // drop samples
             }
         } else {
@@ -51,7 +51,7 @@ static void write_buffer(unsigned char *data, int len) {
         SDL_CondSignal(sound_cv);
         SDL_UnlockMutex(sound_mutex);
     } else {
-        //SDL_UnlockAudio();
+        SDL_UnlockAudio();
     }
 }
 
@@ -90,7 +90,7 @@ SDL2Audio::SDL2Audio(int freq, int fps) : Audio(freq, fps) {
 
     // Find the value which is slighly bigger than buffer_len*2
     for (sample_size = 512; sample_size < (buffer_len * 2); sample_size <<= 1);
-    buf_size = sample_size * channels * 2 * 8;
+    buf_size = sample_size * channels * 4;
     buffer_sdl = (unsigned char *) malloc((size_t) buf_size);
     memset(buffer_sdl, 0, (size_t) buf_size);
 

@@ -886,7 +886,6 @@ void Gui::RunRom(RomList::Rom *rom) {
     UpdateInputMapping(false);
 
     printf("RunRom: RunEmulator: return\n");
-    mode = List;
 }
 
 Input *Gui::GetInput() {

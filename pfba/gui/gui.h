@@ -57,8 +57,6 @@ private:
 
     bool IsOptionHidden(Option *option);
 
-    enum GuiMode { List = 0, CfgGui };
-    GuiMode mode = List;
     Config *config = NULL;
     Renderer *renderer = NULL;
     Skin *skin = NULL;
