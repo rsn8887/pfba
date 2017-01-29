@@ -85,8 +85,6 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
     //options_gui.push_back(Option("M68K", {"ASM", "C"}, 0, Option::Index::ROM_M68K));
     options_gui.push_back(Option("FORCE_60HZ", {"OFF", "ON"}, 0, Option::Index::ROM_FORCE_60HZ));
     options_gui.push_back(Option("AUDIO_FREQ", {"OFF", "11025", "22050", "44100", "48000"}, 4, Option::Index::ROM_AUDIO_FREQ));
-    //options_gui.push_back(Option("AUDIO_INTERP", {"MIN", "MAX"}, 1, Option::Index::ROM_AUDIO_INTERPOLATION));
-    //options_gui.push_back(Option("AUDIO_FMINTERP", {"OFF", "ON"}, 1, Option::Index::ROM_AUDIO_FMINTERPOLATION));
 
     // joystick
     options_gui.push_back(Option("JOYPAD", {"JOYPAD"}, 0, Option::Index::MENU_JOYPAD, Option::Type::MENU));
