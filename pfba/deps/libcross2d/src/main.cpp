@@ -25,7 +25,7 @@ int main() {
 #endif
     renderer = (Renderer *) new PSP2Renderer(SCRW, SCRH);
     input = (Input *) new SDL2Input();
-    font = renderer->LoadFont("app0:/default.pgf", 21);
+    font = renderer->LoadFont("app0:/default.pgf", 40); // 40 = pgf font size
 #elif __SFML__
     renderer = (Renderer *) new SFMLRenderer(SCRW, SCRH);
     input = (Input *) new SFMLInput((SFMLRenderer*)renderer);
@@ -101,7 +101,7 @@ int main() {
 
         // centered text
         Rect r{ rect.w/2, rect.h/2, 0, 0 };
-        font->scaling = 2;
+        font->scaling = 0.8;
         r.w = font->GetWidth("HELLO WORLD");
         r.h = font->GetHeight("HELLO WORLD");
         r.x -= r.w/2;
