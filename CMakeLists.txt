@@ -7,7 +7,8 @@ enable_language(ASM)
 # delete cmake cache folder before changing this options
 set(BUILD_SFML OFF CACHE BOOL "Build with SFML support")
 set(BUILD_SDL2 OFF CACHE BOOL "Build with SDL2 support")
-set(BUILD_PSP2 ON CACHE BOOL "Build with PSP2 support")
+set(BUILD_PSP2 OFF CACHE BOOL "Build with PSP2 support")
+set(BUILD_3DS OFF CACHE BOOL "Build with 3DS support")
 set(BUILD_RPI OFF CACHE BOOL "Build with RPI support")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -24,8 +25,24 @@ if (BUILD_PSP2)
     set(CMAKE_AR "${VITASDK}/bin/arm-vita-eabi-ar")
     set(CMAKE_RANLIB "${VITASDK}/bin/arm-vita-eabi-ranlib")
     set(CMAKE_C_FLAGS "-Wl,-q" CACHE STRING "C flags")
-    execute_process(COMMAND "date" "+%Y.%m.%d" OUTPUT_VARIABLE BUILD_DATE OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(TITLE_ID "VITAFBA01")
+elseif (BUILD_3DS)
+    set(DEVKITPRO "/opt/devkitpro")
+    set(CMAKE_SYSTEM_PROCESSOR "armv6k")
+    set(CMAKE_C_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc")
+    set(CMAKE_CXX_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-g++")
+    set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-vita-eabi-as")
+    set(CMAKE_AR "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ar" CACHE STRING "")
+    set(CMAKE_RANLIB "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ranlib" CACHE STRING "")
+    set(CMAKE_C_FLAGS "-mword-relocations" CACHE STRING "C flags")
+    set(CMAKE_CXX_FLAGS "-mword-relocations -fno-rtti -fno-exceptions -std=gnu++11
+                        -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft" CACHE STRING "C++ flags")
+    set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO} ${DEVKITPRO}/devkitARM ${DEVKITPRO}/portlibs/armv6k)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+    SET(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available" )
 elseif (BUILD_RPI)
     set(RPISDK "/usr/local/rpi-tools")
     set(CMAKE_SYSTEM_PROCESSOR "armv7-a")
@@ -36,6 +53,8 @@ elseif (BUILD_RPI)
 endif (BUILD_PSP2)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=gnu++11 -fpermissive" CACHE STRING "C++ flags")
+
+execute_process(COMMAND "date" "+%Y.%m.%d" OUTPUT_VARIABLE BUILD_DATE OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 # add cross2d library. If you want to port pfba to another platform,
 # you should (may) only need to port this library.
@@ -349,6 +368,8 @@ if (BUILD_PSP2)
         list(APPEND LDFLAGS
                 psp2shell SceNetCtl_stub SceNet_stub SceAppMgr_stub)
     endif (BUILD_DEBUG)
+elseif(BUILD_3DS)
+
 else ()
     ##############
     # SDL2

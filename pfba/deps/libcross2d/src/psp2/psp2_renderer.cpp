@@ -52,7 +52,7 @@ void PSP2Renderer::DrawFont(Font *font, int x, int y, const char *fmt, ...) {
     va_end(args);
 
     int height = font->GetHeight(msg);
-    StartDrawring();
+    StartDrawing();
     vita2d_pgf_draw_text(((PSP2Font *) font)->font, x, y + height,
                          (unsigned int) RGBA8(font->color.r, font->color.g,
                                               font->color.b, font->color.a),
@@ -88,7 +88,7 @@ void PSP2Renderer::DrawTexture(Texture *texture, int x, int y, int w, int h, flo
 
         float sx = (float) w / (float) texture->width;
         float sy = (float) h / (float) texture->height;
-        StartDrawring();
+        StartDrawing();
 
         const float rad = rotation * 0.0174532925f;
         vita2d_draw_texture_scale_rotate(((PSP2Texture *) texture)->tex,
@@ -129,13 +129,13 @@ void PSP2Renderer::SetShader(int index) {
 }
 
 void PSP2Renderer::DrawLine(int x1, int y1, int x2, int y2, const Color &c) {
-    StartDrawring();
+    StartDrawing();
     vita2d_draw_line(x1, y1, x2, y2,
                      RGBA8(c.r, c.g, c.b, c.a));
 }
 
 void PSP2Renderer::DrawRect(const Rect &rect, const Color &c, bool fill) {
-    StartDrawring();
+    StartDrawing();
     if (fill) {
         vita2d_draw_rectangle(rect.x, rect.y, rect.w, rect.h,
                               RGBA8(c.r, c.g, c.b, c.a));
@@ -159,7 +159,7 @@ void PSP2Renderer::Clip(const Rect &rect) {
 }
 
 void PSP2Renderer::Clear() {
-    StartDrawring();
+    StartDrawing();
     vita2d_clear_screen();
 }
 
@@ -182,7 +182,7 @@ PSP2Renderer::~PSP2Renderer() {
     delete (shaders);
 }
 
-void PSP2Renderer::StartDrawring() {
+void PSP2Renderer::StartDrawing() {
     if (!drawing_started) {
         vita2d_start_drawing();
         drawing_started = true;

@@ -17,11 +17,28 @@ if (BUILD_PSP2)
     set(CMAKE_C_COMPILER "${VITASDK}/bin/arm-vita-eabi-gcc")
     set(CMAKE_CXX_COMPILER "${VITASDK}/bin/arm-vita-eabi-g++")
     set(CMAKE_ASM_COMPILER "${VITASDK}/bin/arm-vita-eabi-g++")
-    set(CMAKE_C_FLAGS "-Wl,-q" CACHE STRING "C flags")
     set(CMAKE_AR "${VITASDK}/bin/arm-vita-eabi-ar")
     set(CMAKE_RANLIB "${VITASDK}/bin/arm-vita-eabi-ranlib")
+    set(CMAKE_C_FLAGS "-Wl,-q" CACHE STRING "C flags")
     execute_process(COMMAND "date" "+%Y.%m.%d" OUTPUT_VARIABLE BUILD_DATE OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(TITLE_ID "CROSS2D00")
+elseif (BUILD_3DS)
+    set(DEVKITPRO "/opt/devkitpro")
+    set(CMAKE_SYSTEM_PROCESSOR "armv6k")
+    set(CMAKE_C_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc")
+    set(CMAKE_CXX_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-g++")
+    set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-vita-eabi-as")
+    set(CMAKE_AR "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ar" CACHE STRING "")
+    set(CMAKE_RANLIB "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ranlib" CACHE STRING "")
+    set(CMAKE_C_FLAGS "-mword-relocations" CACHE STRING "C flags")
+    set(CMAKE_CXX_FLAGS "-mword-relocations -fno-rtti -fno-exceptions -std=gnu++11
+                        -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft" CACHE STRING "C++ flags")
+    set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO} ${DEVKITPRO}/devkitARM ${DEVKITPRO}/portlibs/armv6k)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+    SET(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available" )
 elseif (BUILD_RPI)
     set(RPISDK "/usr/local/rpi-tools")
     set(CMAKE_SYSTEM_PROCESSOR "armv7-a")
@@ -64,6 +81,17 @@ if (BUILD_PSP2)
     if (BUILD_DEBUG)
         list(APPEND FLAGS -D__PSP2_DEBUG__)
     endif (BUILD_DEBUG)
+elseif (BUILD_3DS)
+    set(PLATFORM_DIRS
+            src/3ds
+            ${DEVKITPRO}/libctru/include
+            )
+    file(GLOB PLATFORM_SRC
+            src/3ds/*.c*
+            )
+    list(APPEND FLAGS -O3 -DARM11 -D_3DS -D__3DS__
+            -ffunction-sections -fomit-frame-pointer
+            )
 elseif (BUILD_SDL2)
     set(PLATFORM_DIRS src/sdl2)
     file(GLOB PLATFORM_SRC src/sdl2/*.c*)
@@ -125,3 +153,21 @@ add_custom_target(${PROJECT_NAME}.vpk
         COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/src/res/* vpk/
         COMMAND cd vpk && zip -r ../${PROJECT_NAME}-${BUILD_DATE}.vpk . && cd ..
         )
+
+#####################
+# CTR (3DS) target
+#####################
+add_executable(${PROJECT_NAME}.3ds src/main.cpp)
+target_compile_options(${PROJECT_NAME}.3ds PRIVATE ${FLAGS} -I${DEVKITPRO}/libctru/include)
+target_link_libraries(${PROJECT_NAME}.3ds
+        cross2d
+        ${DEVKITPRO}/libctru/lib/libsftd.a
+        ${DEVKITPRO}/portlibs/armv6k/lib/libfreetype.a
+        ${DEVKITPRO}/portlibs/armv6k/lib/libpng.a
+        ${DEVKITPRO}/portlibs/armv6k/lib/libz.a
+        ${DEVKITPRO}/libctru/lib/libsf2d.a
+        ${DEVKITPRO}/libctru/lib/libcitro3d.a
+        ${DEVKITPRO}/libctru/lib/libctru.a
+        m)
+set_target_properties(${PROJECT_NAME}.3ds PROPERTIES LINK_FLAGS "-specs=3dsx.specs")
+add_dependencies(${PROJECT_NAME}.3ds ${PROJECT_NAME})

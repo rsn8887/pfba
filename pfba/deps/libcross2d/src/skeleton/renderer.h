@@ -66,6 +66,8 @@ public:
 
 #ifdef __PSP2__
 #include "psp2/psp2_renderer.h"
+#elif __3DS__
+#include "3ds/ctr_renderer.h"
 #elif __SDL2__
 #include "sdl2/sdl2_renderer.h"
 #elif __SFML__

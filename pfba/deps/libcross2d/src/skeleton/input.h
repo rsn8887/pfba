@@ -68,6 +68,8 @@ public:
 
 #ifdef __PSP2__
 #include "sdl2/sdl2_input.h"
+#elif __3DS__
+#include "3ds/ctr_input.h"
 #elif __SDL2__
 #include "sdl2/sdl2_input.h"
 #elif __SFML__

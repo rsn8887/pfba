@@ -42,7 +42,7 @@ public:
     void SetShader(int shader);
 
 private:
-    void StartDrawring();
+    void StartDrawing();
     bool drawing_started = false;
 };
 

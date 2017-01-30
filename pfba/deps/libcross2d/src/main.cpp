@@ -2,8 +2,8 @@
 // Created by cpasjuste on 08/12/16.
 //
 
-#include <skeleton/renderer.h>
-#include <skeleton/input.h>
+#include "skeleton/renderer.h"
+#include "skeleton/input.h"
 
 #ifdef __PSP2_DEBUG__
 #include <psp2shell.h>
@@ -28,24 +28,27 @@ int main() {
     input = (Input *) new SDL2Input();
     font_small = renderer->LoadFont("app0:/default-20.pgf", 20); // 20 = pgf font size
     font_large = renderer->LoadFont("app0:/default-40.pgf", 40); // 40 = pgf font size
+#elif __3DS__
+    renderer = (Renderer*) new CTRRenderer();
+    input = (Input *) new CTRInput();
+    font_small = renderer->LoadFont("default.ttf", 20);
+    font_large = renderer->LoadFont("default.ttf", 40);
 #elif __SFML__
     renderer = (Renderer *) new SFMLRenderer(SCRW, SCRH);
     input = (Input *) new SFMLInput((SFMLRenderer*)renderer);
-    font = renderer->LoadFont("/home/cpasjuste/dev/psvita/libcross2d/src/res/default.ttf", 60);
 #else
     renderer = (Renderer *) new SDL2Renderer(SCRW, SCRH);
     input = (Input *) new SDL2Input();
-    font = renderer->LoadFont("/home/cpasjuste/dev/psvita/libcross2d/src/res/default.ttf", 60);
 #endif
 
-    int sdl_keyboard_keys[] {
+    int sdl_keyboard_keys[]{
             // SDL_Scancode
             // needs to be in this order
             82, 81, 80, 79, 89, 90,
             91, 92, 93, 94, 41, 40,
             0 // KEY_QUIT
     };
-    int sfml_keyboard_keys[] {
+    int sfml_keyboard_keys[]{
             // SDL_Scancode
             // needs to be in this order
             73, // KEY_UP
@@ -70,8 +73,8 @@ int main() {
     while (true) {
 
         Input::Player player = input->Update()[0];
-        if(player.state) {
-            if(player.state & EV_QUIT)
+        if (player.state) {
+            if (player.state & EV_QUIT)
                 break;
             printf("state: %i\n", player.state);
             renderer->Delay(100);
@@ -84,33 +87,39 @@ int main() {
         renderer->DrawRect(rect, ORANGE, false);
 
         // inside rect
-        rect.x+=1; rect.y+=1; rect.w-=2; rect.h-=2;
+        rect.x += 1;
+        rect.y += 1;
+        rect.w -= 2;
+        rect.h -= 2;
         renderer->DrawRect(rect, GRAY_LIGHT);
 
         // inside "inside rect"
-        rect.x+=1; rect.y+=1; rect.w-=2; rect.h-=2;
+        rect.x += 1;
+        rect.y += 1;
+        rect.w -= 2;
+        rect.h -= 2;
         renderer->DrawRect(rect, GREEN, false);
 
         // "inside rect" inside border
         renderer->DrawBorder(rect, ORANGE);
 
         // screen centers
-        renderer->DrawLine(0, rect.h/2, rect.w, rect.h/2); // X
-        renderer->DrawLine(rect.w/2, 0, rect.w/2, rect.h); // Y
+        renderer->DrawLine(0, rect.h / 2, rect.w, rect.h / 2); // X
+        renderer->DrawLine(rect.w / 2, 0, rect.w / 2, rect.h); // Y
 
         // top middle text
-        renderer->DrawFont(font_large, rect.w/2, 0, "HELLO WORLD");
+        renderer->DrawFont(font_large, rect.w / 2, 0, "HELLO WORLD");
 
         // top left text
         renderer->DrawFont(font_small, 0, 0, "HELLO WORLD");
 
         // centered text
-        Rect r{ rect.w/2, rect.h/2, 0, 0 };
+        Rect r{rect.w / 2, rect.h / 2, 0, 0};
         font_small->scaling = 0.8;
         r.w = font_small->GetWidth("HELLO WORLD");
         r.h = font_small->GetHeight("HELLO WORLD");
-        r.x -= r.w/2;
-        r.y -= r.h/2;
+        r.x -= r.w / 2;
+        r.y -= r.h / 2;
         renderer->DrawRect(r, RED, false);
         renderer->DrawFont(font_small, r, WHITE, true, true, "HELLO WORLD");
         font_small->scaling = 1;
