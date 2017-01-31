@@ -42,7 +42,7 @@ elseif (BUILD_3DS)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
     set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
-    SET(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available" )
+    SET(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available")
 elseif (BUILD_RPI)
     set(RPISDK "/usr/local/rpi-tools")
     set(CMAKE_SYSTEM_PROCESSOR "armv7-a")
@@ -58,7 +58,7 @@ execute_process(COMMAND "date" "+%Y.%m.%d" OUTPUT_VARIABLE BUILD_DATE OUTPUT_STR
 
 # add cross2d library. If you want to port pfba to another platform,
 # you should (may) only need to port this library.
-add_subdirectory (pfba/deps/libcross2d)
+add_subdirectory(pfba/deps/libcross2d)
 
 project(pfba)
 
@@ -368,60 +368,71 @@ if (BUILD_PSP2)
         list(APPEND LDFLAGS
                 psp2shell SceNetCtl_stub SceNet_stub SceAppMgr_stub)
     endif (BUILD_DEBUG)
-elseif(BUILD_3DS)
-
-else ()
+elseif (BUILD_3DS)
+    ##############
+    # 3DS
+    ##############
+    list(APPEND FLAGS -DARM11 -D_3DS -D__3DS__
+            -ffunction-sections -fomit-frame-pointer)
+    set(LDFLAGS
+            cross2d
+            ${DEVKITPRO}/libctru/lib/libsftd.a
+            ${DEVKITPRO}/portlibs/armv6k/lib/libfreetype.a
+            ${DEVKITPRO}/portlibs/armv6k/lib/libpng.a
+            ${DEVKITPRO}/portlibs/armv6k/lib/libz.a
+            ${DEVKITPRO}/libctru/lib/libsf2d.a
+            ${DEVKITPRO}/libctru/lib/libcitro3d.a
+            ${DEVKITPRO}/libctru/lib/libctru.a
+            m)
+elseif (BUILD_SDL2)
     ##############
     # SDL2
     ##############
-    if (BUILD_SDL2)
-        list(APPEND FLAGS -D__SDL2__)
-        set(LDFLAGS cross2d SDL2 SDL2_image SDL2_ttf png z)
-        ##############
-        # SFML
-        ##############
-    elseif (BUILD_SFML)
-        list(APPEND FLAGS -D__SFML__)
-        list(APPEND LDFLAGS cross2d SDL2 sfml-graphics sfml-window sfml-system GL png z)
-    endif (BUILD_SDL2)
+    list(APPEND FLAGS -D__SDL2__)
+    set(LDFLAGS cross2d SDL2 SDL2_image SDL2_ttf png z)
+elseif (BUILD_SFML)
+    ##############
+    # SFML
+    ##############
+    list(APPEND FLAGS -D__SFML__)
+    list(APPEND LDFLAGS cross2d SDL2 sfml-graphics sfml-window sfml-system GL png z)
     ##############
     # RPI
     ##############
-    if (BUILD_RPI)
-        # add cyclone arm asm cpu support
-        list(REMOVE_ITEM SRC_CPU ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/m68000_intf.cpp)
-        list(APPEND INC
-                pfba/cpu/cyclone
-                )
-        file(GLOB SRC_RPI
-                pfba/cpu/c68000_intf.cpp
-                pfba/cpu/cyclone/Cyclone.s
-                )
-        list(APPEND SRC_PFBA ${SRC_RPI})
-        # rpi3 compile flags
-        list(APPEND FLAGS
-                -D__RPI__ -D__ARM__ -DBUILD_C68K -DUSE_FILE32API
-                -march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53 -mfpu=neon-fp-armv8
-                -mfloat-abi=hard -mvectorize-with-neon-quad -funsafe-math-optimizations
-                -ffast-math -mlittle-endian -munaligned-access
-                -fno-asynchronous-unwind-tables -funroll-loops
-                -mword-relocations -fno-unwind-tables -fno-optimize-sibling-calls
-                )
-        # rpi linker flags, linked to raspbian binaries compiled on
-        # the rpi device with no x11 support for sdl2 (faster, more stable)
-        set(LDFLAGS
-                -s
-                -Xlinker -rpath-link=${RPISDK}/sysroot/lib
-                -L${RPISDK}/sysroot/lib
-                cross2d
-                ${RPISDK}/sysroot/lib/libSDL2.a
-                ${RPISDK}/sysroot/lib/libSDL2_image.a
-                ${RPISDK}/sysroot/lib/libSDL2_ttf.a
-                ${RPISDK}/sysroot/lib/libfreetype.a
-                ${RPISDK}/sysroot/lib/libpng.a
-                ${RPISDK}/sysroot/lib/libz.a
-                pthread bcm_host rt dl)
-    endif (BUILD_RPI)
+elseif (BUILD_RPI)
+    # add cyclone arm asm cpu support
+    list(REMOVE_ITEM SRC_CPU ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/m68000_intf.cpp)
+    list(APPEND INC
+            pfba/cpu/cyclone
+            )
+    file(GLOB SRC_RPI
+            pfba/cpu/c68000_intf.cpp
+            pfba/cpu/cyclone/Cyclone.s
+            )
+    list(APPEND SRC_PFBA ${SRC_RPI})
+    # rpi3 compile flags
+    list(APPEND FLAGS
+            -D__RPI__ -D__ARM__ -DBUILD_C68K -DUSE_FILE32API
+            -march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53 -mfpu=neon-fp-armv8
+            -mfloat-abi=hard -mvectorize-with-neon-quad -funsafe-math-optimizations
+            -ffast-math -mlittle-endian -munaligned-access
+            -fno-asynchronous-unwind-tables -funroll-loops
+            -mword-relocations -fno-unwind-tables -fno-optimize-sibling-calls
+            )
+    # rpi linker flags, linked to raspbian binaries compiled on
+    # the rpi device with no x11 support for sdl2 (faster, more stable)
+    set(LDFLAGS
+            -s
+            -Xlinker -rpath-link=${RPISDK}/sysroot/lib
+            -L${RPISDK}/sysroot/lib
+            cross2d
+            ${RPISDK}/sysroot/lib/libSDL2.a
+            ${RPISDK}/sysroot/lib/libSDL2_image.a
+            ${RPISDK}/sysroot/lib/libSDL2_ttf.a
+            ${RPISDK}/sysroot/lib/libfreetype.a
+            ${RPISDK}/sysroot/lib/libpng.a
+            ${RPISDK}/sysroot/lib/libz.a
+            pthread bcm_host rt dl)
 endif (BUILD_PSP2)
 
 # source files
@@ -469,3 +480,11 @@ add_custom_target(${PROJECT_NAME}.deps ALL
         COMMAND perl ${CMAKE_SOURCE_DIR}/src/dep/scripts/cave_sprite_func.pl -o deps/cave_sprite_func.h
         COMMAND perl ${CMAKE_SOURCE_DIR}/src/dep/scripts/psikyo_tile_func.pl -o deps/psikyo_tile_func.h
         )
+
+#####################
+# CTR (3DS) target
+#####################
+add_executable(${PROJECT_NAME}.3ds ${SRC} ${CMAKE_BINARY_DIR}/deps/m68kops.c)
+target_compile_options(${PROJECT_NAME}.3ds PRIVATE ${FLAGS} -I${DEVKITPRO}/libctru/include)
+target_link_libraries(${PROJECT_NAME}.3ds cross2d ${LDFLAGS})
+set_target_properties(${PROJECT_NAME}.3ds PROPERTIES LINK_FLAGS "-specs=3dsx.specs")
