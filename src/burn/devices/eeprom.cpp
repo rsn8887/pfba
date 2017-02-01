@@ -4,7 +4,7 @@
 #define SERIAL_BUFFER_LENGTH 40
 #define MEMORY_SIZE 1024
 
-extern char szNvPath[MAX_PATH];
+extern char szAppNvPath[MAX_PATH];
 
 static const eeprom_interface *intf;
 
@@ -92,7 +92,7 @@ void EEPROMInit(const eeprom_interface *interface)
 	else locked = 0;
 
 	char output[MAX_PATH];
-	sprintf (output, "%s/%s.nv", szNvPath, BurnDrvGetTextA(DRV_NAME));
+	sprintf (output, "%s/%s.nv", szAppNvPath, BurnDrvGetTextA(DRV_NAME));
 
 	neeprom_available = 0;
 
@@ -113,7 +113,7 @@ void EEPROMExit()
 #endif
 
 	char output[MAX_PATH];
-	sprintf (output, "%s/%s.nv", szNvPath, BurnDrvGetTextA(DRV_NAME));
+	sprintf (output, "%s/%s.nv", szAppNvPath, BurnDrvGetTextA(DRV_NAME));
 
 	neeprom_available = 0;
 

@@ -1,6 +1,5 @@
 // Driver Init module
 #include "gui.h"
-#include "burner.h"
 #include "run.h"
 
 extern Gui *gui;
@@ -74,15 +73,18 @@ int DrvInit(int nDrvNum, bool bRestore) {
 
     printf("DrvInit: DoLibInit()\n");
     if (DoLibInit()) {                // Init the Burn library's driver
-        char szTemp[512];
-        //BurnDrvExit(); // this may crash if it wasn't init properly
-        _stprintf(szTemp, _T("Error starting '%s'.\n"), BurnDrvGetText(DRV_FULLNAME));
+        //char szTemp[512];
+        //_stprintf(szTemp, _T("Error starting '%s'.\n"), BurnDrvGetText(DRV_FULLNAME));
         //AppError(szTemp, 1);
         return 1;
     }
 
     printf("DrvInit: BurnExtLoadRom = DrvLoadRom\n");
     BurnExtLoadRom = DrvLoadRom;
+
+    char path[MAX_PATH];
+    snprintf(path, MAX_PATH, "%s/%s.nv2", szAppNvPath, BurnDrvGetTextA(DRV_NAME));
+    BurnStateLoad(path, 0, NULL);
 
     bDrvOkay = 1;                    // Okay to use all BurnDrv functions
 
@@ -100,6 +102,9 @@ int DrvInitCallback() {
 int DrvExit() {
     if (bDrvOkay) {
         if (nBurnDrvSelect[0] < nBurnDrvCount) {
+            char path[MAX_PATH];
+            snprintf(path, MAX_PATH, "%s/%s.nv2", szAppNvPath, BurnDrvGetTextA(DRV_NAME));
+            BurnStateSave(path, 0);
             BurnDrvExit();                // Exit the driver
         }
     }
@@ -190,7 +195,8 @@ int AppError(TCHAR *szText, int bWarning) {
             dst.y += height;
         }
 
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font_small, dst, WHITE, true, true, "PRESS A KEY TO CONTINUE", szText);
+        gui->GetRenderer()->DrawFont(gui->GetSkin()->font_small, dst, WHITE, true, true, "PRESS A KEY TO CONTINUE",
+                                     szText);
 
         gui->Flip();
     }
