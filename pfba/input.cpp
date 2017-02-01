@@ -1,6 +1,4 @@
-#include <SDL2/SDL.h>
 #include <skeleton/input.h>
-
 #include "burner.h"
 
 unsigned char inputServiceSwitch;

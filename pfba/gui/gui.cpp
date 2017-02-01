@@ -614,6 +614,13 @@ void Gui::RunOptionMenu(bool isRomConfig) {
 
 void Gui::Run() {
 
+    RomList::Rom r;
+    char *name = (char *) malloc(4);
+    strcpy(name, "dino");
+    r.zip = name;
+    RunRom(&r);
+
+    /*
     Clear();
     DrawBg();
     DrawRomList();
@@ -708,6 +715,7 @@ void Gui::Run() {
 
     delete (timer_input);
     delete (timer_load);
+    */
 }
 
 Gui::Gui(Renderer *rdr, Skin *sk, RomList *rList, Config *cfg, Input *in) {

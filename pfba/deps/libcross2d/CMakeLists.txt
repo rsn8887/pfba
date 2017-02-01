@@ -30,9 +30,8 @@ elseif (BUILD_3DS)
     set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-vita-eabi-as")
     set(CMAKE_AR "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ar" CACHE STRING "")
     set(CMAKE_RANLIB "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ranlib" CACHE STRING "")
-    set(CMAKE_C_FLAGS "-mword-relocations" CACHE STRING "C flags")
-    set(CMAKE_CXX_FLAGS "-mword-relocations -fno-rtti -fno-exceptions -std=gnu++11
-                        -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft" CACHE STRING "C++ flags")
+    set(CMAKE_C_FLAGS "-mword-relocations -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft" CACHE STRING "C flags")
+    set(CMAKE_CXX_FLAGS "-fpermissive -std=gnu++11 -mword-relocations -fno-rtti -fno-exceptions -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft" CACHE STRING "C++ flags")
     set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO} ${DEVKITPRO}/devkitARM ${DEVKITPRO}/portlibs/armv6k)
     set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -161,9 +160,11 @@ add_executable(${PROJECT_NAME}.3ds src/main.cpp)
 target_compile_options(${PROJECT_NAME}.3ds PRIVATE ${FLAGS} -I${DEVKITPRO}/libctru/include)
 target_link_libraries(${PROJECT_NAME}.3ds
         cross2d
+        ${DEVKITPRO}/libctru/lib/libsfil.a
         ${DEVKITPRO}/libctru/lib/libsftd.a
         ${DEVKITPRO}/portlibs/armv6k/lib/libfreetype.a
         ${DEVKITPRO}/portlibs/armv6k/lib/libpng.a
+        ${DEVKITPRO}/portlibs/armv6k/lib/libjpeg.a
         ${DEVKITPRO}/portlibs/armv6k/lib/libz.a
         ${DEVKITPRO}/libctru/lib/libsf2d.a
         ${DEVKITPRO}/libctru/lib/libcitro3d.a

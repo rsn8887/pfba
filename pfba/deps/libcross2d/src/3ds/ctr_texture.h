@@ -18,8 +18,10 @@ public:
     ~CTRTexture();
 
     void SetFiltering(int filter);
+    void Tile();
 
     sf2d_texture *tex = NULL;
+    u8 *pixels = NULL;
 };
 
 #endif //_CTR_TEXTURE_H_

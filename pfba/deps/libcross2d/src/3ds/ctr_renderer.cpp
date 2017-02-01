@@ -2,11 +2,11 @@
 // Created by cpasjuste on 21/11/16.
 //
 
+#include <citro3d.h>
+#include <sf2d.h>
 #include "ctr_renderer.h"
 #include "ctr_font.h"
 #include "ctr_texture.h"
-#include <sf2d.h>
-#include <citro3d.h>
 
 //////////
 // INIT //
@@ -18,6 +18,8 @@ CTRRenderer::CTRRenderer() : Renderer() {
     sf2d_set_3D(0);
 
     sftd_init();
+
+    this->shaders = new Shaders("");
 }
 //////////
 // INIT //
@@ -69,28 +71,44 @@ Texture *CTRRenderer::CreateTexture(int w, int h) {
 }
 
 Texture *CTRRenderer::LoadTexture(const char *file) {
-    return NULL;
+    CTRTexture *texture = new CTRTexture(file);
+    if (texture->tex == NULL) {
+        delete (texture);
+        return NULL;
+    }
+    return (Texture *) texture;
 }
 
 void CTRRenderer::DrawTexture(Texture *texture, int x, int y, int w, int h, float rotation) {
-    if (texture && ((CTRTexture *) texture)->tex) {
+
+    CTRTexture *ctr_tex = (CTRTexture *) texture;
+    sf2d_texture *sf2d_tex = ((CTRTexture *) texture)->tex;
+
+    if (sf2d_tex) {
 
         float sx = (float) w / (float) texture->width;
         float sy = (float) h / (float) texture->height;
+
+        // tile buffer for 3ds...
+        if (ctr_tex->pixels) {
+            ctr_tex->Tile();
+        }
+
         StartDrawing();
 
         const float rad = rotation * 0.0174532925f;
-        sf2d_draw_texture_rotate_scale_hotspot(((CTRTexture *) texture)->tex,
-                                               x + w / 2, y + h / 2,
+        sf2d_draw_texture_rotate_scale_hotspot(sf2d_tex,
+                                               x, y,
                                                rad,
                                                sx, sy,
-                                               x + w / 2,
-                                               y + h / 2);
+                                               0, 0);
+
+        //sf2d_draw_texture(sf2d_tex, x, y);
     }
 }
 
 int CTRRenderer::LockTexture(Texture *texture, const Rect &rect, void **pixels, int *pitch) {
-    *pixels = ((CTRTexture *) texture)->tex->tex.data;
+    *pixels = ((CTRTexture *) texture)->pixels;
     *pitch = texture->width * 2;
     return 0;
 }

@@ -8,7 +8,7 @@ enable_language(ASM)
 set(BUILD_SFML OFF CACHE BOOL "Build with SFML support")
 set(BUILD_SDL2 OFF CACHE BOOL "Build with SDL2 support")
 set(BUILD_PSP2 OFF CACHE BOOL "Build with PSP2 support")
-set(BUILD_3DS OFF CACHE BOOL "Build with 3DS support")
+set(BUILD_3DS ON CACHE BOOL "Build with 3DS support")
 set(BUILD_RPI OFF CACHE BOOL "Build with RPI support")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -25,6 +25,7 @@ if (BUILD_PSP2)
     set(CMAKE_AR "${VITASDK}/bin/arm-vita-eabi-ar")
     set(CMAKE_RANLIB "${VITASDK}/bin/arm-vita-eabi-ranlib")
     set(CMAKE_C_FLAGS "-Wl,-q" CACHE STRING "C flags")
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=gnu++11 -fpermissive" CACHE STRING "C++ flags")
     set(TITLE_ID "VITAFBA01")
 elseif (BUILD_3DS)
     set(DEVKITPRO "/opt/devkitpro")
@@ -34,9 +35,8 @@ elseif (BUILD_3DS)
     set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-vita-eabi-as")
     set(CMAKE_AR "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ar" CACHE STRING "")
     set(CMAKE_RANLIB "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ranlib" CACHE STRING "")
-    set(CMAKE_C_FLAGS "-mword-relocations" CACHE STRING "C flags")
-    set(CMAKE_CXX_FLAGS "-mword-relocations -fno-rtti -fno-exceptions -std=gnu++11
-                        -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft" CACHE STRING "C++ flags")
+    set(CMAKE_C_FLAGS "-mword-relocations -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft" CACHE STRING "C flags")
+    set(CMAKE_CXX_FLAGS "-fpermissive -std=gnu++11 -mword-relocations -fno-rtti -fno-exceptions -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft" CACHE STRING "C++ flags")
     set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO} ${DEVKITPRO}/devkitARM ${DEVKITPRO}/portlibs/armv6k)
     set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -50,9 +50,11 @@ elseif (BUILD_RPI)
     set(CMAKE_CXX_COMPILER "${RPISDK}/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-g++")
     set(CMAKE_ASM_COMPILER "${RPISDK}/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-g++")
     set(CMAKE_C_FLAGS "-I${RPISDK}/sysroot/include" CACHE STRING "C flags")
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=gnu++11 -fpermissive" CACHE STRING "C++ flags")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=gnu++11 -fpermissive" CACHE STRING "C++ flags")
 endif (BUILD_PSP2)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=gnu++11 -fpermissive" CACHE STRING "C++ flags")
 
 execute_process(COMMAND "date" "+%Y.%m.%d" OUTPUT_VARIABLE BUILD_DATE OUTPUT_STRIP_TRAILING_WHITESPACE)
 
@@ -373,12 +375,15 @@ elseif (BUILD_3DS)
     # 3DS
     ##############
     list(APPEND FLAGS -DARM11 -D_3DS -D__3DS__
+            -DUSE_FILE32API
             -ffunction-sections -fomit-frame-pointer)
     set(LDFLAGS
             cross2d
+            ${DEVKITPRO}/libctru/lib/libsfil.a
             ${DEVKITPRO}/libctru/lib/libsftd.a
             ${DEVKITPRO}/portlibs/armv6k/lib/libfreetype.a
             ${DEVKITPRO}/portlibs/armv6k/lib/libpng.a
+            ${DEVKITPRO}/portlibs/armv6k/lib/libjpeg.a
             ${DEVKITPRO}/portlibs/armv6k/lib/libz.a
             ${DEVKITPRO}/libctru/lib/libsf2d.a
             ${DEVKITPRO}/libctru/lib/libcitro3d.a
@@ -485,6 +490,11 @@ add_custom_target(${PROJECT_NAME}.deps ALL
 # CTR (3DS) target
 #####################
 add_executable(${PROJECT_NAME}.3ds ${SRC} ${CMAKE_BINARY_DIR}/deps/m68kops.c)
-target_compile_options(${PROJECT_NAME}.3ds PRIVATE ${FLAGS} -I${DEVKITPRO}/libctru/include)
+target_compile_options(${PROJECT_NAME}.3ds PRIVATE ${FLAGS})
+target_include_directories(${PROJECT_NAME}.3ds PRIVATE
+        ${INC}
+        ${DEVKITPRO}/libctru/include
+        ${DEVKITPRO}/portlibs/armv6k/include
+        )
 target_link_libraries(${PROJECT_NAME}.3ds cross2d ${LDFLAGS})
 set_target_properties(${PROJECT_NAME}.3ds PROPERTIES LINK_FLAGS "-specs=3dsx.specs")

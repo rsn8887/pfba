@@ -238,6 +238,12 @@ void AudioInit(Config *cfg) {
     nFMInterpolation = 0;
     //cfg->GetRomValue(Option::Index::ROM_AUDIO_FMINTERPOLATION) == 0 ? 0 : 3;
 
+#ifdef __3DS__
+    nBurnSoundRate = 0;
+    nBurnSoundLen = 0;
+    pBurnSoundOut = NULL;
+    audio = NULL;
+#else
     audio = (Audio *) new SDL2Audio(nBurnSoundRate, nBurnFPS);
     if (audio->available) {
         nBurnSoundRate = audio->frequency;
@@ -248,6 +254,7 @@ void AudioInit(Config *cfg) {
         nBurnSoundLen = 0;
         pBurnSoundOut = NULL;
     }
+#endif
 }
 
 void RunEmulator(Gui *g, int drvnum) {

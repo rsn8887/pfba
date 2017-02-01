@@ -28,9 +28,7 @@ int _newlib_heap_size_user = 192 * 1024 * 1024;
 #elif __SDL2__
 #include <sdl2/sdl2_input.h>
 #elif __SFML__
-
 #include <sfml/sfml_input.h>
-
 #endif
 
 Renderer *renderer;
@@ -94,6 +92,8 @@ int main(int argc, char **argv) {
     buttons.push_back({11, "START"});
 
     renderer = (Renderer *) new PSP2Renderer(960, 544);
+#elif __3DS__
+    renderer = (Renderer *) new CTRRenderer();
 #elif __SDL2__
     renderer = (Renderer *) new SDL2Renderer(960, 544);
 #elif __SFML__
@@ -110,6 +110,8 @@ int main(int argc, char **argv) {
     // init input
 #ifdef __PSP2__
     inp = (Input *) new SDL2Input();
+#elif __3DS__
+    inp = (Input *) new CTRInput();
 #elif __SDL2__
     inp = (Input *) new SDL2Input();
 #elif __SFML__
@@ -127,6 +129,7 @@ int main(int argc, char **argv) {
 #ifdef __PSP2__ // prevent rom list scrolling lag on psp2
     gui->SetTitleLoadDelay(500);
 #endif
+
     gui->Run();
 
     BurnLibExit();

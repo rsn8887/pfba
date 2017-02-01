@@ -17,6 +17,8 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
     roms_paths.clear();
 #ifdef __PSP2__
     roms_paths.push_back("ux0:/data/pfba/roms/");
+#elif __3DS__
+    roms_paths.push_back("/pfba/roms/");
 #else
     roms_paths.push_back("./roms/");
 #endif
@@ -312,10 +314,6 @@ const char *Config::GetRomPath(int n) {
 }
 
 std::vector<std::string> Config::GetRomPaths() {
-    std::vector<std::string> rom_paths;
-    for (int i = 0; i < DIRS_MAX; i++) {
-        rom_paths.push_back(GetRomPath(i));
-    }
     return roms_paths;
 }
 

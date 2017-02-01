@@ -28,7 +28,11 @@ char szAppSkinPath[MAX_PATH];
 void BurnPathsInit()
 {
 #ifndef __PSP2__ // TODO : crash on psp2 ?!
+#ifdef __3DS__
+    strncpy(szAppHomePath, "/pfba", MAX_PATH);
+#else
     getcwd(szAppHomePath, MAX_PATH);
+#endif
     strcat(szAppHomePath, "/");
     mkdir(szAppHomePath, 0777);
     //printf("szAppHomePath: %s\n", szAppHomePath);
