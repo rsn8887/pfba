@@ -178,7 +178,8 @@ void CTRRenderer::Flip() {
 }
 
 void CTRRenderer::Delay(unsigned int ms) {
-
+    s64 nano = ms * 1000000;
+    svcSleepThread(nano);
 }
 
 CTRRenderer::~CTRRenderer() {

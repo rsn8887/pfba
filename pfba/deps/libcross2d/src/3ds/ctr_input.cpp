@@ -4,6 +4,7 @@
 
 #include <3ds.h>
 #include "ctr_input.h"
+#include "ctr_renderer.h"
 
 static int key_id[KEY_COUNT]{
         Input::Key::KEY_UP,
@@ -22,43 +23,10 @@ static int key_id[KEY_COUNT]{
 
 CTRInput::CTRInput() {
 
-    /*
-    if (SDL_WasInit(SDL_INIT_JOYSTICK) == 0) {
-        printf("SDL2Input: SDL_INIT_JOYSTICK\n");
-        SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-    }
+    players[0].enabled = true;
 
-    int joystick_count = SDL_NumJoysticks();
-    if (joystick_count > 4) {
-        joystick_count = 4;
-    }
-    printf("%d Joystick(s) Found\n", joystick_count);
-
-    if (joystick_count > 0) {
-        for (int i = 0; i < joystick_count; i++) {
-            printf("Joystick: %i\n", i);
-            players[i].data = SDL_JoystickOpen(i);
-            players[i].id = i;
-            players[i].enabled = true;
-            printf("Name: %s\n", SDL_JoystickName((SDL_Joystick *) players[i].data));
-            printf("Hats %d\n", SDL_JoystickNumHats((SDL_Joystick *) players[i].data));
-            printf("Buttons %d\n", SDL_JoystickNumButtons((SDL_Joystick *) players[i].data));
-            printf("Axis %d\n", SDL_JoystickNumAxes((SDL_Joystick *) players[i].data));
-        }
-    } else {
-        // allow keyboard mapping to player1
-        players[0].enabled = true;
-    }
-    */
-
-    for (int i = 0; i < PLAYER_COUNT; i++) {
-        for (int k = 0; k < KEY_COUNT; k++) {
-            players[i].mapping[k] = 0;
-        }
-    }
-
-    for (int i = 0; i < KEY_COUNT; i++) {
-        keyboard.mapping[i] = 0;
+    for (int k = 0; k < KEY_COUNT; k++) {
+        players[0].mapping[k] = 0;
     }
 }
 
@@ -79,6 +47,12 @@ int CTRInput::GetButton(int player) {
         }
     }
     */
+    while (true) {
+
+        hidScanInput();
+
+    }
+
     return -1;
 }
 
@@ -94,66 +68,46 @@ Input::Player *CTRInput::Update(bool rotate) {
         return players;
     }
 
-    circlePosition circle;
     hidScanInput();
+    circlePosition circle;
     hidCircleRead(&circle);
+
+    process_buttons(players[0], rotate);
 
     // 3ds needs screen refresh/swap every frames ?
     if (players[0].state <= 0) {
         players[0].state = EV_REFRESH;
     }
 
-    /*
-    for (int i = 0; i < PLAYER_COUNT; i++) {
-
-        if (!players[i].enabled) {
-            continue;
-        }
-
-        // hat
-        process_hat(players[i], rotate);
-
-        // sticks
-        process_axis(players[i], rotate);
-
-        // buttons
-        process_buttons(players[i], rotate);
-    }
-
-    // keyboard
-    process_keyboard(players[0], rotate);
-    */
-
     return players;
-}
-
-void CTRInput::process_axis(Input::Player &player, bool rotate) {
-
-    if (!player.enabled || !player.data) {
-        return;
-    }
-
-
-}
-
-void CTRInput::process_hat(Input::Player &player, bool rotate) {
-
-    if (!player.enabled || !player.data) {
-        return;
-    }
-
-
 }
 
 void CTRInput::process_buttons(Input::Player &player, bool rotate) {
 
-    if (!player.enabled || !player.data) {
+    if (!player.enabled) {
         return;
     }
+
+    u32 held = hidKeysHeld();
 
     for (int i = 0; i < KEY_COUNT; i++) {
 
         int mapping = player.mapping[i];
+        if (mapping < 0)
+            mapping = 0;
 
+        if (held & BIT(mapping)) {
+            if (rotate && key_id[i] == Input::Key::KEY_UP) {
+                player.state |= Input::Key::KEY_RIGHT;
+            } else if (rotate && key_id[i] == Input::Key::KEY_DOWN) {
+                player.state |= Input::Key::KEY_LEFT;
+            } else if (rotate && key_id[i] == Input::Key::KEY_LEFT) {
+                player.state |= Input::Key::KEY_UP;
+            } else if (rotate && key_id[i] == Input::Key::KEY_RIGHT) {
+                player.state |= Input::Key::KEY_DOWN;
+            } else {
+                player.state |= key_id[i];
+            }
+        }
     }
 }

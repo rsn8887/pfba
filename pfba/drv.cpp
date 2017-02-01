@@ -5,7 +5,6 @@
 
 extern Gui *gui;
 int bDrvOkay = 0;                        // 1 if the Driver has been initted okay, and it's okay to use the BurnDrv functions
-static bool bSaveRAM = false;
 
 static int ProgressCreate();
 
@@ -87,7 +86,6 @@ int DrvInit(int nDrvNum, bool bRestore) {
 
     bDrvOkay = 1;                    // Okay to use all BurnDrv functions
 
-    bSaveRAM = false;
     nBurnLayer = 0xFF;                // show all layers
 
     // Reset the speed throttling code, so we don't 'jump' after the load
@@ -102,20 +100,12 @@ int DrvInitCallback() {
 int DrvExit() {
     if (bDrvOkay) {
         if (nBurnDrvSelect[0] < nBurnDrvCount) {
-            if (bSaveRAM) {
-                bSaveRAM = false;
-            }
             BurnDrvExit();                // Exit the driver
         }
     }
 
-    // Make sure config is saved when command-line setting override config file
-    //if (nBurnDrvSelect[0] != ~0U)
-    //    ConfigGameSave();
-
     BurnExtLoadRom = NULL;
     bDrvOkay = 0;                    // Stop using the BurnDrv functions
-    //SndExit();
     nBurnDrvSelect[0] = ~0U;            // no driver selected
 
     return 0;
