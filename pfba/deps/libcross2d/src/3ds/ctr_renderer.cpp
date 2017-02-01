@@ -86,9 +86,6 @@ void CTRRenderer::DrawTexture(Texture *texture, int x, int y, int w, int h, floa
 
     if (sf2d_tex) {
 
-        float sx = (float) w / (float) texture->width;
-        float sy = (float) h / (float) texture->height;
-
         // tile buffer for 3ds...
         if (ctr_tex->pixels) {
             ctr_tex->Tile();
@@ -96,14 +93,30 @@ void CTRRenderer::DrawTexture(Texture *texture, int x, int y, int w, int h, floa
 
         StartDrawing();
 
+        const float sx = (float) w / (float) texture->width;
+        const float sy = (float) h / (float) texture->height;
         const float rad = rotation * 0.0174532925f;
+
+        /*
+        sf2d_draw_texture_part_rotate_scale(sf2d_tex,
+                                            x + (w / 2), y + (h / 2),
+                                            rad,
+                                            0, 0,
+                                            texture->width, texture->height,
+                                            sx, sy);
+        */
+
+        //printf("w: %i, h: %i || sx: %f, sy: %f\n",  texture->width, texture->height, sx, sy);
+        /*
         sf2d_draw_texture_rotate_scale_hotspot(sf2d_tex,
-                                               x, y,
+                                               x + w / 2, y + h / 2,
                                                rad,
                                                sx, sy,
-                                               0, 0);
+                                               texture->width / 2, texture->height / 2);
+                                               */
 
-        //sf2d_draw_texture(sf2d_tex, x, y);
+        sf2d_draw_texture_scale(sf2d_tex, x, y, sx, sy);
+
     }
 }
 

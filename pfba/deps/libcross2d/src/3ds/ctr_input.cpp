@@ -3,7 +3,6 @@
 //
 
 #include <3ds.h>
-#include <cstdio>
 #include "ctr_input.h"
 
 static int key_id[KEY_COUNT]{
@@ -98,6 +97,11 @@ Input::Player *CTRInput::Update(bool rotate) {
     circlePosition circle;
     hidScanInput();
     hidCircleRead(&circle);
+
+    // 3ds needs screen refresh/swap every frames ?
+    if (players[0].state <= 0) {
+        players[0].state = EV_REFRESH;
+    }
 
     /*
     for (int i = 0; i < PLAYER_COUNT; i++) {

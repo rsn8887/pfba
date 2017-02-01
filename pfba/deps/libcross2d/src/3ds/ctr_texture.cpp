@@ -21,7 +21,7 @@ CTRTexture::CTRTexture(const char *path) : Texture(path) {
     }
 
     if (!tex) {
-        printf("PSP2Texture: could not create texture from `%s`\n", path);
+        printf("CTRTexture: could not create texture from `%s`\n", path);
         return;
     }
 
@@ -33,7 +33,7 @@ CTRTexture::CTRTexture(int w, int h) : Texture(w, h) {
 
     tex = sf2d_create_texture(w, h, TEXFMT_RGB565, SF2D_PLACE_VRAM);
     if (!tex) {
-        printf("PSP2Texture: couldn't create texture\n");
+        printf("CTRTexture: couldn't create texture\n");
         return;
     }
 
@@ -56,9 +56,9 @@ void CTRTexture::Tile() {
 
     C3D_SafeDisplayTransfer(
             (u32 *) pixels,
-            GX_BUFFER_DIM(width, height),
+            (u32) GX_BUFFER_DIM(width, height),
             (u32 *) tex->tex.data,
-            GX_BUFFER_DIM(width, height),
+            (u32) GX_BUFFER_DIM(width, height),
             flags
     );
 

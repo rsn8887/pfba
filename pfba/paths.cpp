@@ -12,7 +12,8 @@ char szAppConfigPath[MAX_PATH] = "ux0:/data/pfba/configs";
 char szAppHiscorePath[MAX_PATH] = "ux0:/data/pfba/hiscore";
 char szAppSamplesPath[MAX_PATH] = "ux0:/data/pfba/samples";
 char szAppPreviewPath[MAX_PATH] = "ux0:/data/pfba/previews";
-char szAppBlendPath[MAX_PATH] = "ux0:/data/pfba/blend";
+char szAppBlendPath[MAX_PATH] = "ux0:/data/pfba/blend/";
+char szNvPath[MAX_PATH] = "ux0:/data/pfba/config/games";
 char szAppSkinPath[MAX_PATH] = "app0:/skin";
 #else
 char szAppHomePath[MAX_PATH];
@@ -22,6 +23,7 @@ char szAppHiscorePath[MAX_PATH];
 char szAppSamplesPath[MAX_PATH];
 char szAppPreviewPath[MAX_PATH];
 char szAppBlendPath[MAX_PATH];
+char szNvPath[MAX_PATH];
 char szAppSkinPath[MAX_PATH];
 #endif
 
@@ -57,12 +59,17 @@ void BurnPathsInit()
     mkdir(szAppPreviewPath, 0777);
     //printf("szAppPreviewPath: %s\n", szAppPreviewPath);
 
-    snprintf(szAppBlendPath, MAX_PATH, "%s%s", szAppHomePath, "blend");
+    snprintf(szAppBlendPath, MAX_PATH, "%s%s/", szAppHomePath, "blend");
     mkdir(szAppBlendPath, 0777);
     //printf("szAppBlendPath: %s\n", szAppBlendPath);
 
     snprintf(szAppSkinPath, MAX_PATH, "%s%s", szAppHomePath, "skin");
     mkdir(szAppSkinPath, 0777);
     //printf("szAppSkinPath: %s\n", szAppSkinPath);
+
+    snprintf(szNvPath, MAX_PATH, "%sconfig", szAppHomePath);
+    mkdir(szNvPath, 0777);
+    strncat(szNvPath, "/games", MAX_PATH);
+    mkdir(szNvPath, 0777);
 #endif
 }

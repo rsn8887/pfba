@@ -107,7 +107,8 @@ void Gui::DrawRomInfo(RomList::Rom *rom) {
     if (rom->flags & BDF_ORIENTATION_VERTICAL) {
         renderer->DrawFont(skin->font_small, r.x, r.y, "ORIENTATION: VERTICAL");
         if (rom->flags & BDF_ORIENTATION_FLIPPED) {
-            renderer->DrawFont(skin->font_small, r.x + skin->font_small->GetWidth("ORIENTATION: VERTICAL"), r.y, " / FLIPPED");
+            renderer->DrawFont(skin->font_small, r.x + skin->font_small->GetWidth("ORIENTATION: VERTICAL"), r.y,
+                               " / FLIPPED");
         }
     }
 }
@@ -614,13 +615,14 @@ void Gui::RunOptionMenu(bool isRomConfig) {
 
 void Gui::Run() {
 
+    /*
     RomList::Rom r;
     char *name = (char *) malloc(4);
     strcpy(name, "dino");
     r.zip = name;
     RunRom(&r);
+    */
 
-    /*
     Clear();
     DrawBg();
     DrawRomList();
@@ -715,7 +717,6 @@ void Gui::Run() {
 
     delete (timer_input);
     delete (timer_load);
-    */
 }
 
 Gui::Gui(Renderer *rdr, Skin *sk, RomList *rList, Config *cfg, Input *in) {
@@ -960,7 +961,7 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
             }
 
             Clear();
-            if(video) {
+            if (video) {
                 video->Render();
             }
 

@@ -13,6 +13,7 @@
 
 #define EV_RESIZE 0x1000
 #define EV_QUIT 0x2000
+#define EV_REFRESH 0x4000
 
 class Input {
 

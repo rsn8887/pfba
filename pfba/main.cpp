@@ -77,6 +77,8 @@ int main(int argc, char **argv) {
     sceIoMkdir("ux0:/data/pfba/previews", 0777);
     sceIoMkdir("ux0:/data/pfba/blend", 0777);
     sceIoMkdir("ux0:/data/pfba/roms", 0777);
+    sceIoMkdir("ux0:/data/pfba/config", 0777);
+    sceIoMkdir("ux0:/data/pfba/config/games", 0777);
 
     buttons.push_back({8, "UP"});
     buttons.push_back({6, "DOWN"});
