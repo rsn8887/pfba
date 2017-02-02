@@ -65,7 +65,9 @@ PFBA: Portable Final Burn Alpha
 
 **Developers tips**
 
->-
+There is currently two modifications to the original FBA sources :
+>- [ARM: fix nec cpu (irem, raiden...)](https://github.com/Cpasjuste/pfba/commit/d1d8bc51457a1f00eecc5a934b94afe5993c7eae)
+>- [COMMON: fix eeprom (nvram) loading/saving](https://github.com/Cpasjuste/pfba/commit/4e65c45ddb5993ec2c43728bb789280cff99cacd)
 
 -----
 
