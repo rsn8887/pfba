@@ -27,8 +27,6 @@
 int _newlib_heap_size_user = 192 * 1024 * 1024;
 #elif __SDL2__
 #include <sdl2/sdl2_input.h>
-#elif __SFML__
-#include <sfml/sfml_input.h>
 #endif
 
 Renderer *renderer;
@@ -94,31 +92,24 @@ int main(int argc, char **argv) {
     buttons.push_back({11, "START"});
 
     renderer = (Renderer *) new PSP2Renderer(960, 544);
+    inp = (Input *) new SDL2Input();
 #elif __3DS__
     renderer = (Renderer *) new CTRRenderer();
+    inp = (Input *) new CTRInput();
 #elif __SDL2__
     renderer = (Renderer *) new SDL2Renderer(960, 544);
+     inp = (Input *) new SDL2Input();
 #elif __SFML__
     std::string shaderPath = szAppHomePath;
     shaderPath += "shaders/sfml";
     renderer = (Renderer *) new SFMLRenderer(0, 0, shaderPath);
+    inp = (Input *) new SFMLInput((SFMLRenderer *) renderer);
 #endif
 
     // load configuration
     std::string cfgPath = szAppHomePath;
     cfgPath += "pfba.cfg";
     config = new Config(cfgPath, renderer);
-
-    // init input
-#ifdef __PSP2__
-    inp = (Input *) new SDL2Input();
-#elif __3DS__
-    inp = (Input *) new CTRInput();
-#elif __SDL2__
-    inp = (Input *) new SDL2Input();
-#elif __SFML__
-    inp = (Input *) new SFMLInput((SFMLRenderer *) renderer);
-#endif
 
     // build/init roms list
     romList = new RomList(&config->hardwareList, config->GetRomPaths());
