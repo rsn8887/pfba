@@ -116,9 +116,11 @@
 //typedef UINT8 unsigned char
 //typedef UINT16 unsigned short
 //typedef UINT32 unsigned int
+#ifndef __ARM__ // https://github.com/libretro/fbalpha/commit/003922b9317af073008021e39eac6bafa819e071
 #define INT8 char
 #define INT16 short
 #define INT32 int
+#endif
 #define INPUT_LINE_NMI	0x20 // nmi
 
 #define NEC_INLINE
