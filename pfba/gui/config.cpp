@@ -129,18 +129,18 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
 
     // keyboard
     options_gui.push_back(Option("KEYBOARD", {"KEYBOARD"}, 0, Option::Index::MENU_KEYBOARD, Option::Type::MENU));
-    options_gui.push_back(Option("KEY_UP", {"82"}, 82, Option::Index::KEY_UP, Option::Type::INPUT));
-    options_gui.push_back(Option("KEY_DOWN", {"81"}, 81, Option::Index::KEY_DOWN, Option::Type::INPUT));
-    options_gui.push_back(Option("KEY_LEFT", {"80"}, 80, Option::Index::KEY_LEFT, Option::Type::INPUT));
-    options_gui.push_back(Option("KEY_RIGHT", {"79"}, 79, Option::Index::KEY_RIGHT, Option::Type::INPUT));
-    options_gui.push_back(Option("KEY_FIRE1", {"89"}, 89, Option::Index::KEY_FIRE1, Option::Type::INPUT));
-    options_gui.push_back(Option("KEY_FIRE2", {"90"}, 90, Option::Index::KEY_FIRE2, Option::Type::INPUT));
-    options_gui.push_back(Option("KEY_FIRE3", {"91"}, 91, Option::Index::KEY_FIRE3, Option::Type::INPUT));
-    options_gui.push_back(Option("KEY_FIRE4", {"92"}, 92, Option::Index::KEY_FIRE4, Option::Type::INPUT));
-    options_gui.push_back(Option("KEY_FIRE5", {"93"}, 93, Option::Index::KEY_FIRE5, Option::Type::INPUT));
-    options_gui.push_back(Option("KEY_FIRE6", {"94"}, 94, Option::Index::KEY_FIRE6, Option::Type::INPUT));
-    options_gui.push_back(Option("KEY_COIN1", {"41"}, 41, Option::Index::KEY_COIN1, Option::Type::INPUT));
-    options_gui.push_back(Option("KEY_START1", {"40"}, 40, Option::Index::KEY_START1, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_UP", {"73"}, 73, Option::Index::KEY_UP, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_DOWN", {"74"}, 74, Option::Index::KEY_DOWN, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_LEFT", {"71"}, 71, Option::Index::KEY_LEFT, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_RIGHT", {"72"}, 72, Option::Index::KEY_RIGHT, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_FIRE1", {"76"}, 76, Option::Index::KEY_FIRE1, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_FIRE2", {"77"}, 77, Option::Index::KEY_FIRE2, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_FIRE3", {"78"}, 78, Option::Index::KEY_FIRE3, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_FIRE4", {"79"}, 79, Option::Index::KEY_FIRE4, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_FIRE5", {"80"}, 80, Option::Index::KEY_FIRE5, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_FIRE6", {"81"}, 81, Option::Index::KEY_FIRE6, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_COIN1", {"36"}, 36, Option::Index::KEY_COIN1, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_START1", {"58"}, 58, Option::Index::KEY_START1, Option::Type::INPUT));
 
     //
     options_gui.push_back(Option("END", {"END"}, 0, Option::Index::END, Option::Type::MENU));
