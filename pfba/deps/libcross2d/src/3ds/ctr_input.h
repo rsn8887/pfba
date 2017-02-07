@@ -13,11 +13,11 @@ public:
     CTRInput();
     virtual ~CTRInput();
 
-    virtual Player *Update(bool rotate = false);
+    virtual Player *Update(int rotate = 0);
     virtual int GetButton(int player);
 
 private:
-    virtual void process_buttons(Input::Player &player, bool rotate = false);
+    virtual void process_buttons(Input::Player &player, int rotate = 0);
 
 };
 

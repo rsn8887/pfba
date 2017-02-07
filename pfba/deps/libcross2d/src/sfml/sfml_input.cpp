@@ -74,7 +74,7 @@ int SFMLInput::GetButton(int player) {
     return -1;
 }
 
-Input::Player *SFMLInput::Update(bool rotate) {
+Input::Player *SFMLInput::Update(int rotate) {
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
         players[i].state = 0;
@@ -125,7 +125,7 @@ Input::Player *SFMLInput::Update(bool rotate) {
     return players;
 }
 
-void SFMLInput::process_axis(Input::Player &player, bool rotate) {
+void SFMLInput::process_axis(Input::Player &player, int rotate) {
 
     if (!player.enabled) {
         return;
@@ -135,9 +135,9 @@ void SFMLInput::process_axis(Input::Player &player, bool rotate) {
     if (sf::Joystick::hasAxis(player.id, sf::Joystick::X)) {
         int x = (int) sf::Joystick::getAxisPosition(player.id, sf::Joystick::X) * 320;
         if (x > player.dead_zone) {
-            player.state |= rotate ? Input::Key::KEY_DOWN : Input::Key::KEY_RIGHT;
+            player.state |= (rotate == 1) ? Input::Key::KEY_DOWN : (rotate == 3) ? Input::Key::KEY_UP : Input::Key::KEY_RIGHT;
         } else if (x < -player.dead_zone) {
-            player.state |= rotate ? Input::Key::KEY_UP : Input::Key::KEY_LEFT;
+            player.state |= (rotate == 1) ? Input::Key::KEY_UP : (rotate == 3) ? Input::Key::KEY_DOWN : Input::Key::KEY_LEFT;
         }
     }
 
@@ -145,14 +145,14 @@ void SFMLInput::process_axis(Input::Player &player, bool rotate) {
     if (sf::Joystick::hasAxis(player.id, sf::Joystick::Y)) {
         int y = (int) sf::Joystick::getAxisPosition(player.id, sf::Joystick::Y) * 320;
         if (y > player.dead_zone) {
-            player.state |= rotate ? Input::Key::KEY_LEFT : Input::Key::KEY_DOWN;
+            player.state |= (rotate == 1) ? Input::Key::KEY_LEFT : (rotate == 3) ? Input::Key::KEY_RIGHT : Input::Key::KEY_DOWN;
         } else if (y < -player.dead_zone) {
-            player.state |= rotate ? Input::Key::KEY_RIGHT : Input::Key::KEY_UP;
+            player.state |= (rotate == 1) ? Input::Key::KEY_RIGHT : (rotate == 3) ? Input::Key::KEY_LEFT : Input::Key::KEY_UP;
         }
     }
 }
 
-void SFMLInput::process_hat(Input::Player &player, bool rotate) {
+void SFMLInput::process_hat(Input::Player &player, int rotate) {
 
     if (!player.enabled) {
         return;
@@ -162,9 +162,9 @@ void SFMLInput::process_hat(Input::Player &player, bool rotate) {
     if (sf::Joystick::hasAxis(player.id, sf::Joystick::PovX)) {
         int x = (int) sf::Joystick::getAxisPosition(player.id, sf::Joystick::PovX) * 320;
         if (x > player.dead_zone) {
-            player.state |= rotate ? Input::Key::KEY_DOWN : Input::Key::KEY_RIGHT;
+            player.state |= (rotate == 1) ? Input::Key::KEY_DOWN : (rotate == 3) ? Input::Key::KEY_UP : Input::Key::KEY_RIGHT;
         } else if (x < -player.dead_zone) {
-            player.state |= rotate ? Input::Key::KEY_UP : Input::Key::KEY_LEFT;
+            player.state |= (rotate == 1) ? Input::Key::KEY_UP : (rotate == 3) ? Input::Key::KEY_DOWN : Input::Key::KEY_LEFT;
         }
     }
 
@@ -172,15 +172,15 @@ void SFMLInput::process_hat(Input::Player &player, bool rotate) {
     if (sf::Joystick::hasAxis(player.id, sf::Joystick::PovY)) {
         int y = (int) sf::Joystick::getAxisPosition(player.id, sf::Joystick::PovY) * 320;
         if (y > player.dead_zone) {
-            player.state |= rotate ? Input::Key::KEY_LEFT : Input::Key::KEY_DOWN;
+            player.state |= (rotate == 1) ? Input::Key::KEY_LEFT : (rotate == 3) ? Input::Key::KEY_RIGHT : Input::Key::KEY_DOWN;
         } else if (y < -player.dead_zone) {
-            player.state |= rotate ? Input::Key::KEY_RIGHT : Input::Key::KEY_UP;
+            player.state |= (rotate == 1) ? Input::Key::KEY_RIGHT : (rotate == 3) ? Input::Key::KEY_LEFT : Input::Key::KEY_UP;
         }
     }
 
 }
 
-void SFMLInput::process_buttons(Input::Player &player, bool rotate) {
+void SFMLInput::process_buttons(Input::Player &player, int rotate) {
 
     if (!player.enabled) {
         return;
@@ -194,13 +194,29 @@ void SFMLInput::process_buttons(Input::Player &player, bool rotate) {
 
         if (sf::Joystick::isButtonPressed(player.id, mapping)) {
             if (rotate && key_id[i] == Input::Key::KEY_UP) {
-                player.state |= Input::Key::KEY_RIGHT;
+                if (rotate == 1) {
+                    player.state |= Input::Key::KEY_RIGHT;
+                } else if (rotate == 3) {
+                    player.state |= Input::Key::KEY_LEFT;
+                }
             } else if (rotate && key_id[i] == Input::Key::KEY_DOWN) {
-                player.state |= Input::Key::KEY_LEFT;
+                if (rotate == 1) {
+                    player.state |= Input::Key::KEY_LEFT;
+                } else if (rotate == 3) {
+                    player.state |= Input::Key::KEY_RIGHT;
+                }
             } else if (rotate && key_id[i] == Input::Key::KEY_LEFT) {
-                player.state |= Input::Key::KEY_UP;
+                if (rotate == 1) {
+                    player.state |= Input::Key::KEY_UP;
+                } else if (rotate == 3) {
+                    player.state |= Input::Key::KEY_DOWN;
+                }
             } else if (rotate && key_id[i] == Input::Key::KEY_RIGHT) {
-                player.state |= Input::Key::KEY_DOWN;
+                if (rotate == 1) {
+                    player.state |= Input::Key::KEY_DOWN;
+                } else if (rotate == 3) {
+                    player.state |= Input::Key::KEY_UP;
+                }
             } else {
                 player.state |= key_id[i];
             }
@@ -208,7 +224,7 @@ void SFMLInput::process_buttons(Input::Player &player, bool rotate) {
     }
 }
 
-void SFMLInput::process_keyboard(Input::Player &player, bool rotate) {
+void SFMLInput::process_keyboard(Input::Player &player, int rotate) {
 
     for (int i = 0; i < KEY_COUNT; i++) {
         sf::Keyboard::Key key((sf::Keyboard::Key) keyboard.mapping[i]);

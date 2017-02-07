@@ -62,9 +62,16 @@ void Video::Scale() {
 
     // TODO: force right to left orientation on psp2,
     // should add platform specific code
-    if (!gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION)
+
+    if ((gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION) == 0
+          || gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION) == 3)
         && BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
         if (!(BurnDrvGetFlags() & BDF_ORIENTATION_FLIPPED)) {
+            rotation = 180;
+        }
+    } else if (gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION) == 2
+        && BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
+        if ((BurnDrvGetFlags() & BDF_ORIENTATION_FLIPPED)) {
             rotation = 180;
         }
     } else {
@@ -115,25 +122,11 @@ void Video::Scale() {
                 }
             } else {
                 scale.w = window.h;
-                scale.h = (int) (((float) scale.w * 4.0) / 3.0);
-            }
-            break;
-
-        case 4: // fit 3:4
-            if (rotation == 0 || rotation == 180) {
-                scale.h = window.h;
-                scale.w = (int) (((float) scale.h * 3.0) / 4.0);
-                if (scale.w > window.w) {
-                    scale.w = window.w;
-                    scale.h = (int) (((float) scale.w * 4.0) / 3.0);
-                }
-            } else {
-                scale.w = window.h;
                 scale.h = (int) (((float) scale.w * 3.0) / 4.0);
             }
             break;
 
-        case 5: // fullscreen
+        case 4: // fullscreen
             if (rotation == 0 || rotation == 180) {
                 scale.h = window.h;
                 scale.w = window.w;

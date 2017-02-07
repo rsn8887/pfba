@@ -56,7 +56,7 @@ public:
 
     virtual ~Input() {};
 
-    virtual Player *Update(bool rotate = false) { return players; }; // to implement
+    virtual Player *Update(int rotate = 0) { return players; }; // to implement
     virtual int GetButton(int player) { return -1; }; // to implement
 
     virtual int Clear(int player);
