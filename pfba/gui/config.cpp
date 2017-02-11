@@ -76,12 +76,12 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
 
     // default rom config
     options_gui.push_back(Option("ROM", {"ROM"}, 0, Option::Index::MENU_ROM_OPTIONS, Option::Type::MENU));
-    options_gui.push_back(Option("SCALING", {"NONE", "2X", "FIT", "FIT 4:3", "FIT 3:4", "FULL"}, 1, Option::Index::ROM_SCALING));
+    options_gui.push_back(Option("SCALING", {"NONE", "2X", "FIT", "FIT 4:3", "FULL"}, 3, Option::Index::ROM_SCALING));
     options_gui.push_back(
-            Option("FILTER", {"POINT", "LINEAR"}, 0, Option::Index::ROM_FILTER));
+            Option("FILTER", {"POINT", "LINEAR"}, 1, Option::Index::ROM_FILTER));
     options_gui.push_back(
-            Option("SHADER", renderer->shaders->GetNames(), 0, Option::Index::ROM_SHADER));
-    options_gui.push_back(Option("ROTATION", {"OFF", "ON"}, 0, Option::Index::ROM_ROTATION));
+            Option("SHADER", renderer->shaders->GetNames(), 2, Option::Index::ROM_SHADER));
+    options_gui.push_back(Option("ROTATION", {"OFF", "ON", "OFF+FLIP", "OFF+CAB MODE"}, 0, Option::Index::ROM_ROTATION));
     options_gui.push_back(Option("SHOW_FPS", {"NO", "YES"}, 0, Option::Index::ROM_SHOW_FPS));
     options_gui.push_back(Option("FRAMESKIP", {"OFF", "ON"}, 0, Option::Index::ROM_FRAMESKIP));
     //options_gui.push_back(Option("M68K", {"ASM", "C"}, 0, Option::Index::ROM_M68K));

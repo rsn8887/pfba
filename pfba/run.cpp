@@ -65,7 +65,17 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
     inputP1P2Switch = 0;
 
     int rotation = gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION);
-    bool rotate = (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) && !rotation;
+    int rotate = 0;
+    if (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
+      if (rotation == 0) {
+      //rotate controls by 90 degrees
+        rotate = 1;
+      }
+      if (rotation == 2) {
+      //rotate controls by 270 degrees
+        rotate = 3;
+      }
+    }
     Input::Player *players = gui->GetInput()->Update(rotate);
 
     // process menu

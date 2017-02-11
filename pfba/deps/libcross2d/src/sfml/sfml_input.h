@@ -14,14 +14,14 @@ public:
     SFMLInput(SFMLRenderer *rdr);
     virtual ~SFMLInput();
 
-    virtual Player *Update(bool rotate = false);
+    virtual Player *Update(int rotate = 0);
     virtual int GetButton(int player);
 
 private:
-    virtual void process_axis(Player& player, bool rotate = false);
-    virtual void process_hat(Player& player, bool rotate = false);
-    virtual void process_buttons(Player &player, bool rotate = false);
-    virtual void process_keyboard(Player& player, bool rotate = false);
+    virtual void process_axis(Player& player, int rotate = 0);
+    virtual void process_hat(Player& player, int rotate = 0);
+    virtual void process_buttons(Player &player, int rotate = 0);
+    virtual void process_keyboard(Player& player, int rotate = 0);
 
     SFMLRenderer *renderer;
 };

@@ -56,7 +56,7 @@ int CTRInput::GetButton(int player) {
     return -1;
 }
 
-Input::Player *CTRInput::Update(bool rotate) {
+Input::Player *CTRInput::Update(int rotate) {
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
         players[i].state = 0;
@@ -82,7 +82,7 @@ Input::Player *CTRInput::Update(bool rotate) {
     return players;
 }
 
-void CTRInput::process_buttons(Input::Player &player, bool rotate) {
+void CTRInput::process_buttons(Input::Player &player, int rotate) {
 
     if (!player.enabled) {
         return;
@@ -98,13 +98,29 @@ void CTRInput::process_buttons(Input::Player &player, bool rotate) {
 
         if (held & BIT(mapping)) {
             if (rotate && key_id[i] == Input::Key::KEY_UP) {
-                player.state |= Input::Key::KEY_RIGHT;
+                if (rotate == 1) {
+                    player.state |= Input::Key::KEY_RIGHT;
+                } else if (rotate == 3) {
+                    player.state |= Input::Key::KEY_LEFT;
+                }
             } else if (rotate && key_id[i] == Input::Key::KEY_DOWN) {
-                player.state |= Input::Key::KEY_LEFT;
+                if (rotate == 1) {
+                    player.state |= Input::Key::KEY_LEFT;
+                } else if (rotate == 3) {
+                    player.state |= Input::Key::KEY_RIGHT;
+                }
             } else if (rotate && key_id[i] == Input::Key::KEY_LEFT) {
-                player.state |= Input::Key::KEY_UP;
+                if (rotate == 1) {
+                    player.state |= Input::Key::KEY_UP;
+                } else if (rotate == 3) {
+                    player.state |= Input::Key::KEY_DOWN;
+                }
             } else if (rotate && key_id[i] == Input::Key::KEY_RIGHT) {
-                player.state |= Input::Key::KEY_DOWN;
+                if (rotate == 1) {
+                    player.state |= Input::Key::KEY_DOWN;
+                } else if (rotate == 3) {
+                    player.state |= Input::Key::KEY_UP;
+                }
             } else {
                 player.state |= key_id[i];
             }

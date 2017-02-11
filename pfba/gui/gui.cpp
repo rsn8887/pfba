@@ -173,7 +173,6 @@ bool Gui::IsOptionHidden(Option *option) {
     return option->index == Option::Index::ROM_ROTATION
            && romSelected != NULL
            && !(romSelected->flags & BDF_ORIENTATION_VERTICAL);
-
 }
 
 void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, int end) {
