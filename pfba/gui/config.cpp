@@ -74,6 +74,10 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
     options_gui.push_back(Option("SHOW_HARDWARE", hardware_names, 0, Option::Index::GUI_SHOW_HARDWARE));
     options_gui.push_back(Option("FULLSCREEN", {"NO", "YES"}, 1, Option::Index::GUI_FULLSCREEN, Option::Type::HIDDEN));
 
+    // skin config, hidden in gui for now
+    options_gui.push_back(Option("SKIN", {"SKIN"}, 0, Option::Index::MENU_SKIN, Option::Type::MENU | Option::Type::HIDDEN));
+    options_gui.push_back(Option("SKIN_FONT_SIZE", {"20"}, 20, Option::Index::SKIN_FONT_SIZE, Option::Type::HIDDEN));
+
     // default rom config
     options_gui.push_back(Option("ROM", {"ROM"}, 0, Option::Index::MENU_ROM_OPTIONS, Option::Type::MENU));
     options_gui.push_back(Option("SCALING", {"NONE", "2X", "FIT", "FIT 4:3", "FULL"}, 3, Option::Index::ROM_SCALING));
@@ -199,7 +203,7 @@ void Config::Load(RomList::Rom *rom) {
             }
 
             for (unsigned long i = 0; i < options->size(); i++) {
-                if (options->at(i).type == Option::Type::MENU) {
+                if (options->at(i).flags & Option::Type::MENU) {
                     settings = config_setting_lookup(settings_root, options->at(i).GetName());
                 }
                 if (settings) {
@@ -263,7 +267,7 @@ void Config::Save(RomList::Rom *rom) {
         if (options->at(i).index == Option::Index::END) {
             continue;
         }
-        if (options->at(i).type == Option::Type::MENU) {
+        if (options->at(i).flags & Option::Type::MENU) {
             sub_setting = config_setting_add(setting_fba, options->at(i).GetName(), CONFIG_TYPE_GROUP);
             continue;
         }

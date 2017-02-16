@@ -22,7 +22,7 @@ public:
         }
     };
 
-    Skin(Renderer *renderer, char *skinPath, std::vector<Button> btns);
+    Skin(Renderer *renderer, char *skinPath, int fontSize, std::vector<Button> btns);
 
     ~Skin();
 

@@ -6,8 +6,8 @@
 
 Option::Option(const std::string &text,
                const std::vector<std::string> &options,
-               int defaultValue, Index idx, Type type) {
-    this->type = type;
+               int defaultValue, Index idx, int flags) {
+    this->flags = flags;
     this->text = text;
     this->options = options;
     this->value = defaultValue;

@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
 #elif __SFML__
     std::string shaderPath = szAppHomePath;
     shaderPath += "shaders/sfml";
-    renderer = (Renderer *) new SFMLRenderer(0, 0, shaderPath);
+    renderer = (Renderer *) new SFMLRenderer(480, 320, shaderPath);
     inp = (Input *) new SFMLInput((SFMLRenderer *) renderer);
 #endif
 
@@ -115,7 +115,8 @@ int main(int argc, char **argv) {
     romList = new RomList(&config->hardwareList, config->GetRomPaths());
 
     // skin
-    Skin *skin = new Skin(renderer, szAppSkinPath, buttons);
+    int size = config->GetGuiValue(Option::Index::SKIN_FONT_SIZE);
+    Skin *skin = new Skin(renderer, szAppSkinPath, size, buttons);
 
     // run gui
     gui = new Gui(renderer, skin, romList, config, inp);

@@ -5,7 +5,7 @@
 #include "skin.h"
 #include "burner.h"
 
-Skin::Skin(Renderer *renderer, char *skinPath, std::vector<Button> btns) {
+Skin::Skin(Renderer *renderer, char *skinPath, int fontSize, std::vector<Button> btns) {
 
     char str[MAX_PATH];
     memset(str, 0, MAX_PATH);
@@ -19,17 +19,17 @@ Skin::Skin(Renderer *renderer, char *skinPath, std::vector<Button> btns) {
     memset(str, 0, MAX_PATH);
 #ifdef __PSP2__
     snprintf(str, MAX_PATH, "%s/default-20.pgf", skinPath);
-    font_small = renderer->LoadFont(str, 20);
+    font_small = renderer->LoadFont(str, fontSize);
     snprintf(str, MAX_PATH, "%s/default-40.pgf", skinPath);
-    font_large = renderer->LoadFont(str, 40);
+    font_large = renderer->LoadFont(str, (int) ((float) fontSize * 1.5f));
 #elif __3DS__
     snprintf(str, MAX_PATH, "%s/default.ttf", skinPath);
-    font_small = renderer->LoadFont(str, 12);
-    font_large = renderer->LoadFont(str, 16);
+    font_small = renderer->LoadFont(str, fontSize);
+    font_large = renderer->LoadFont(str, (int) ((float) fontSize * 1.5f));
 #else
     snprintf(str, MAX_PATH, "%s/default.ttf", skinPath);
-    font_small = renderer->LoadFont(str, 20);
-    font_large = renderer->LoadFont(str, 40);
+    font_small = renderer->LoadFont(str, fontSize);
+    font_large = renderer->LoadFont(str, (int) ((float) fontSize * 1.5f));
 #endif
 
     // load buttons textures

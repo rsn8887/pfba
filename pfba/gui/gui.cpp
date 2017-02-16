@@ -196,7 +196,8 @@ void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, in
         // draw menu types
         Option *option = &options->at((unsigned long) i);
 
-        if (option->type == Option::Type::MENU) {
+        if (option->flags & Option::Type::MENU
+            && !(option->flags & Option::Type::HIDDEN)) {
             bool new_col = option->index == Option::Index::MENU_JOYPAD;
             if (new_col) {
                 rect.x += rect.w / 2;
@@ -208,7 +209,7 @@ void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, in
             Rect r = rect;
             r.x += 16;
             r.y += 16;
-            r.w = rect.w / 3;
+            r.w = rect.w / 2;
             renderer->DrawFont(skin->font_small, r, ORANGE, option->GetName());
             renderer->color = ORANGE;
             renderer->DrawLine(r.x, r.y + skin->font_small->size, r.x + r.w, r.y + skin->font_small->size);
@@ -218,37 +219,41 @@ void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, in
 
             // skip rotation option if not needed
             if ((isRomCfg && IsOptionHidden(option))
-                || option->type == Option::Type::HIDDEN) {
+                || option->flags & Option::Type::HIDDEN) {
                 continue;
             }
 
+            // option "title"
+            renderer->DrawFont(skin->font_small, rect.x + 16, rect.y + 32, option->GetName());
+
             // draw selection
             if (i == option_index) {
-                Rect sel{rect.x + 190, rect.y + 24, 150, 30};
+                int width = rect.w / 5;
+                Rect sel{rect.x + rect.w / 3, rect.y + 24, width, 30};
                 renderer->DrawRect(sel, GRAY_LIGHT);
                 renderer->DrawBorder(sel, GREEN);
             }
 
-            renderer->DrawFont(skin->font_small, rect.x + 16, rect.y + 32, option->GetName());
+            // option value
+            Rect pos{rect.x + (rect.w / 3) + 8, rect.y + 25, rect.w / 3, 30};
 
-            Rect sel{rect.x + 196, rect.y + 25, 140, 30};
-            if (option->type == Option::Type::INPUT) {
+            if (option->flags == Option::Type::INPUT) {
                 Skin::Button *button = skin->GetButton(option->value);
                 if (button) {
                     if (button->texture) {
-                        Rect r = sel;
+                        Rect r = pos;
                         r.w = r.h = skin->font_small->size;
                         r.y += 3; // TODO: fix DrawTexture ?
                         renderer->DrawTexture(button->texture, r);
                     } else {
-                        renderer->DrawFont(skin->font_small, sel, WHITE, false, true, "%s", button->name.c_str());
+                        renderer->DrawFont(skin->font_small, pos, WHITE, false, true, "%s", button->name.c_str());
                     }
                 } else {
-                    renderer->DrawFont(skin->font_small, sel, WHITE, false, true, "%i", option->value);
+                    renderer->DrawFont(skin->font_small, pos, WHITE, false, true, "%i", option->value);
                 }
                 rect.y += skin->font_small->size + 4;
             } else {
-                renderer->DrawFont(skin->font_small, sel, WHITE, false, true, option->GetValue());
+                renderer->DrawFont(skin->font_small, pos, WHITE, false, true, option->GetValue());
                 rect.y += skin->font_small->size + 2;
             }
         }
@@ -441,8 +446,8 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                     option_index = config->GetOptionPos(options, Option::Index::MENU_KEYBOARD - 1);
                 // skip menus and submenus
                 Option *option = &options->at((unsigned long) option_index);
-                while (option->type == Option::Type::MENU
-                       || option->type == Option::Type::HIDDEN
+                while (option->flags & Option::Type::MENU
+                       || option->flags & Option::Type::HIDDEN
                        || (isRomConfig && IsOptionHidden(option))) {
                     option_index--;
                     if (option_index < 0)
@@ -455,8 +460,8 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                     option_index = 0;
                 // skip menus and submenus
                 Option *option = &options->at((unsigned long) option_index);
-                while (option->type == Option::Type::MENU
-                       || option->type == Option::Type::HIDDEN
+                while (option->flags & Option::Type::MENU
+                       || option->flags & Option::Type::HIDDEN
                        || (isRomConfig && IsOptionHidden(option))) {
                     option_index++;
                     if (option_index >= config->GetOptionPos(options, Option::Index::MENU_KEYBOARD))
@@ -466,7 +471,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
             } else if (key & Input::Key::KEY_LEFT) {
                 option_changed = true;
                 Option *option = &options->at((unsigned long) option_index);
-                if (option->type == Option::Type::INTEGER) {
+                if (option->flags == Option::Type::INTEGER) {
                     option->Prev();
                     switch (option->index) {
 
@@ -502,7 +507,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
             } else if (key & Input::Key::KEY_RIGHT) {
                 option_changed = true;
                 Option *option = &options->at((unsigned long) option_index);
-                if (option->type == Option::Type::INTEGER) {
+                if (option->flags == Option::Type::INTEGER) {
                     option->Next();
                     switch (option->index) {
 
@@ -538,7 +543,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                 }
             } else if (key & Input::Key::KEY_FIRE1) {
                 Option *option = &options->at((unsigned long) option_index);
-                if (option->type == Option::Type::INPUT) {
+                if (option->flags == Option::Type::INPUT) {
                     int btn = GetButton();
                     if (btn >= 0) {
                         option->value = btn;

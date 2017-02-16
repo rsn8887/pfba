@@ -17,10 +17,10 @@ class Option {
 public:
 
     enum Type {
-        MENU = 0,
-        INTEGER,
-        INPUT,
-        HIDDEN
+        MENU = 0x0001,
+        INTEGER = 0x0002,
+        INPUT = 0x0004,
+        HIDDEN = 0x0008
     };
 
     enum Index {
@@ -29,6 +29,8 @@ public:
         GUI_SHOW_CLONES,
         GUI_SHOW_HARDWARE,
         GUI_FULLSCREEN,
+        MENU_SKIN,
+        SKIN_FONT_SIZE,
         MENU_ROM_OPTIONS,
         ROM_SCALING,
         ROM_FILTER,
@@ -72,9 +74,9 @@ public:
         END
     };
 
-    Option(const std::string &text, const std::vector<std::string> &options, int defaultValue, Index idx, Type type = INTEGER);
+    Option(const std::string &text, const std::vector<std::string> &options, int defaultValue, Index idx, int flags = INTEGER);
 
-    Type type = INTEGER;
+    int flags = INTEGER;
     int index = 0;
     int value = 0;
     const char *GetName();
