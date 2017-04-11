@@ -77,7 +77,6 @@ public:
 
     int GetGuiValue(int id);
     int GetRomValue(int id);
-    int GetRomAudioFrequency();
 
     const char *GetRomPath(int n);
     std::vector<std::string> GetRomPaths();
@@ -86,6 +85,7 @@ public:
     std::vector<Option> *GetRomOptions();
 
     int GetOptionPos(std::vector<Option> *options, int index);
+    Option *GetOption(std::vector<Option> *options, int index);
 
     int *GetGuiPlayerInputKeys(int player);
     int *GetGuiPlayerInputButtons(int player);

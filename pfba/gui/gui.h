@@ -10,6 +10,8 @@
 #include "skin.h"
 #include "romlist.h"
 #include "config.h"
+#include "menu.h"
+
 class Config;
 class Option;
 
@@ -29,7 +31,7 @@ public:
     int MessageBox(const char *message, const char *choice1, const char *choice2);
     void DrawBg();
     void DrawRomList();
-    void DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, int end);
+    void DrawOptions(bool isRomCfg, Menu *_menu);
     void DrawRomInfo(RomList::Rom *rom);
     void RunOptionMenu(bool isRomConfig = false);
     void RunStatesMenu();
@@ -61,6 +63,9 @@ private:
     Renderer *renderer = NULL;
     Skin *skin = NULL;
     Input *input = NULL;
+    Menu *menu_gui = NULL;
+    Menu *menu_rom = NULL;
+    Menu *menu_current = NULL;
 
     Texture *title = NULL;
     int title_loaded = 0;

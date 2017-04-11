@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "run.h"
 #include "video.h"
+#include "menu.h"
 #include <skeleton/timer.h>
 
 #define BORDER_SIZE 16
@@ -175,88 +176,98 @@ bool Gui::IsOptionHidden(Option *option) {
            && !(romSelected->flags & BDF_ORIENTATION_VERTICAL);
 }
 
-void Gui::DrawOptions(bool isRomCfg, std::vector<Option> *options, int start, int end) {
+void Gui::DrawOptions(bool isRomCfg, Menu *m) {
 
     Rect rect{32, 32,
               renderer->GetWindowSize().w - 64,
               renderer->GetWindowSize().h - 64
     };
-    Rect rect_start = rect;
 
     // window
     renderer->DrawRect(rect, GRAY);
     renderer->DrawBorder(rect, GREEN);
 
-    for (int i = start; i < end; i++) {
+    // title
+    Rect r = rect;
+    r.x += 16;
+    r.y += 16;
+    r.w = rect.w / 2;
+    renderer->DrawFont(skin->font_small, r, ORANGE, m->title.c_str());
+    renderer->color = ORANGE;
+    renderer->DrawLine(r.x, r.y + skin->font_small->size, r.x + r.w, r.y + skin->font_small->size);
+    renderer->color = BLACK;
+    rect.y += 16;
 
-        if (i >= options->size()) {
-            break;
-        }
+    std::vector<Option> *options =
+            isRomCfg ? config->GetRomOptions() : config->GetGuiOptions();
+
+    // draw options
+    for (int i = 0; i < m->option_ids.size(); i++) {
 
         // draw menu types
-        Option *option = &options->at((unsigned long) i);
-
-        if (option->flags & Option::Type::MENU
-            && !(option->flags & Option::Type::HIDDEN)) {
-            bool new_col = option->index == Option::Index::MENU_JOYPAD;
-            if (new_col) {
-                rect.x += rect.w / 2;
-                rect.y = rect_start.y;
-            }
-            if (i != start && !new_col) {
-                rect.y += 32;
-            }
-            Rect r = rect;
-            r.x += 16;
-            r.y += 16;
-            r.w = rect.w / 2;
-            renderer->DrawFont(skin->font_small, r, ORANGE, option->GetName());
-            renderer->color = ORANGE;
-            renderer->DrawLine(r.x, r.y + skin->font_small->size, r.x + r.w, r.y + skin->font_small->size);
-            renderer->color = BLACK;
-            rect.y += 32;
-        } else {
-
-            // skip rotation option if not needed
-            if ((isRomCfg && IsOptionHidden(option))
-                || option->flags & Option::Type::HIDDEN) {
-                continue;
-            }
-
-            // option "title"
-            renderer->DrawFont(skin->font_small, rect.x + 16, rect.y + 32, option->GetName());
-
-            // draw selection
-            if (i == option_index) {
-                int width = rect.w / 5;
-                Rect sel{rect.x + rect.w / 3, rect.y + 24, width, 30};
-                renderer->DrawRect(sel, GRAY_LIGHT);
-                renderer->DrawBorder(sel, GREEN);
-            }
-
-            // option value
-            Rect pos{rect.x + (rect.w / 3) + 8, rect.y + 25, rect.w / 3, 30};
-
-            if (option->flags == Option::Type::INPUT) {
-                Skin::Button *button = skin->GetButton(option->value);
-                if (button) {
-                    if (button->texture) {
-                        Rect r = pos;
-                        r.w = r.h = skin->font_small->size;
-                        r.y += 3; // TODO: fix DrawTexture ?
-                        renderer->DrawTexture(button->texture, r);
-                    } else {
-                        renderer->DrawFont(skin->font_small, pos, WHITE, false, true, "%s", button->name.c_str());
-                    }
-                } else {
-                    renderer->DrawFont(skin->font_small, pos, WHITE, false, true, "%i", option->value);
-                }
-                rect.y += skin->font_small->size + 4;
-            } else {
-                renderer->DrawFont(skin->font_small, pos, WHITE, false, true, option->GetValue());
-                rect.y += skin->font_small->size + 2;
-            }
+        Option *option = config->GetOption(options, m->option_ids[i]);
+        if (option == NULL) {
+            continue;
         }
+
+        // skip rotation option if not needed
+        if ((isRomCfg && IsOptionHidden(option))
+            || option->flags & Option::Type::HIDDEN) {
+            continue;
+        }
+
+        // option "title"
+        renderer->DrawFont(skin->font_small, rect.x + 16, rect.y + 32, option->GetName());
+
+        // draw selection
+        if (i == option_index) {
+            int width = rect.w / 6;
+            Rect sel{rect.x + rect.w / 3, rect.y + 25, width, skin->font_small->size + 6};
+            renderer->DrawRect(sel, GRAY_LIGHT);
+            renderer->DrawBorder(sel, GREEN);
+        }
+
+        // option value
+        Rect pos{rect.x + (rect.w / 3) + 8, rect.y + 25, rect.w / 3, skin->font_small->size + 6};
+
+        if (option->flags == Option::Type::INPUT) {
+            Skin::Button *button = skin->GetButton(option->value);
+            if (button) {
+                if (button->texture) {
+                    Rect r = pos;
+                    r.w = r.h = skin->font_small->size;
+                    r.y += 3; // TODO: fix DrawTexture ?
+                    renderer->DrawTexture(button->texture, r);
+                } else {
+                    renderer->DrawFont(skin->font_small, pos, WHITE, false, true, "%s", button->name.c_str());
+                }
+            } else {
+                renderer->DrawFont(skin->font_small, pos, WHITE, false, true, "%i", option->value);
+            }
+            rect.y += skin->font_small->size + 4;
+        } else {
+            renderer->DrawFont(skin->font_small, pos, WHITE, false, true, option->GetValue());
+            rect.y += skin->font_small->size + 2;
+        }
+    }
+
+    // draw "submenus"
+    rect.y += 16;
+    for (int i = 0; i < m->childs.size(); i++) {
+        if (m->childs[i]->title == "RETURN") {
+            rect.y += 16;
+        }
+        // draw selection
+        if (i + m->option_ids.size() == option_index) {
+            int width = rect.w / 6;
+            Rect sel{rect.x + rect.w / 3, rect.y + 25, width, skin->font_small->size + 6};
+            renderer->DrawRect(sel, GRAY_LIGHT);
+            renderer->DrawBorder(sel, GREEN);
+        }
+        renderer->DrawFont(skin->font_small, rect.x + 16, rect.y + 32, m->childs[i]->title.c_str());
+        Rect pos{rect.x + (rect.w / 3) + 8, rect.y + 25, rect.w / 3, skin->font_small->size + 6};
+        renderer->DrawFont(skin->font_small, pos, WHITE, false, true, "GO");
+        rect.y += skin->font_small->size + 2;
     }
 }
 
@@ -301,9 +312,7 @@ void Gui::RunStatesMenu() {
 
             first = 0;
 
-            if (key & Input::Key::KEY_UP) {
-            } else if (key & Input::Key::KEY_DOWN) {
-            } else if (key & Input::Key::KEY_LEFT) {
+            if (key & Input::Key::KEY_LEFT) {
                 save_index--;
                 if (save_index < 0)
                     save_index = save_max - 1;
@@ -406,10 +415,11 @@ void Gui::RunOptionMenu(bool isRomConfig) {
     int first = 1;
     bool option_changed = false;
     bool stop = false;
-    option_index = 1;
+    option_index = 0;
 
-    std::vector<Option> *options =
-            isRomConfig ? config->GetRomOptions() : config->GetGuiOptions();
+    std::vector<Option> *options = isRomConfig ? config->GetRomOptions() : config->GetGuiOptions();
+    menu_current = isRomConfig ? menu_rom : menu_gui;
+    menu_current->title = isRomConfig ? romSelected->name : "Options";
 
     input->Clear(0);
 
@@ -421,17 +431,13 @@ void Gui::RunOptionMenu(bool isRomConfig) {
             RunOneFrame(true, 0, 0);
             bPauseOn = true;
         }
-
-        options->insert(options->begin(), Option("EXIT", {"GO"}, 0, OPTION_EXIT));
-        options->insert(options->begin(), Option("STATES", {"GO"}, 0, OPTION_STATES));
-        options->insert(options->begin(), Option("RETURN", {"GO"}, 0, OPTION_RETURN));
-        options->insert(options->begin(),
-                        Option(romSelected->name, {romSelected->name}, 0, (Option::Index) 0, Option::Type::MENU));
-    } else {
-        // change "rom" title menu to game name
-        int index = config->GetOptionPos(options, Option::Index::MENU_ROM_OPTIONS);
-        options->at((unsigned long) index).SetName(isRomConfig ? romSelected->name : "Default roms options");
+        // add custom in game menus
+        menu_current->AddChild("RETURN");
+        menu_current->AddChild("STATES");
+        menu_current->AddChild("EXIT");
     }
+
+    int item_count = (int) (menu_current->childs.size() + menu_current->option_ids.size());
 
     while (true) {
 
@@ -443,34 +449,26 @@ void Gui::RunOptionMenu(bool isRomConfig) {
             if (key & Input::Key::KEY_UP) {
                 option_index--;
                 if (option_index < 0)
-                    option_index = config->GetOptionPos(options, Option::Index::MENU_KEYBOARD - 1);
-                // skip menus and submenus
-                Option *option = &options->at((unsigned long) option_index);
-                while (option->flags & Option::Type::MENU
-                       || option->flags & Option::Type::HIDDEN
-                       || (isRomConfig && IsOptionHidden(option))) {
+                    option_index = item_count - 1;
+                if (option_index < menu_current->option_ids.size() && isRomConfig
+                    && IsOptionHidden(config->GetOption(options, menu_current->option_ids[option_index]))) {
                     option_index--;
                     if (option_index < 0)
-                        option_index = config->GetOptionPos(options, Option::Index::MENU_KEYBOARD - 1);
-                    option = &options->at((unsigned long) option_index);
+                        option_index = item_count - 1;
                 }
             } else if (key & Input::Key::KEY_DOWN) {
                 option_index++;
-                if (option_index >= config->GetOptionPos(options, Option::Index::MENU_KEYBOARD))
+                if (option_index >= item_count)
                     option_index = 0;
-                // skip menus and submenus
-                Option *option = &options->at((unsigned long) option_index);
-                while (option->flags & Option::Type::MENU
-                       || option->flags & Option::Type::HIDDEN
-                       || (isRomConfig && IsOptionHidden(option))) {
+                if (option_index < menu_current->option_ids.size() && isRomConfig
+                    && IsOptionHidden(config->GetOption(options, menu_current->option_ids[option_index]))) {
                     option_index++;
-                    if (option_index >= config->GetOptionPos(options, Option::Index::MENU_KEYBOARD))
+                    if (option_index >= item_count)
                         option_index = 0;
-                    option = &options->at((unsigned long) option_index);
                 }
-            } else if (key & Input::Key::KEY_LEFT) {
+            } else if (key & Input::Key::KEY_LEFT && option_index < menu_current->option_ids.size()) {
                 option_changed = true;
-                Option *option = &options->at((unsigned long) option_index);
+                Option *option = config->GetOption(options, menu_current->option_ids[option_index]);
                 if (option->flags == Option::Type::INTEGER) {
                     option->Prev();
                     switch (option->index) {
@@ -504,9 +502,9 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                             break;
                     }
                 }
-            } else if (key & Input::Key::KEY_RIGHT) {
+            } else if (key & Input::Key::KEY_RIGHT && option_index < menu_current->option_ids.size()) {
                 option_changed = true;
-                Option *option = &options->at((unsigned long) option_index);
+                Option *option = config->GetOption(options, menu_current->option_ids[option_index]);
                 if (option->flags == Option::Type::INTEGER) {
                     option->Next();
                     switch (option->index) {
@@ -542,25 +540,40 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                     }
                 }
             } else if (key & Input::Key::KEY_FIRE1) {
-                Option *option = &options->at((unsigned long) option_index);
-                if (option->flags == Option::Type::INPUT) {
-                    int btn = GetButton();
-                    if (btn >= 0) {
-                        option->value = btn;
-                        option_changed = true;
+                if (option_index < menu_current->option_ids.size()) {
+                    Option *option = config->GetOption(options, menu_current->option_ids[option_index]);
+                    if (option->flags == Option::Type::INPUT) {
+                        int btn = GetButton();
+                        if (btn >= 0) {
+                            option->value = btn;
+                            option_changed = true;
+                        }
                     }
-                } else if (option->index == OPTION_EXIT) {
-                    stop = true;
-                    break;
-                } else if (option->index == OPTION_RETURN) {
-                    break;
-                } else if (option->index == OPTION_STATES) {
-                    RunStatesMenu();
+                } else {
+                    Menu *menu = menu_current->childs[option_index - menu_current->option_ids.size()];
+                    if (menu->title == "EXIT") {
+                        stop = true;
+                        break;
+                    } else if (menu->title == "STATES") {
+                        RunStatesMenu();
+                    } else if (menu->title == "RETURN") {
+                        break;
+                    } else {
+                        menu_current = menu;
+                        item_count = (int) (menu_current->childs.size() + menu_current->option_ids.size());
+                        option_index = 0;
+                    }
                 }
             } else if (key & Input::Key::KEY_FIRE2
                        || (key & Input::Key::KEY_START && !isRomConfig)
                        || (key & Input::Key::KEY_COIN && isRomConfig)) {
-                break;
+                if (menu_current->parent == NULL) {
+                    break;
+                } else {
+                    menu_current = menu_current->parent;
+                    item_count = (int) (menu_current->childs.size() + menu_current->option_ids.size());
+                    option_index = 0;
+                }
             }
 
             Clear();
@@ -577,8 +590,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                 renderer->SetShader(0);
             }
 
-            int end = config->GetOptionPos(options, Option::Index::MENU_KEYBOARD);
-            DrawOptions(isRomConfig, options, 0, end);
+            DrawOptions(isRomConfig, menu_current);
 
             // restore shader
             if (GameLooping) {
@@ -591,15 +603,11 @@ void Gui::RunOptionMenu(bool isRomConfig) {
     }
 
     if (GameLooping) {
-        options->erase(options->begin(), options->begin() + 4);
+        menu_current->childs.erase(menu_current->childs.end() - 3, menu_current->childs.end());
         for (int i = 0; i < 3; i++) {
             Clear();
             Flip();
         }
-    } else {
-        // restore "rom" title menu for config save
-        int index = config->GetOptionPos(options, Option::Index::MENU_ROM_OPTIONS);
-        options->at((unsigned long) index).SetName("ROM");
     }
 
     if (option_changed) {
@@ -732,6 +740,11 @@ Gui::Gui(Renderer *rdr, Skin *sk, RomList *rList, Config *cfg, Input *in) {
     input = in;
 
     skin->font_small->color = WHITE;
+
+    // build menus from options
+    menu_gui = new Menu(NULL, cfg->GetGuiOptions());
+    menu_rom = new Menu(NULL, cfg->GetRomOptions(), true);
+    menu_current = menu_gui;
 
     // filter roms
     FilterRoms();
@@ -1058,6 +1071,6 @@ void Gui::Flip() {
 }
 
 Gui::~Gui() {
-    delete (skin);
-
+    delete (menu_gui);
+    delete (menu_rom);
 }

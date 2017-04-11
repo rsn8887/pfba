@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
 #elif __SFML__
     std::string shaderPath = szAppHomePath;
     shaderPath += "shaders/sfml";
-    renderer = (Renderer *) new SFMLRenderer(480, 320, shaderPath);
+    renderer = (Renderer *) new SFMLRenderer(960, 544, shaderPath);
     inp = (Input *) new SFMLInput((SFMLRenderer *) renderer);
 #endif
 
@@ -133,6 +133,7 @@ int main(int argc, char **argv) {
     delete (renderer);
     delete (config);
     delete (inp);
+    delete (skin);
 
 #ifdef __PSP2__
     scePowerSetArmClockFrequency(266);
