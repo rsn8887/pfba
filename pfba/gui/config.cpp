@@ -133,6 +133,7 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
                                   "18000", "20000", "22000", "24000", "26000", "28000", "30000"}, 3,
                                  Option::Index::JOY_DEADZONE, Option::Type::INTEGER));
 
+#ifndef NO_KEYBOARD
     // keyboard
     options_gui.push_back(Option("KEYBOARD", {"KEYBOARD"}, 0, Option::Index::MENU_KEYBOARD, Option::Type::MENU));
     options_gui.push_back(Option("KEY_UP", {"73"}, 73, Option::Index::KEY_UP, Option::Type::INPUT));        // KP_UP
@@ -147,6 +148,7 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
     options_gui.push_back(Option("KEY_FIRE6", {"81"}, 81, Option::Index::KEY_FIRE6, Option::Type::INPUT));  // KP_6
     options_gui.push_back(Option("KEY_COIN1", {"36"}, 36, Option::Index::KEY_COIN1, Option::Type::INPUT));  // ESCAPE
     options_gui.push_back(Option("KEY_START1", {"58"}, 58, Option::Index::KEY_START1, Option::Type::INPUT));// ENTER
+#endif
 
     //
     options_gui.push_back(Option("END", {"END"}, 0, Option::Index::END, Option::Type::MENU));
@@ -351,6 +353,7 @@ Option *Config::GetOption(std::vector<Option> *options, int index) {
 
 int *Config::GetGuiPlayerInputKeys(int player) {
 
+#ifndef NO_KEYBOARD
     // TODO: player > 0 not supported yet
     keyboard_keys[0] = GetGuiValue(Option::Index::KEY_UP);
     keyboard_keys[1] = GetGuiValue(Option::Index::KEY_DOWN);
@@ -364,6 +367,7 @@ int *Config::GetGuiPlayerInputKeys(int player) {
     keyboard_keys[9] = GetGuiValue(Option::Index::KEY_FIRE4);
     keyboard_keys[10] = GetGuiValue(Option::Index::KEY_FIRE5);
     keyboard_keys[11] = GetGuiValue(Option::Index::KEY_FIRE6);
+#endif
 
     return keyboard_keys;
 }
@@ -389,6 +393,7 @@ int *Config::GetGuiPlayerInputButtons(int player) {
 
 int *Config::GetRomPlayerInputKeys(int player) {
 
+#ifndef NO_KEYBOARD
     // TODO: player > 0 not supported yet
     keyboard_keys[0] = GetRomValue(Option::Index::KEY_UP);
     keyboard_keys[1] = GetRomValue(Option::Index::KEY_DOWN);
@@ -402,6 +407,7 @@ int *Config::GetRomPlayerInputKeys(int player) {
     keyboard_keys[9] = GetRomValue(Option::Index::KEY_FIRE4);
     keyboard_keys[10] = GetRomValue(Option::Index::KEY_FIRE5);
     keyboard_keys[11] = GetRomValue(Option::Index::KEY_FIRE6);
+#endif
 
     return keyboard_keys;
 }

@@ -369,7 +369,7 @@ if (BUILD_PSP2)
     list(APPEND SRC_PFBA ${SRC_PSP2})
     list(APPEND FLAGS
             -Wl,-q -D__PSP2__ -D__PFBA_ARM__
-            -DBUILD_C68K -DUSE_FILE32API)
+            -DNO_KEYBOARD -DBUILD_C68K -DUSE_FILE32API)
     if (BUILD_DEBUG)
         list(APPEND FLAGS
                 -D__PSP2_DEBUG__ # TODO: cyclone arm asm core not working without O2/O3
@@ -399,7 +399,7 @@ elseif (BUILD_3DS)
     # 3DS
     ##############
     list(APPEND FLAGS -DARM11 -D_3DS -D__3DS__
-            -DUSE_FILE32API
+            -DNO_KEYBOARD -D__PFBA_ARM__ -DUSE_FILE32API
             -ffunction-sections -fomit-frame-pointer)
     set(LDFLAGS
             cross2d

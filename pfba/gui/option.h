@@ -8,10 +8,6 @@
 #include <string>
 #include <vector>
 
-#define OPTION_RETURN (Option::Index)100
-#define OPTION_STATES (Option::Index)101
-#define OPTION_EXIT (Option::Index)102
-
 class Option {
 
 public:
@@ -58,6 +54,7 @@ public:
         JOY_AXIS_RX,
         JOY_AXIS_RY,
         JOY_DEADZONE,
+#ifndef NO_KEYBOARD
         MENU_KEYBOARD,
         KEY_UP,
         KEY_DOWN,
@@ -71,6 +68,7 @@ public:
         KEY_FIRE6,
         KEY_COIN1,
         KEY_START1,
+#endif
         END
     };
 
