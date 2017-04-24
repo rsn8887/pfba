@@ -368,7 +368,7 @@ if (BUILD_PSP2)
             )
     list(APPEND SRC_PFBA ${SRC_PSP2})
     list(APPEND FLAGS
-            -Wl,-q -D__PSP2__ -D__ARM__
+            -Wl,-q -D__PSP2__ -D__PFBA_ARM__
             -DBUILD_C68K -DUSE_FILE32API)
     if (BUILD_DEBUG)
         list(APPEND FLAGS
@@ -441,7 +441,7 @@ elseif (BUILD_RPI)
     list(APPEND SRC_PFBA ${SRC_RPI})
     # rpi3 compile flags
     list(APPEND FLAGS
-            -D__RPI__ -D__ARM__ -DBUILD_C68K -DUSE_FILE32API
+            -D__RPI__ -D__PFBA_ARM__ -DBUILD_C68K -DUSE_FILE32API
             -march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53 -mfpu=neon-fp-armv8
             -mfloat-abi=hard -mvectorize-with-neon-quad -funsafe-math-optimizations
             -ffast-math -mlittle-endian -munaligned-access
