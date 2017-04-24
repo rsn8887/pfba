@@ -29,8 +29,8 @@ typedef struct
 	UINT8	after_ei;			/* are we in the EI shadow? */
 	INT32 cycles_left;
 	INT32 hold_irq;
-	const struct z80_irq_daisy_chain *daisy;
-	int		(*irq_callback)(int irqline);
+	ALIGN_VAR(8) const struct z80_irq_daisy_chain *daisy;
+	ALIGN_VAR(8) int (*irq_callback)(int irqline);
 } Z80_Regs;
 
 enum {
@@ -67,6 +67,7 @@ void Z80GetContext (void *dst);
 void Z80SetContext (void *src);
 int Z80Scan(int nAction);
 INT32 z80TotalCycles();
+void Z80StopExecute();
 
 extern unsigned char Z80Vector;
 extern void (*z80edfe_callback)(Z80_Regs *Regs);
@@ -92,6 +93,7 @@ int ActiveZ80GetBC();
 int ActiveZ80GetDE();
 int ActiveZ80GetHL();
 int ActiveZ80GetI();
+int ActiveZ80GetIM();
 int ActiveZ80GetPrevPC();
 void ActiveZ80SetIRQHold();
 

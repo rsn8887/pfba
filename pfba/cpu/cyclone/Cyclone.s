@@ -9,18 +9,29 @@
 
 ;@ SVN repository can be found at http://code.google.com/p/cyclone68000/
 
+  .arm
+
   .text
   .align 4
 
   .global CycloneInit
+  .type CycloneInit, %function
   .global CycloneReset
+  .type CycloneReset, %function
   .global CycloneRun
+  .type CycloneRun, %function
   .global CycloneSetSr
+  .type CycloneSetSr, %function
   .global CycloneGetSr
+  .type CycloneGetSr, %function
   .global CycloneFlushIrq
+  .type CycloneFlushIrq, %function
   .global CyclonePack
+  .type CyclonePack, %function
   .global CycloneUnpack
+  .type CycloneUnpack, %function
   .global CycloneVer
+  .type CycloneVer, %function
 
 CycloneVer: .long 0x0099
 

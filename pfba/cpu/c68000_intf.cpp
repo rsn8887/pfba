@@ -181,8 +181,16 @@ unsigned int m68k_read16(unsigned int a)
 //	bprintf(PRINT_NORMAL, _T("read16 0x%08X\n"), a);
 
 	pr = FIND_R(a);
-	if ((uintptr_t)pr >= SEK_MAXHANDLER) {
-		return BURN_ENDIAN_SWAP_INT16(*((UINT16*)(pr + (a & SEK_PAGEM))));
+	if ((uintptr_t)pr >= SEK_MAXHANDLER)
+	{
+		if (a & 1)
+		{
+			return BURN_ENDIAN_SWAP_INT16((M68KReadByte(a + 0) * 256) + M68KReadByte(a + 1));
+		}
+		else
+		{
+			return BURN_ENDIAN_SWAP_INT16(*((UINT16*)(pr + (a & SEK_PAGEM))));
+		}
 	}
 	return pSekExt->ReadWord[(uintptr_t)pr](a);
 }
@@ -211,9 +219,21 @@ void m68k_write16(unsigned int a, unsigned short d)
 //	bprintf(PRINT_NORMAL, _T("write16 0x%08X\n"), a);
 
 	pr = FIND_W(a);
-	if ((uintptr_t)pr >= SEK_MAXHANDLER) {
-		*((UINT16*)(pr + (a & SEK_PAGEM))) = (UINT16)BURN_ENDIAN_SWAP_INT16(d);
-		return;
+	if ((uintptr_t)pr >= SEK_MAXHANDLER)
+	{
+		if (a & 1)
+		{
+			//	bprintf(PRINT_NORMAL, _T("write16 0x%08X\n"), a);
+			d = BURN_ENDIAN_SWAP_INT16(d);
+			M68KWriteByte(a + 0, d / 0x100);
+			M68KWriteByte(a + 1, d);
+			return;
+		}
+		else
+		{
+			*((UINT16 *) (pr + (a & SEK_PAGEM))) = (UINT16) BURN_ENDIAN_SWAP_INT16(d);
+			return;
+		}
 	}
 	pSekExt->WriteWord[(uintptr_t)pr](a, d);
 }
@@ -241,10 +261,37 @@ unsigned int m68k_read32(unsigned int a)
 //	bprintf(PRINT_NORMAL, _T("read32 0x%08X\n"), a);
 
 	pr = FIND_R(a);
-	if ((uintptr_t)pr >= SEK_MAXHANDLER) {
-		UINT32 r = *((UINT32*)(pr + (a & SEK_PAGEM)));
-		r = (r >> 16) | (r << 16);
-		return BURN_ENDIAN_SWAP_INT32(r);
+	if ((uintptr_t)pr >= SEK_MAXHANDLER)
+	{
+		if (a & 1)
+		{
+			UINT32 r = 0;
+
+			if (a & 2)
+			{
+				r  = M68KReadByte((a + 0)) * 0x1000000;
+				r += M68KReadByte((a + 1) ^ 1) * 0x100;
+				r += M68KReadByte((a + 2) ^ 1) * 0x10000;
+				r += M68KReadByte((a + 3));
+			}
+			else
+			{
+				r  = M68KReadByte((a + 0)) * 0x1000000;
+				r += M68KReadByte((a + 1)) * 0x100;
+				r += M68KReadByte((a + 2)) * 0x10000;
+				r += M68KReadByte((a + 3));
+			}
+
+			//bprintf(PRINT_NORMAL, _T("read32 0x%08X 0x%8.8x\n"), a, r);
+
+			return BURN_ENDIAN_SWAP_INT32(r);
+		}
+		else
+		{
+			UINT32 r = *((UINT32*)(pr + (a & SEK_PAGEM)));
+			r = (r >> 16) | (r << 16);
+			return BURN_ENDIAN_SWAP_INT32(r);
+		}
 	}
 	return pSekExt->ReadLong[(uintptr_t)pr](a);
 }
@@ -275,10 +322,37 @@ void m68k_write32(unsigned int a, unsigned int d)
 //	bprintf(PRINT_NORMAL, _T("write32 0x%08X\n"), a);
 
 	pr = FIND_W(a);
-	if ((uintptr_t)pr >= SEK_MAXHANDLER) {
-		d = (d >> 16) | (d << 16);
-		*((UINT32*)(pr + (a & SEK_PAGEM))) = BURN_ENDIAN_SWAP_INT32(d);
-		return;
+	if ((uintptr_t)pr >= SEK_MAXHANDLER)
+	{
+		if (a & 1)
+		{
+			//	bprintf(PRINT_NORMAL, _T("write32 0x%08X 0x%8.8x\n"), a,d);
+
+			d = BURN_ENDIAN_SWAP_INT32(d);
+
+			if (a & 2)
+			{
+				M68KWriteByte((a + 0), d / 0x1000000);
+				M68KWriteByte((a + 1) ^ 1, d / 0x100);
+				M68KWriteByte((a + 2) ^ 1, d / 0x10000);
+				M68KWriteByte((a + 3), d);
+			}
+			else
+			{
+				M68KWriteByte(a + 0, d / 0x1000000);
+				M68KWriteByte(a + 1, d / 0x100);
+				M68KWriteByte(a + 2, d / 0x10000);
+				M68KWriteByte(a + 3, d);
+			}
+
+			return;
+		}
+		else
+		{
+			d = (d >> 16) | (d << 16);
+			*((UINT32*)(pr + (a & SEK_PAGEM))) = BURN_ENDIAN_SWAP_INT32(d);
+			return;
+		}
 	}
 	pSekExt->WriteLong[(uintptr_t)pr](a, d);
 }
@@ -461,7 +535,9 @@ static INT32 SekInitCPUC68K(INT32 nCount, INT32 nCPUType)
 	nSekCPUType[nCount] = nCPUType;
 
 	if (!bCycloneInited) {
+        printf("EMU_C68K: CycloneInit\n");
 		CycloneInit();
+        printf("EMU_C68K: CycloneInit OK\n");
 		bCycloneInited = true;
 	}
 	memset(&c68k[nCount], 0, sizeof(Cyclone));

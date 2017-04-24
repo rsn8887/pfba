@@ -405,9 +405,7 @@ void ZetRunEnd()
 	if (nOpenedCPU == -1) bprintf(PRINT_ERROR, _T("ZetRunEnd called when no CPU open\n"));
 #endif
 
-	//ZetRunEnd() re-broken March 23, 2016.  breaks YM irq's in some games:
-	//  karnov's revenge, haunted castle (before frame rewrite: see svn history for drv/konami/d_hcastle.cpp), and a few others that I forgot...
-	//z80_ICount = 0;
+	Z80StopExecute();
 }
 
 // This function will make an area callback ZetRead/ZetWrite
@@ -445,11 +443,14 @@ void ZetExit()
 	if (!DebugCPU_ZetInitted) bprintf(PRINT_ERROR, _T("ZetExit called without init\n"));
 #endif
 
+	if (!DebugCPU_ZetInitted) return;
+
 	Z80Exit();
 
 	for (INT32 i = 0; i < MAX_Z80; i++) {
 		if (ZetCPUContext[i]) {
 			BurnFree (ZetCPUContext[i]);
+			ZetCPUContext[i] = NULL;
 		}
 	}
 

@@ -1,4 +1,5 @@
 // Crazy Climber FBA Driver
+// Based on MAME driver by Nicola Salmoria
 
 // Todo:
 // 1: hook up samples
@@ -920,7 +921,7 @@ static void SwimmerPaletteInit()
 }
 
 
-static void cclimber_decode(const char convtable[8][16])
+static void cclimber_decode(const INT8 convtable[8][16])
 {
 	UINT8 *rom = DrvZ80ROM;
 	UINT8 *decrypt = DrvZ80OPS;
@@ -1504,7 +1505,7 @@ STD_ROM_FN(cclimber)
 
 static void cclimber_decrypt()
 {
-	static const char convtable[8][16] =
+	static const INT8 convtable[8][16] =
 	{
 		/* -1 marks spots which are unused and therefore unknown */
 		{ 0x44,0x14,0x54,0x10,0x11,0x41,0x05,0x50,0x51,0x00,0x40,0x55,0x45,0x04,0x01,0x15 },
@@ -1641,7 +1642,7 @@ struct BurnDriver BurnDrvCkong = {
 
 void cclimbrj_decode()
 {
-	static const char convtable[8][16] =
+	static const INT8 convtable[8][16] =
 	{
 		{ 0x41,0x54,0x51,0x14,0x05,0x10,0x01,0x55,0x44,0x11,0x00,0x50,0x15,0x40,0x04,0x45 },
 		{ 0x50,0x11,0x40,0x55,0x51,0x14,0x45,0x04,0x54,0x15,0x10,0x05,0x44,0x01,0x00,0x41 },

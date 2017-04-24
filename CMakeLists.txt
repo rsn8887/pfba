@@ -5,9 +5,9 @@ set(CMAKE_SYSTEM_NAME "Generic")
 enable_language(ASM)
 
 # delete cmake cache folder before changing this options
-set(BUILD_SFML ON CACHE BOOL "Build with SFML support")
+set(BUILD_SFML OFF CACHE BOOL "Build with SFML support")
 set(BUILD_SDL2 OFF CACHE BOOL "Build with SDL2 support")
-set(BUILD_PSP2 OFF CACHE BOOL "Build with PSP2 support")
+set(BUILD_PSP2 ON CACHE BOOL "Build with PSP2 support")
 set(BUILD_3DS OFF CACHE BOOL "Build with 3DS support")
 set(BUILD_RPI OFF CACHE BOOL "Build with RPI support")
 
@@ -21,7 +21,7 @@ if (BUILD_PSP2)
     set(CMAKE_SYSTEM_PROCESSOR "armv7-a")
     set(CMAKE_C_COMPILER "${VITASDK}/bin/arm-vita-eabi-gcc")
     set(CMAKE_CXX_COMPILER "${VITASDK}/bin/arm-vita-eabi-g++")
-    set(CMAKE_ASM_COMPILER "${VITASDK}/bin/arm-vita-eabi-g++")
+    set(CMAKE_ASM_COMPILER "${VITASDK}/bin/arm-vita-eabi-gcc")
     set(CMAKE_AR "${VITASDK}/bin/arm-vita-eabi-ar")
     set(CMAKE_RANLIB "${VITASDK}/bin/arm-vita-eabi-ranlib")
     set(CMAKE_C_FLAGS "-Wl,-q" CACHE STRING "C flags")
@@ -51,7 +51,7 @@ elseif (BUILD_RPI)
     set(CMAKE_ASM_COMPILER "${RPISDK}/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-g++")
     set(CMAKE_C_FLAGS "-I${RPISDK}/sysroot/include" CACHE STRING "C flags")
     set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=gnu++11 -fpermissive" CACHE STRING "C++ flags")
-else()
+else ()
     set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=gnu++11 -fpermissive" CACHE STRING "C++ flags")
 endif (BUILD_PSP2)
 
@@ -195,6 +195,10 @@ set(CPU_DIRS
         src/cpu/tlcs90
         #src/cpu/tms34010
         src/cpu/z80
+        src/cpu/tms32010
+        src/cpu/upd7725
+        src/cpu/upd7810
+        src/cpu/v60
         )
 file(GLOB SRC_CPU
         src/cpu/*.c*
@@ -220,6 +224,10 @@ file(GLOB SRC_CPU
         src/cpu/tlcs90/*.c*
         #src/cpu/tms34010/*.c*
         src/cpu/z80/*.c*
+        src/cpu/tms32010/*.c*
+        src/cpu/upd7725/*.c*
+        src/cpu/upd7810/*.c*
+        src/cpu/v60/*.c*
         )
 list(REMOVE_ITEM SRC_CPU
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/adsp2100_intf.cpp
@@ -233,7 +241,6 @@ list(REMOVE_ITEM SRC_CPU
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/hd6309/6309tbl.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/h6280/tblh6280.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/hd6309/6309ops.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/i8051/i8051ops.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/konami/konamops.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/m6502/t6502.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/m6502/t65c02.c
@@ -249,6 +256,23 @@ list(REMOVE_ITEM SRC_CPU
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/nec/necinstr.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/nec/v25sfr.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/nec/v25instr.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/i8051/mcs51ops.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/upd7810/7810ops.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/upd7810/7810tbl.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/op12.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/am.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/am1.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/am2.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/op7a.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/am3.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/op2.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/op4.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/op6.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/op3.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/op5.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/optable.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/v60mem.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/v60/v60d.c
         )
 
 ##############
@@ -344,15 +368,15 @@ if (BUILD_PSP2)
             )
     list(APPEND SRC_PFBA ${SRC_PSP2})
     list(APPEND FLAGS
-            -Wl,-q -D__PSP2__
+            -Wl,-q -D__PSP2__ -D__ARM__
             -DBUILD_C68K -DUSE_FILE32API)
     if (BUILD_DEBUG)
         list(APPEND FLAGS
-                -D__PSP2_DEBUG__ -D__ARM__  # TODO: cyclone arm asm core not working without O2/O3
+                -D__PSP2_DEBUG__ # TODO: cyclone arm asm core not working without O2/O3
                 )
     else ()
-        list(APPEND FLAGS -D__ARM__
-                -marm -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard -ffast-math
+        list(APPEND FLAGS
+                -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard -ffast-math
                 -fno-asynchronous-unwind-tables -funroll-loops
                 -mword-relocations -fno-unwind-tables -fno-optimize-sibling-calls
                 -mvectorize-with-neon-quad -funsafe-math-optimizations
@@ -458,7 +482,7 @@ add_custom_target(${PROJECT_NAME}.vpk
         DEPENDS ${PROJECT_NAME}.elf
         COMMAND rm -rf vpk && mkdir -p vpk/sce_sys
         COMMAND ${VITASDK}/bin/vita-elf-create ${PROJECT_NAME}.elf ${PROJECT_NAME}.velf
-        COMMAND ${VITASDK}/bin/vita-make-fself -c -s ${PROJECT_NAME}.velf vpk/eboot.bin
+        COMMAND ${VITASDK}/bin/vita-make-fself -s -c ${PROJECT_NAME}.velf vpk/eboot.bin
         COMMAND ${VITASDK}/bin/vita-mksfoex -s TITLE_ID=${TITLE_ID} "${PROJECT_NAME}" vpk/sce_sys/param.sfo
         COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/data/skin vpk/
         COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/data/psp2/* vpk

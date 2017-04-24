@@ -3,7 +3,6 @@
 
 add analog inputs (Super Hang-On, Outrun, Turbo Outrun, Power Drift...)
 PSP2: load roms from ur0: ?
-PSP2: add "disable right stick" option
 add favorites section in hardware list
 add > 1 joystick support
 add help screen

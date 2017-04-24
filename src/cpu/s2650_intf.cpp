@@ -42,6 +42,9 @@ void s2650MapMemory(UINT8 *ptr, INT32 nStart, INT32 nEnd, INT32 nType)
 	if (nActiveS2650 == -1) bprintf(PRINT_ERROR, _T("s2650MapMemory called when no CPU open\n"));
 #endif
 
+	nStart &= ADDRESS_MASK;
+	nEnd   &= ADDRESS_MASK;
+
 	for (INT32 i = nStart / PAGE; i < (nEnd / PAGE) + 1; i++)
 	{
 		if (nType & (1 <<  READ)) sPointer->mem[ READ][i] = ptr + ((i * PAGE) - nStart);
@@ -244,6 +247,8 @@ void s2650Exit()
 #if defined FBA_DEBUG
 	if (!DebugCPU_S2650Initted) bprintf(PRINT_ERROR, _T("s2650Exit called without init\n"));
 #endif
+
+	if (!DebugCPU_S2650Initted) return;
 
 	memset (&sHandler, 0, sizeof (sHandler));
 	s2650Count = 0;
