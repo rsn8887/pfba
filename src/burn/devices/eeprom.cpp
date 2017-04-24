@@ -6,6 +6,8 @@
 #define SERIAL_BUFFER_LENGTH 40
 #define MEMORY_SIZE 1024
 
+extern char szAppNvPath[MAX_PATH];
+
 static const eeprom_interface *intf;
 
 static INT32 serial_count;
@@ -93,8 +95,8 @@ void EEPROMInit(const eeprom_interface *interface)
 	if (intf->cmd_unlock) locked = 1;
 	else locked = 0;
 
-	char output[128];
-	sprintf (output, "config/games/%s.nv", BurnDrvGetTextA(DRV_NAME));
+	char output[MAX_PATH];
+	sprintf (output, "%s/%s.nv", szAppNvPath, BurnDrvGetTextA(DRV_NAME));
 
 	neeprom_available = 0;
 
@@ -116,8 +118,8 @@ void EEPROMExit()
 
 	if (!DebugDev_EEPROMInitted) return;
 
-	char output[128];
-	sprintf (output, "config/games/%s.nv", BurnDrvGetTextA(DRV_NAME));
+	char output[MAX_PATH];
+	sprintf (output, "%s/%s.nv", szAppNvPath, BurnDrvGetTextA(DRV_NAME));
 
 	neeprom_available = 0;
 
