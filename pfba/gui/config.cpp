@@ -81,11 +81,11 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
 
     // default rom config
     options_gui.push_back(Option("EMULATION", {"EMULATION"}, 0, Option::Index::MENU_ROM_OPTIONS, Option::Type::MENU));
-    options_gui.push_back(Option("SCALING", {"NONE", "2X", "FIT", "FIT 4:3", "FULL"}, 3, Option::Index::ROM_SCALING));
+    options_gui.push_back(Option("SCALING", {"NONE", "2X", "FIT", "FIT 4:3", "FULL"}, 2, Option::Index::ROM_SCALING));
     options_gui.push_back(
-            Option("FILTER", {"POINT", "LINEAR"}, 1, Option::Index::ROM_FILTER));
+            Option("FILTER", {"POINT", "LINEAR"}, 0, Option::Index::ROM_FILTER));
     options_gui.push_back(
-            Option("SHADER", renderer->shaders->GetNames(), 2, Option::Index::ROM_SHADER));
+            Option("SHADER", renderer->shaders->GetNames(), 0, Option::Index::ROM_SHADER));
     options_gui.push_back(
             Option("ROTATION", {"OFF", "ON", "OFF+FLIP", "OFF+CAB MODE"}, 0, Option::Index::ROM_ROTATION));
     options_gui.push_back(Option("SHOW_FPS", {"NO", "YES"}, 0, Option::Index::ROM_SHOW_FPS));
@@ -119,6 +119,10 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
             Option("JOY_COIN1", {"6"}, KEY_JOY_COIN1_DEFAULT, Option::Index::JOY_COIN1, Option::Type::INPUT));
     options_gui.push_back(
             Option("JOY_START1", {"7"}, KEY_JOY_START1_DEFAULT, Option::Index::JOY_START1, Option::Type::INPUT));
+    options_gui.push_back(
+            Option("JOY_MENU1", {"6"}, KEY_JOY_MENU1_DEFAULT, Option::Index::JOY_MENU1, Option::Type::INPUT));
+    options_gui.push_back(
+            Option("JOY_MENU2", {"7"}, KEY_JOY_MENU2_DEFAULT, Option::Index::JOY_MENU2, Option::Type::INPUT));
     // TODO: add gui option for axis in option menu
     options_gui.push_back(
             Option("JOY_AXIS_LX", {"0"}, KEY_JOY_AXIS_LX, Option::Index::JOY_AXIS_LX, Option::Type::HIDDEN));
@@ -148,6 +152,8 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
     options_gui.push_back(Option("KEY_FIRE6", {"81"}, 81, Option::Index::KEY_FIRE6, Option::Type::INPUT));  // KP_6
     options_gui.push_back(Option("KEY_COIN1", {"36"}, 36, Option::Index::KEY_COIN1, Option::Type::INPUT));  // ESCAPE
     options_gui.push_back(Option("KEY_START1", {"58"}, 58, Option::Index::KEY_START1, Option::Type::INPUT));// ENTER
+    options_gui.push_back(Option("KEY_MENU1", {"58"}, 58, Option::Index::KEY_MENU1, Option::Type::INPUT));
+    options_gui.push_back(Option("KEY_MENU2", {"36"}, 36, Option::Index::KEY_MENU2, Option::Type::INPUT));
 #endif
 
     //
@@ -367,6 +373,8 @@ int *Config::GetGuiPlayerInputKeys(int player) {
     keyboard_keys[9] = GetGuiValue(Option::Index::KEY_FIRE4);
     keyboard_keys[10] = GetGuiValue(Option::Index::KEY_FIRE5);
     keyboard_keys[11] = GetGuiValue(Option::Index::KEY_FIRE6);
+    keyboard_keys[12] = GetGuiValue(Option::Index::KEY_MENU1);
+    keyboard_keys[13] = GetGuiValue(Option::Index::KEY_MENU2);
 #endif
 
     return keyboard_keys;
@@ -387,6 +395,8 @@ int *Config::GetGuiPlayerInputButtons(int player) {
     joystick_keys[9] = GetGuiValue(Option::Index::JOY_FIRE4);
     joystick_keys[10] = GetGuiValue(Option::Index::JOY_FIRE5);
     joystick_keys[11] = GetGuiValue(Option::Index::JOY_FIRE6);
+    joystick_keys[12] = GetGuiValue(Option::Index::JOY_MENU1);
+    joystick_keys[13] = GetGuiValue(Option::Index::JOY_MENU2);
 
     return joystick_keys;
 }
@@ -407,6 +417,8 @@ int *Config::GetRomPlayerInputKeys(int player) {
     keyboard_keys[9] = GetRomValue(Option::Index::KEY_FIRE4);
     keyboard_keys[10] = GetRomValue(Option::Index::KEY_FIRE5);
     keyboard_keys[11] = GetRomValue(Option::Index::KEY_FIRE6);
+    keyboard_keys[12] = GetRomValue(Option::Index::KEY_MENU1);
+    keyboard_keys[13] = GetRomValue(Option::Index::KEY_MENU2);
 #endif
 
     return keyboard_keys;
@@ -427,6 +439,8 @@ int *Config::GetRomPlayerInputButtons(int player) {
     joystick_keys[9] = GetRomValue(Option::Index::JOY_FIRE4);
     joystick_keys[10] = GetRomValue(Option::Index::JOY_FIRE5);
     joystick_keys[11] = GetRomValue(Option::Index::JOY_FIRE6);
+    joystick_keys[12] = GetRomValue(Option::Index::JOY_MENU1);
+    joystick_keys[13] = GetRomValue(Option::Index::JOY_MENU2);
 
     return joystick_keys;
 }

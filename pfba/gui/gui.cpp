@@ -565,8 +565,8 @@ void Gui::RunOptionMenu(bool isRomConfig) {
                     }
                 }
             } else if (key & Input::Key::KEY_FIRE2
-                       || (key & Input::Key::KEY_START && !isRomConfig)
-                       || (key & Input::Key::KEY_COIN && isRomConfig)) {
+                       || (key & Input::Key::KEY_MENU1 && !isRomConfig)
+                       || (key & Input::Key::KEY_MENU2 && isRomConfig)) {
                 if (menu_current->parent == NULL) {
                     break;
                 } else {
@@ -616,6 +616,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
         } else {
             config->Save();
         }
+        UpdateInputMapping(isRomConfig);
     }
 
     if (stop) {
@@ -674,7 +675,7 @@ void Gui::Run() {
                     && romSelected->state != RomList::RomState::MISSING) {
                     RunRom(romSelected);
                 }
-            } else if (key & Input::Key::KEY_START) {
+            } else if (key & Input::Key::KEY_MENU1) {
                 RunOptionMenu();
                 if (title != NULL) {
                     // refresh preview/title image
@@ -683,7 +684,7 @@ void Gui::Run() {
                     renderer->DrawTexture(title, GetRectRomPreview(), true);
                     Flip();
                 }
-            } else if (key & Input::Key::KEY_COIN) {
+            } else if (key & Input::Key::KEY_MENU2) {
                 if (romSelected != NULL) {
                     config->Load(romSelected);
                     RunOptionMenu(true);
@@ -1041,9 +1042,9 @@ void Gui::UpdateInputMapping(bool isRomConfig) {
 
     if (isRomConfig) {
         input->SetKeyboardMapping(config->GetRomPlayerInputKeys(0));
-        int deadzone = 2000 + config->GetRomValue(Option::Index::JOY_DEADZONE) * 2000;
+        int dz = 2000 + config->GetRomValue(Option::Index::JOY_DEADZONE) * 2000;
         for (int i = 0; i < PLAYER_COUNT; i++) {
-            input->SetJoystickMapping(i, config->GetRomPlayerInputButtons(i), deadzone);
+            input->SetJoystickMapping(i, config->GetRomPlayerInputButtons(i), dz);
             input->players[i].lx.id = config->GetRomValue(Option::Index::JOY_AXIS_LX);
             input->players[i].ly.id = config->GetRomValue(Option::Index::JOY_AXIS_LY);
             input->players[i].rx.id = config->GetRomValue(Option::Index::JOY_AXIS_RX);
@@ -1051,9 +1052,9 @@ void Gui::UpdateInputMapping(bool isRomConfig) {
         }
     } else {
         input->SetKeyboardMapping(config->GetGuiPlayerInputKeys(0));
-        int deadzone = 2000 + config->GetGuiValue(Option::Index::JOY_DEADZONE) * 2000;
+        int dz = 2000 + config->GetGuiValue(Option::Index::JOY_DEADZONE) * 2000;
         for (int i = 0; i < PLAYER_COUNT; i++) {
-            input->SetJoystickMapping(i, config->GetGuiPlayerInputButtons(i), deadzone);
+            input->SetJoystickMapping(i, config->GetGuiPlayerInputButtons(i), dz);
             input->players[i].lx.id = config->GetGuiValue(Option::Index::JOY_AXIS_LX);
             input->players[i].ly.id = config->GetGuiValue(Option::Index::JOY_AXIS_LY);
             input->players[i].rx.id = config->GetGuiValue(Option::Index::JOY_AXIS_RX);

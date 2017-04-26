@@ -79,8 +79,8 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
     Input::Player *players = gui->GetInput()->Update(rotate);
 
     // process menu
-    if ((players[0].state & Input::Key::KEY_COIN)
-        && (players[0].state & Input::Key::KEY_START)) {
+    if ((players[0].state & Input::Key::KEY_MENU1)
+        && (players[0].state & Input::Key::KEY_MENU2)) {
         bPauseOn = true;
         if (audio) {
             audio->Pause(1);
@@ -94,7 +94,7 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
             audio->Pause(0);
         }
         bPauseOn = false;
-    } else if ((players[0].state & Input::Key::KEY_COIN)
+    } else if ((players[0].state & Input::Key::KEY_MENU2)
                && (players[0].state & Input::Key::KEY_FIRE5)) {
         bPauseOn = true;
         if (audio) {
@@ -109,13 +109,13 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
             audio->Pause(0);
         }
         bPauseOn = false;
-    } else if ((players[0].state & Input::Key::KEY_COIN)
+    } else if ((players[0].state & Input::Key::KEY_MENU2)
                && (players[0].state & Input::Key::KEY_FIRE3)) {
         inputServiceSwitch = 1;
-    } else if ((players[0].state & Input::Key::KEY_COIN)
+    } else if ((players[0].state & Input::Key::KEY_MENU2)
                && (players[0].state & Input::Key::KEY_FIRE4)) {
         inputP1P2Switch = 1;
-    } else if ((players[0].state & Input::Key::KEY_COIN)
+    } else if ((players[0].state & Input::Key::KEY_MENU2)
                && (players[0].state & Input::Key::KEY_UP)) {
         int scaling = gui->GetConfig()->GetRomValue(Option::Index::ROM_SCALING) + 1;
         if (scaling <= 5) {
@@ -125,7 +125,7 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
             video->Scale();
             gui->GetRenderer()->Delay(500);
         }
-    } else if ((players[0].state & Input::Key::KEY_COIN)
+    } else if ((players[0].state & Input::Key::KEY_MENU2)
                && (players[0].state & Input::Key::KEY_DOWN)) {
         int scaling = gui->GetConfig()->GetRomValue(Option::Index::ROM_SCALING) - 1;
         if (scaling >= 0) {
@@ -135,7 +135,7 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
             video->Scale();
             gui->GetRenderer()->Delay(500);
         }
-    } else if ((players[0].state & Input::Key::KEY_COIN)
+    } else if ((players[0].state & Input::Key::KEY_MENU2)
                && (players[0].state & Input::Key::KEY_RIGHT)) {
         int shader = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER) + 1;
         if (shader < gui->GetRenderer()->shaders->Count()) {
@@ -145,7 +145,7 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
             gui->GetRenderer()->SetShader(shader);
             gui->GetRenderer()->Delay(500);
         }
-    } else if ((players[0].state & Input::Key::KEY_COIN)
+    } else if ((players[0].state & Input::Key::KEY_MENU2)
                && (players[0].state & Input::Key::KEY_LEFT)) {
         int shader = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER) - 1;
         if (shader >= 0) {
