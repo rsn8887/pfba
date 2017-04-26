@@ -1044,20 +1044,20 @@ void Gui::UpdateInputMapping(bool isRomConfig) {
         int deadzone = 2000 + config->GetRomValue(Option::Index::JOY_DEADZONE) * 2000;
         for (int i = 0; i < PLAYER_COUNT; i++) {
             input->SetJoystickMapping(i, config->GetRomPlayerInputButtons(i), deadzone);
-            input->players[i].axis_lx = config->GetRomValue(Option::Index::JOY_AXIS_LX);
-            input->players[i].axis_ly = config->GetRomValue(Option::Index::JOY_AXIS_LY);
-            input->players[i].axis_rx = config->GetRomValue(Option::Index::JOY_AXIS_RX);
-            input->players[i].axis_ry = config->GetRomValue(Option::Index::JOY_AXIS_RY);
+            input->players[i].lx.id = config->GetRomValue(Option::Index::JOY_AXIS_LX);
+            input->players[i].ly.id = config->GetRomValue(Option::Index::JOY_AXIS_LY);
+            input->players[i].rx.id = config->GetRomValue(Option::Index::JOY_AXIS_RX);
+            input->players[i].ry.id = config->GetRomValue(Option::Index::JOY_AXIS_RY);
         }
     } else {
         input->SetKeyboardMapping(config->GetGuiPlayerInputKeys(0));
         int deadzone = 2000 + config->GetGuiValue(Option::Index::JOY_DEADZONE) * 2000;
         for (int i = 0; i < PLAYER_COUNT; i++) {
             input->SetJoystickMapping(i, config->GetGuiPlayerInputButtons(i), deadzone);
-            input->players[i].axis_lx = config->GetGuiValue(Option::Index::JOY_AXIS_LX);
-            input->players[i].axis_ly = config->GetGuiValue(Option::Index::JOY_AXIS_LY);
-            input->players[i].axis_rx = config->GetGuiValue(Option::Index::JOY_AXIS_RX);
-            input->players[i].axis_ry = config->GetGuiValue(Option::Index::JOY_AXIS_RY);
+            input->players[i].lx.id = config->GetGuiValue(Option::Index::JOY_AXIS_LX);
+            input->players[i].ly.id = config->GetGuiValue(Option::Index::JOY_AXIS_LY);
+            input->players[i].rx.id = config->GetGuiValue(Option::Index::JOY_AXIS_RX);
+            input->players[i].ry.id = config->GetGuiValue(Option::Index::JOY_AXIS_RY);
         }
     }
 }

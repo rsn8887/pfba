@@ -4,7 +4,7 @@
 unsigned char inputServiceSwitch;
 unsigned char inputP1P2Switch;
 
-#define MAX_INPUT_inp (19)
+#define MAX_INPUT_inp (17)
 
 struct GameInput {
     //unsigned char *pVal;  // Destination for the Input Value
@@ -269,7 +269,9 @@ int InpExit() {
 }
 
 int InpMake(Input::Player *players) {
-    if (!bInputOk) return 1;
+
+    if (!bInputOk)
+        return 1;
 
     static int skip = 0;
     skip++;
@@ -281,127 +283,60 @@ int InpMake(Input::Player *players) {
     if (ServiceDip) {
         *(ServiceDip) = inputServiceSwitch;
     }
-    int nJoy;
+
     for (short joyNum = 0; joyNum < PLAYER_COUNT; joyNum++) {
+
         if (!players[joyNum].enabled) {
             continue;
         }
+
         for (i = 0; i < MAX_INPUT_inp; i++) {
-            nJoy = 0;
-            if (GameInput[joyNum][i].pVal == NULL) continue;
+
+            if (GameInput[joyNum][i].pVal == NULL)
+                continue;
 
             if (GameInput[joyNum][i].nBit >= 0) {
+
                 down = players[joyNum].state & (1U << GameInput[joyNum][i].nBit);
 
                 if (GameInput[joyNum][i].nType != 1) {
-                    // Set analog controls to full
 
                     if (i < 12) {
-                        if (down) *(GameInput[joyNum][i].pVal) = 0xff; else *(GameInput[joyNum][i].pVal) = 0x01;
+                        *(GameInput[joyNum][i].pVal) = (UINT8) (down ? 0xff : 0x01);
                     }
 
-                    /* TODO
-                    if (i == 12) //analogue x
-                    {
-                        nJoy = SDL_JoystickGetAxis(joys[joyNum], 0) << 1;
-                        if (down) nJoy = -32768 << 1;
-                        nJoy *= nAnalogSpeed;
-                        nJoy >>= 13;
-
-                        // Clip axis to 8 bits
-                        if (nJoy < -32768) {
-                            nJoy = -32768;
-                        }
-                        if (nJoy > 32767) {
-                            nJoy = 32767;
-                        }
-
-                        *(GameInput[joyNum][i].pShortVal) = nJoy;
+                    // analog x
+                    if (i == 12 || i == 13) {
+                        *(GameInput[joyNum][i].pShortVal) = (UINT16) (players[joyNum].lx.value * 0x800 / 0x7FFF);
                     }
-                    if (i == 13) //analogue right
-                    {
-                        if (down) {
-                            nJoy = 32768 << 1;
-                            nJoy *= nAnalogSpeed;
-                            nJoy >>= 13;
 
-                            // Clip axis to 8 bits
-                            if (nJoy < -32768) {
-                                nJoy = -32768;
-                            }
-                            if (nJoy > 32767) {
-                                nJoy = 32767;
-                            }
-                            *(GameInput[joyNum][i].pShortVal) = nJoy;
-                        }
+                    // analog y
+                    if (i == 14 || i == 15) {
+                        *(GameInput[joyNum][i].pShortVal) = (UINT16) (players[joyNum].ly.value * 0x800 / 0x7FFF);
                     }
-                    if (i == 14) //analogue y
-                    {
-                        nJoy = SDL_JoystickGetAxis(joys[joyNum], 1) << 1;
-                        if (down) nJoy = -32768 << 1;
-                        nJoy *= nAnalogSpeed;
-                        nJoy >>= 13;
 
-                        // Clip axis to 8 bits
-                        if (nJoy < -32768) {
-                            nJoy = -32768;
-                        }
-                        if (nJoy > 32767) {
-                            nJoy = 32767;
-                        }
-                        *(GameInput[joyNum][i].pShortVal) = nJoy;
+                    // analog z
+                    if (i == 16) {
+                        *(GameInput[joyNum][i].pShortVal) = (UINT16) (players[joyNum].ry.value * 0x800 / 0x7FFF);
                     }
-                    if (i == 15) //analogue down
-                    {
-                        if (down) {
-                            nJoy = 32768 << 1;
-                            nJoy *= nAnalogSpeed;
-                            nJoy >>= 13;
-
-                            // Clip axis to 8 bits
-                            if (nJoy < -32768) {
-                                nJoy = -32768;
-                            }
-                            if (nJoy > 32767) {
-                                nJoy = 32767;
-                            }
-                            *(GameInput[joyNum][i].pShortVal) = nJoy;
-                        }
-                    }
-                    if (i == 16) //analogue z
-                    {
-                        nJoy = (-SDL_JoystickGetAxis(joys[joyNum + 1], 1)) << 1;
-                        //printf("%d\n",nJoy);
-                        if (down) nJoy = 32768 << 1;
-                        nJoy *= nAnalogSpeed;
-                        nJoy >>= 13;
-
-                        // Clip axis to 8 bits
-                        if (nJoy < -32768) {
-                            nJoy = -32768;
-                        }
-                        if (nJoy > 32767) {
-                            nJoy = 32767;
-                        }
-                        *(GameInput[joyNum][i].pShortVal) = nJoy;
-                    }
-                    */
                 } else {
                     // Binary controls
-                    if (down) *(GameInput[joyNum][i].pVal) = 1; else *(GameInput[joyNum][i].pVal) = 0;
-                    //(GameInput[joyNum][i].pVal)=0;
+                    *(GameInput[joyNum][i].pVal) = (UINT8) (down ? 1 : 0);
                 }
             }
         }
     }
+
     for (i = 0; i < (int) DIPInfo.nDIP; i++) {
         if (DIPInfo.DIPData[i].pVal == NULL)
             continue;
         *(DIPInfo.DIPData[i].pVal) = DIPInfo.DIPData[i].nConst;
     }
+
     if (inputP1P2Switch) {
         *(P1Start) = *(P2Start) = 1;
     }
+
     return 0;
 }
 

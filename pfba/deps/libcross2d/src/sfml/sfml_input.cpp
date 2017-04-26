@@ -95,12 +95,14 @@ Input::Player *SFMLInput::Update(int rotate) {
             return players;
         }
 
+        /*
         if (event.type == sf::Event::KeyPressed) {
             printf("%i\n", (int) event.key.code);
         }
         if (event.type == sf::Event::JoystickButtonPressed) {
             printf("%i\n", (int) event.joystickButton.button);
         }
+        */
     }
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
@@ -135,9 +137,13 @@ void SFMLInput::process_axis(Input::Player &player, int rotate) {
     if (sf::Joystick::hasAxis(player.id, sf::Joystick::X)) {
         int x = (int) sf::Joystick::getAxisPosition(player.id, sf::Joystick::X) * 320;
         if (x > player.dead_zone) {
+            player.lx.value = x;
             player.state |= (rotate == 1) ? Input::Key::KEY_DOWN : (rotate == 3) ? Input::Key::KEY_UP : Input::Key::KEY_RIGHT;
         } else if (x < -player.dead_zone) {
+            player.lx.value = x;
             player.state |= (rotate == 1) ? Input::Key::KEY_UP : (rotate == 3) ? Input::Key::KEY_DOWN : Input::Key::KEY_LEFT;
+        } else {
+            player.lx.value = 0;
         }
     }
 
@@ -145,9 +151,13 @@ void SFMLInput::process_axis(Input::Player &player, int rotate) {
     if (sf::Joystick::hasAxis(player.id, sf::Joystick::Y)) {
         int y = (int) sf::Joystick::getAxisPosition(player.id, sf::Joystick::Y) * 320;
         if (y > player.dead_zone) {
+            player.ly.value = y;
             player.state |= (rotate == 1) ? Input::Key::KEY_LEFT : (rotate == 3) ? Input::Key::KEY_RIGHT : Input::Key::KEY_DOWN;
         } else if (y < -player.dead_zone) {
             player.state |= (rotate == 1) ? Input::Key::KEY_RIGHT : (rotate == 3) ? Input::Key::KEY_LEFT : Input::Key::KEY_UP;
+            player.ly.value = y;
+        } else {
+            player.ly.value = 0;
         }
     }
 }

@@ -87,7 +87,7 @@ Input::Player *SDL2Input::Update(int rotate) {
     }
 
     SDL_Event event;
-    while(SDL_PollEvent(&event)) {
+    while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             players[0].state |= EV_QUIT;
             return players;
@@ -122,22 +122,38 @@ void SDL2Input::process_axis(Input::Player &player, int rotate) {
         return;
     }
 
-    int x[2] = {SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.axis_lx),
-                SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.axis_rx)};
-
-    if (x[0] > player.dead_zone || x[1] > player.dead_zone) {
-        player.state |= (rotate == 1) ? Input::Key::KEY_DOWN : (rotate == 3) ? Input::Key::KEY_UP : Input::Key::KEY_RIGHT;
-    } else if (x[0] < -player.dead_zone || x[1] < -player.dead_zone) {
-        player.state |= (rotate == 1) ? Input::Key::KEY_UP : (rotate == 3) ? Input::Key::KEY_DOWN : Input::Key::KEY_LEFT;
+    short lx = (short) SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.lx.id);
+    short rx = (short) SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.rx.id);
+    if (lx > player.dead_zone || rx > player.dead_zone) {
+        player.lx.value = lx;
+        player.rx.value = rx;
+        player.state |= (rotate == 1) ? Input::Key::KEY_DOWN : (rotate == 3) ? Input::Key::KEY_UP
+                                                                             : Input::Key::KEY_RIGHT;
+    } else if (lx < -player.dead_zone || rx < -player.dead_zone) {
+        player.lx.value = lx;
+        player.rx.value = rx;
+        player.state |= (rotate == 1) ? Input::Key::KEY_UP : (rotate == 3) ? Input::Key::KEY_DOWN
+                                                                           : Input::Key::KEY_LEFT;
+    } else {
+        player.lx.value = 0;
+        player.rx.value = 0;
     }
 
-    int y[2] = {SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.axis_ly),
-                SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.axis_ry)};
-
-    if (y[0] > player.dead_zone || y[1] > player.dead_zone) {
-        player.state |= (rotate == 1) ? Input::Key::KEY_LEFT : (rotate == 3) ? Input::Key::KEY_RIGHT : Input::Key::KEY_DOWN;
-    } else if (y[0] < -player.dead_zone || y[1] < -player.dead_zone) {
-        player.state |= (rotate == 1) ? Input::Key::KEY_RIGHT : (rotate == 3) ? Input::Key::KEY_LEFT : Input::Key::KEY_UP;
+    short ly = (short) SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.ly.id);
+    short ry = (short) SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.ry.id);
+    if (ly > player.dead_zone || ry > player.dead_zone) {
+        player.ly.value = ly;
+        player.ry.value = ry;
+        player.state |= (rotate == 1) ? Input::Key::KEY_LEFT : (rotate == 3) ? Input::Key::KEY_RIGHT
+                                                                             : Input::Key::KEY_DOWN;
+    } else if (ly < -player.dead_zone || ry < -player.dead_zone) {
+        player.ly.value = ly;
+        player.ry.value = ry;
+        player.state |= (rotate == 1) ? Input::Key::KEY_RIGHT : (rotate == 3) ? Input::Key::KEY_LEFT
+                                                                              : Input::Key::KEY_UP;
+    } else {
+        player.ly.value = 0;
+        player.ry.value = 0;
     }
 }
 
@@ -152,22 +168,26 @@ void SDL2Input::process_hat(Input::Player &player, int rotate) {
     if (value == SDL_HAT_UP
         || value == SDL_HAT_LEFTUP
         || value == SDL_HAT_RIGHTUP) {
-        player.state |= (rotate == 1) ? Input::Key::KEY_RIGHT : (rotate == 3) ? Input::Key::KEY_LEFT : Input::Key::KEY_UP;
+        player.state |= (rotate == 1) ? Input::Key::KEY_RIGHT : (rotate == 3) ? Input::Key::KEY_LEFT
+                                                                              : Input::Key::KEY_UP;
     }
     if (value == SDL_HAT_DOWN
         || value == SDL_HAT_LEFTDOWN
         || value == SDL_HAT_RIGHTDOWN) {
-        player.state |= (rotate == 1) ? Input::Key::KEY_LEFT : (rotate == 3) ? Input::Key::KEY_RIGHT : Input::Key::KEY_DOWN;
+        player.state |= (rotate == 1) ? Input::Key::KEY_LEFT : (rotate == 3) ? Input::Key::KEY_RIGHT
+                                                                             : Input::Key::KEY_DOWN;
     }
     if (value == SDL_HAT_LEFT
         || value == SDL_HAT_LEFTDOWN
         || value == SDL_HAT_LEFTUP) {
-        player.state |= (rotate == 1) ? Input::Key::KEY_UP : (rotate == 3) ? Input::Key::KEY_DOWN : Input::Key::KEY_LEFT;
+        player.state |= (rotate == 1) ? Input::Key::KEY_UP : (rotate == 3) ? Input::Key::KEY_DOWN
+                                                                           : Input::Key::KEY_LEFT;
     }
     if (value == SDL_HAT_RIGHT
         || value == SDL_HAT_RIGHTDOWN
         || value == SDL_HAT_RIGHTUP) {
-        player.state |= (rotate == 1) ? Input::Key::KEY_DOWN : (rotate == 3) ? Input::Key::KEY_UP : Input::Key::KEY_RIGHT;
+        player.state |= (rotate == 1) ? Input::Key::KEY_DOWN : (rotate == 3) ? Input::Key::KEY_UP
+                                                                             : Input::Key::KEY_RIGHT;
     }
 }
 

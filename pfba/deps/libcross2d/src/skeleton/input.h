@@ -34,12 +34,17 @@ public:
         KEY_FIRE6 = 0x0800
     };
 
+    struct Axis {
+        int id;
+        short value;
+    };
+
     struct Player {
         int mapping[KEY_COUNT];
-        int axis_lx = 0;
-        int axis_ly = 1;
-        int axis_rx = 2;
-        int axis_ry = 3;
+        Axis lx {0, 0};
+        Axis ly {1, 0};
+        Axis rx {2, 0};
+        Axis ry {3, 0};
         unsigned int state;
         int dead_zone = 8000;
         bool enabled = false;

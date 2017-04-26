@@ -22,8 +22,6 @@
 #ifdef __PSP2__
 #include <psp2/power.h>
 #include <psp2/io/dirent.h>
-#include <psp2/psp2_utility.h>
-#include <sdl2/sdl2_input.h>
 int _newlib_heap_size_user = 192 * 1024 * 1024;
 #elif __SDL2__
 #include <sdl2/sdl2_input.h>
