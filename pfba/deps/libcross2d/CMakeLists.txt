@@ -134,7 +134,6 @@ add_dependencies(${PROJECT_NAME}.sfml ${PROJECT_NAME})
 add_executable(${PROJECT_NAME}.psp2 src/main.cpp)
 target_compile_options(${PROJECT_NAME}.psp2 PRIVATE ${FLAGS})
 target_link_libraries(${PROJECT_NAME}.psp2
-        psp2shell
         cross2d SDL2
         SceDisplay_stub SceGxm_stub SceSysmodule_stub
         SceCtrl_stub ScePgf_stub SceNetCtl_stub

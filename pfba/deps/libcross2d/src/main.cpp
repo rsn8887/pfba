@@ -5,11 +5,6 @@
 #include "skeleton/renderer.h"
 #include "skeleton/input.h"
 
-#ifdef __PSP2_DEBUG__
-#include <psp2shell.h>
-#define printf psp2shell_print
-#endif
-
 #define SCRW 960
 #define SCRH 544
 
@@ -21,9 +16,6 @@ Input *input;
 int main() {
 
 #ifdef __PSP2__
-#ifdef __PSP2_DEBUG__
-    psp2shell_init(3333, 0);
-#endif
     renderer = (Renderer *) new PSP2Renderer(SCRW, SCRH);
     input = (Input *) new SDL2Input();
     font_small = renderer->LoadFont("app0:/default-20.pgf", 20); // 20 = pgf font size

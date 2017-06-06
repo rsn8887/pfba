@@ -7,7 +7,7 @@ enable_language(ASM)
 # delete cmake cache folder before changing this options
 set(BUILD_SFML OFF CACHE BOOL "Build with SFML support")
 set(BUILD_SDL2 OFF CACHE BOOL "Build with SDL2 support")
-set(BUILD_PSP2 OFF CACHE BOOL "Build with PSP2 support")
+set(BUILD_PSP2 ON CACHE BOOL "Build with PSP2 support")
 set(BUILD_3DS OFF CACHE BOOL "Build with 3DS support")
 set(BUILD_RPI OFF CACHE BOOL "Build with RPI support")
 
@@ -390,10 +390,6 @@ if (BUILD_PSP2)
             SceCtrl_stub ScePgf_stub ScePower_stub SceCommonDialog_stub
             SceAudio_stub
             freetype png jpeg z m c)
-    if (BUILD_DEBUG)
-        list(APPEND LDFLAGS
-                psp2shell SceNetCtl_stub SceNet_stub SceAppMgr_stub)
-    endif (BUILD_DEBUG)
 elseif (BUILD_3DS)
     ##############
     # 3DS

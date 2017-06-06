@@ -7,8 +7,8 @@
 #include "sdl2_audio.h"
 
 #ifdef __PSP2_DEBUG__
-#include <psp2shell.h>
-#define printf psp2shell_print
+#include <psp2/kernel/clib.h>
+#define printf sceClibPrintf
 #endif
 
 static bool use_mutex = false;

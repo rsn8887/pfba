@@ -55,9 +55,6 @@ int main(int argc, char **argv) {
 
     std::vector<Skin::Button> buttons;
 #ifdef __PSP2__
-#ifdef __PSP2_DEBUG__
-    psp2shell_init(3333, 0);
-#endif
     // set max cpu speed
     scePowerSetArmClockFrequency(444);
     scePowerSetBusClockFrequency(222);

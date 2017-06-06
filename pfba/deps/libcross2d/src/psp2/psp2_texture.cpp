@@ -6,10 +6,10 @@
 #include "psp2_texture.h"
 
 #ifdef __PSP2_DEBUG__
-#include <psp2shell.h>
-#define printf psp2shell_print
-#else
-#define printf
+
+#include <psp2/kernel/clib.h>
+
+#define printf sceClibPrintf
 #endif
 
 PSP2Texture::PSP2Texture(const char *path) : Texture(path) {

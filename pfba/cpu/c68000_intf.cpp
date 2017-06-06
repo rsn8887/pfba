@@ -4,10 +4,8 @@
 #include "m68000_debug.h"
 
 #ifdef __PSP2_DEBUG__
-#include <psp2shell.h>
-#include <malloc.h>
-
-#define printf psp2shell_print
+#include <psp2/kernel/clib.h>
+#define printf sceClibPrintf
 #endif
 
 #define EMU_C68K
