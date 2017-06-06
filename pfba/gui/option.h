@@ -35,6 +35,7 @@ public:
         ROM_SHOW_FPS,
         //ROM_M68K,
         ROM_FRAMESKIP,
+        ROM_NEOBIOS,
         ROM_AUDIO,
         MENU_JOYPAD,
         JOY_UP,

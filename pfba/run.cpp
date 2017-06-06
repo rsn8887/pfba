@@ -195,7 +195,13 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
 static int GetSekCpuCore(Gui *g) {
 
     int sekCpuCore = 0; // SEK_CORE_C68K: USE CYCLONE ARM ASM M68K CORE
-    //int sekCpuCore = g->GetConfig()->GetRomValue(Option::Index::ROM_M68K);
+    // int sekCpuCore = g->GetConfig()->GetRomValue(Option::Index::ROM_M68K);
+
+    if (!g->GetConfig()->GetRomValue(Option::Index::ROM_NEOBIOS)) {
+        sekCpuCore = 1;
+        g->MessageBox("UNIBIOS DOESNT SUPPORT THE M68K ASM CORE\n"
+                             "CYCLONE ASM CORE DISABLED", "OK", NULL);
+    }
 
     std::vector<std::string> zipList;
     int hardware = BurnDrvGetHardwareCode();
