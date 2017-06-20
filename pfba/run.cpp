@@ -197,14 +197,16 @@ static int GetSekCpuCore(Gui *g) {
     int sekCpuCore = 0; // SEK_CORE_C68K: USE CYCLONE ARM ASM M68K CORE
     // int sekCpuCore = g->GetConfig()->GetRomValue(Option::Index::ROM_M68K);
 
-    if (!g->GetConfig()->GetRomValue(Option::Index::ROM_NEOBIOS)) {
-        sekCpuCore = 1;
+    std::vector<std::string> zipList;
+    int hardware = BurnDrvGetHardwareCode();
+    
+    if (!g->GetConfig()->GetRomValue(Option::Index::ROM_NEOBIOS)
+        && RomList::IsHardware(hardware, HARDWARE_PREFIX_SNK)) {
+        sekCpuCore = 1; // SEK_CORE_M68K: USE C M68K CORE
         g->MessageBox("UNIBIOS DOESNT SUPPORT THE M68K ASM CORE\n"
                              "CYCLONE ASM CORE DISABLED", "OK", NULL);
     }
 
-    std::vector<std::string> zipList;
-    int hardware = BurnDrvGetHardwareCode();
     if (RomList::IsHardware(hardware, HARDWARE_PREFIX_SEGA)) {
         if (hardware & HARDWARE_SEGA_FD1089A_ENC
             || hardware & HARDWARE_SEGA_FD1089B_ENC
