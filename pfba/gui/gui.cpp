@@ -673,6 +673,10 @@ void Gui::Run() {
             } else if (key & Input::Key::KEY_FIRE1) {
                 if (romSelected != NULL
                     && romSelected->state != RomList::RomState::MISSING) {
+                    for (int i = 0; i < 3; i++) {
+                        Clear();
+                        Flip();
+                    }
                     RunRom(romSelected);
                 }
             } else if (key & Input::Key::KEY_MENU1) {
