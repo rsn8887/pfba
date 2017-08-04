@@ -155,7 +155,7 @@ void SDL2Input::process_axis(Input::Player &player, int rotate) {
         if (magnitude=sqrt(analogX * analogX + analogY * analogY) >= deadZone) {
             
             // analog control
-            scalingFactor=1.0f/magnitude * (magnitude-deadZone)/(32769.0f-deadZone);
+            scalingFactor=32767.0f/magnitude * (magnitude-deadZone)/(32769.0f-deadZone);
             currentStickXAxis->value = (short) (analogX * scalingFactor);
             currentStickYAxis->value = (short) (analogY * scalingFactor);
             
