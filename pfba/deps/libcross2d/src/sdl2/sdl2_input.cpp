@@ -134,6 +134,7 @@ void SDL2Input::process_axis(Input::Player &player, int rotate) {
     bool up = false, down = false, left = false, right = false;
     Axis *currentStickXAxis = NULL;
     Axis *currentStickYAxis = NULL;
+    float slope = 0.414214f; // tangent of 22.5 degrees for size of angular zones
     
     for (int i = 0; i<=1; i++) {
         
@@ -163,27 +164,27 @@ void SDL2Input::process_axis(Input::Player &player, int rotate) {
             analogY = -analogY;
             if (analogY > 0 && analogX > 0) {
                 // upper right quadrant
-                if (2*analogY > analogX)
+                if (analogY > slope * analogX)
                     up = true;
-                if (2*analogX > analogY)
+                if (analogX > slope * analogY)
                     right = true;
             } else if (analogY > 0 && analogX <= 0) {
                 // upper left quadrant
-                if (2*analogY > (-analogX))
+                if (analogY > slope * (-analogX))
                     up = true;
-                if (2*(-analogX) > analogY)
+                if ((-analogX) > slope * analogY)
                     left = true;
             } else if (analogY <= 0 && analogX > 0) {
                 // lower right quadrant
-                if (2*(-analogY) > analogX)
+                if ((-analogY) > slope * analogX)
                     down = true;
-                if (2*analogX > (-analogY))
+                if (analogX > slope * (-analogY))
                     right = true;
             } else if (analogY <= 0 && analogX <= 0) {
                 // lower left quadrant
-                if (2*(-analogY) > (-analogX))
+                if ((-analogY) > slope * (-analogX))
                     down = true;
-                if (2*(-analogX) > (-analogY))
+                if ((-analogX) > slope * (-analogY))
                     left = true;
             }
             
