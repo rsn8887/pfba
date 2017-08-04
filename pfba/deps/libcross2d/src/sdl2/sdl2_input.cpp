@@ -4,6 +4,8 @@
 
 #include "sdl2_input.h"
 
+#include "math.h" // need square root for radial deadzone
+
 static int key_id[KEY_COUNT]{
         Input::Key::KEY_UP,
         Input::Key::KEY_DOWN,
@@ -123,40 +125,86 @@ void SDL2Input::process_axis(Input::Player &player, int rotate) {
     if (!player.enabled || !player.data) {
         return;
     }
-
-    short lx = (short) SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.lx.id);
-    short rx = (short) SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.rx.id);
-    if (lx > player.dead_zone || rx > player.dead_zone) {
-        player.lx.value = lx;
-        player.rx.value = rx;
-        player.state |= (rotate == 1) ? Input::Key::KEY_DOWN : (rotate == 3) ? Input::Key::KEY_UP
-                                                                             : Input::Key::KEY_RIGHT;
-    } else if (lx < -player.dead_zone || rx < -player.dead_zone) {
-        player.lx.value = lx;
-        player.rx.value = rx;
-        player.state |= (rotate == 1) ? Input::Key::KEY_UP : (rotate == 3) ? Input::Key::KEY_DOWN
-                                                                           : Input::Key::KEY_LEFT;
-    } else {
-        player.lx.value = 0;
-        player.rx.value = 0;
-    }
-
-    short ly = (short) SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.ly.id);
-    short ry = (short) SDL_JoystickGetAxis((SDL_Joystick *) player.data, player.ry.id);
-    if (ly > player.dead_zone || ry > player.dead_zone) {
-        player.ly.value = ly;
-        player.ry.value = ry;
-        player.state |= (rotate == 1) ? Input::Key::KEY_LEFT : (rotate == 3) ? Input::Key::KEY_RIGHT
-                                                                             : Input::Key::KEY_DOWN;
-    } else if (ly < -player.dead_zone || ry < -player.dead_zone) {
-        player.ly.value = ly;
-        player.ry.value = ry;
-        player.state |= (rotate == 1) ? Input::Key::KEY_RIGHT : (rotate == 3) ? Input::Key::KEY_LEFT
-                                                                              : Input::Key::KEY_UP;
-    } else {
-        player.ly.value = 0;
-        player.ry.value = 0;
-    }
+    
+    float analogX = 0.0f;
+    float analogY = 0.0f;
+    float deadZone = (float) player.dead_zone;
+    float scalingFactor = 1.0f;
+    float magnitude = 0.0f;
+    bool up = false, down = false, left = false, right = false;
+    Axis *currentStickXAxis = NULL;
+    Axis *currentStickYAxis = NULL;
+    float slope = 0.414214f; // tangent of 22.5 degrees for size of angular zones
+    
+    for (int i = 0; i<=1; i++) {
+        
+        if (i == 0) {
+            // left stick
+            currentStickXAxis = &(player.lx);
+            currentStickYAxis = &(player.ly);
+        } else {
+            // right stick
+            currentStickXAxis = &(player.rx);
+            currentStickYAxis = &(player.ry);
+        }
+        analogX = (float) (SDL_JoystickGetAxis((SDL_Joystick *) player.data, currentStickXAxis->id));
+        analogY = (float) (SDL_JoystickGetAxis((SDL_Joystick *) player.data, currentStickYAxis->id));
+        
+        //radial and scaled deadzone
+        //http://www.third-helix.com/2013/04/12/doing-thumbstick-dead-zones-right.html
+        
+        if (magnitude=sqrt(analogX * analogX + analogY * analogY) >= deadZone) {
+            
+            // analog control
+            scalingFactor=32767.0f/magnitude * (magnitude-deadZone)/(32769.0f-deadZone);
+            currentStickXAxis->value = (short) (analogX * scalingFactor);
+            currentStickYAxis->value = (short) (analogY * scalingFactor);
+            
+            // symmetric angular zones for all eight digital directions
+            analogY = -analogY;
+            if (analogY > 0 && analogX > 0) {
+                // upper right quadrant
+                if (analogY > slope * analogX)
+                    up = true;
+                if (analogX > slope * analogY)
+                    right = true;
+            } else if (analogY > 0 && analogX <= 0) {
+                // upper left quadrant
+                if (analogY > slope * (-analogX))
+                    up = true;
+                if ((-analogX) > slope * analogY)
+                    left = true;
+            } else if (analogY <= 0 && analogX > 0) {
+                // lower right quadrant
+                if ((-analogY) > slope * analogX)
+                    down = true;
+                if (analogX > slope * (-analogY))
+                    right = true;
+            } else if (analogY <= 0 && analogX <= 0) {
+                // lower left quadrant
+                if ((-analogY) > slope * (-analogX))
+                    down = true;
+                if ((-analogX) > slope * (-analogY))
+                    left = true;
+            }
+            
+            if (right)
+                player.state |= (rotate == 1) ? Input::Key::KEY_DOWN : 
+                (rotate == 3) ? Input::Key::KEY_UP : Input::Key::KEY_RIGHT;
+            if (left)
+                player.state |= (rotate == 1) ? Input::Key::KEY_UP : 
+                (rotate == 3) ? Input::Key::KEY_DOWN : Input::Key::KEY_LEFT;
+            if (up)
+                player.state |= (rotate == 1) ? Input::Key::KEY_RIGHT : 
+                (rotate == 3) ? Input::Key::KEY_LEFT : Input::Key::KEY_UP;
+            if (down)
+                player.state |= (rotate == 1) ? Input::Key::KEY_LEFT : 
+                (rotate == 3) ? Input::Key::KEY_RIGHT : Input::Key::KEY_DOWN;
+        } else {
+            currentStickXAxis->value = 0;
+            currentStickYAxis->value = 0;
+        } // end if (magnitude >= deadZone)
+    } // end for
 }
 
 void SDL2Input::process_hat(Input::Player &player, int rotate) {

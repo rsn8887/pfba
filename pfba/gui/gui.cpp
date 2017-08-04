@@ -673,6 +673,10 @@ void Gui::Run() {
             } else if (key & Input::Key::KEY_FIRE1) {
                 if (romSelected != NULL
                     && romSelected->state != RomList::RomState::MISSING) {
+                    for (int i = 0; i < 6; i++) {
+                        Clear();
+                        Flip();
+                    }
                     RunRom(romSelected);
                 }
             } else if (key & Input::Key::KEY_MENU1) {
@@ -1008,6 +1012,7 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
     }
 
     input->Clear(0);
+    
 }
 
 int Gui::GetButton() {
