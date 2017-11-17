@@ -11,6 +11,8 @@
 //////////
 NXRenderer::NXRenderer() : Renderer() {
 
+    gfxInitDefault();
+
     // TODO
     this->shaders = new Shaders("");
 }
@@ -101,7 +103,7 @@ void NXRenderer::DrawLine(int x1, int y1, int x2, int y2, const Color &c) {
 
 void NXRenderer::DrawRect(const Rect &rect, const Color &c, bool fill) {
 
-   // TODO: draw
+    // TODO: draw
 }
 
 void NXRenderer::Clip(const Rect &rect) {
@@ -112,8 +114,8 @@ void NXRenderer::Clear() {
 }
 
 void NXRenderer::Flip() {
-
-    // TODO: draw
+    gfxSwapBuffers();
+    gfxWaitForVsync();
 }
 
 void NXRenderer::Delay(unsigned int ms) {
@@ -122,6 +124,5 @@ void NXRenderer::Delay(unsigned int ms) {
 }
 
 NXRenderer::~NXRenderer() {
-
-    // TODO: draw
+    gfxExit();
 }
