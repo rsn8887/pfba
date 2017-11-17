@@ -91,6 +91,9 @@ int main(int argc, char **argv) {
 #elif __3DS__
     renderer = (Renderer *) new CTRRenderer();
     inp = (Input *) new CTRInput();
+#elif __NX__
+    renderer = (Renderer *) new NXRenderer();
+    inp = (Input *) new Input();
 #elif __SDL2__
     renderer = (Renderer *) new SDL2Renderer(960, 544);
      inp = (Input *) new SDL2Input();
