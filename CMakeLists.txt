@@ -561,3 +561,8 @@ target_include_directories(${PROJECT_NAME}.nx PRIVATE
         )
 target_link_libraries(${PROJECT_NAME}.nx cross2d ${LDFLAGS})
 set_target_properties(${PROJECT_NAME}.nx PROPERTIES LINK_FLAGS "-specs=switch.specs")
+
+add_custom_target(${PROJECT_NAME}.nso
+        DEPENDS ${PROJECT_NAME}.nx
+        COMMAND ${DEVKITPRO}/devkitA64/bin/elf2nso ${PROJECT_NAME}.nx ${PROJECT_NAME}.nso
+        )
