@@ -261,6 +261,11 @@ void AudioInit(Config *cfg) {
     nBurnSoundLen = 0;
     pBurnSoundOut = NULL;
     audio = NULL;
+#elif __NX__
+    nBurnSoundRate = 0;
+    nBurnSoundLen = 0;
+    pBurnSoundOut = NULL;
+    audio = NULL;
 #else
     audio = (Audio *) new SDL2Audio(nBurnSoundRate, nBurnFPS);
     if (audio->available) {

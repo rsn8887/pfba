@@ -12,6 +12,8 @@ int Input::Clear(int player) {
             break;
         }
     }
+
+    return 0;
 }
 
 void Input::SetJoystickMapping(int player, int *mapping, int deadzone) {

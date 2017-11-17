@@ -9,7 +9,9 @@ endif (NOT CMAKE_SYSTEM_NAME)
 option(BUILD_SFML "Build with SFML support" OFF)
 option(BUILD_SDL2 "Build with SDL2 support" OFF)
 option(BUILD_PSP2 "Build with PSP2 support" OFF)
+option(BUILD_3DS "Build with 3DS support" OFF)
 option(BUILD_RPI "Build with RPI support" OFF)
+option(BUILD_NX "Build with NX (SWITCH) support" ON)
 
 if (BUILD_PSP2)
     set(VITASDK "/usr/local/vitasdk")
@@ -37,7 +39,23 @@ elseif (BUILD_3DS)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
     set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
-    SET(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available")
+    set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available")
+elseif (BUILD_NX)
+    set(DEVKITPRO "/opt/devkitpro")
+    set(CMAKE_SYSTEM_PROCESSOR "armv8-a")
+    set(CMAKE_C_COMPILER "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-gcc")
+    set(CMAKE_CXX_COMPILER "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-g++")
+    set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-as")
+    set(CMAKE_AR "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-gcc-ar" CACHE STRING "")
+    set(CMAKE_RANLIB "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-gcc-ranlib" CACHE STRING "")
+    set(CMAKE_C_FLAGS "-march=armv8-a -mtp=soft -fPIE -g -O2 -ffast-math -ffunction-sections -fdata-sections" CACHE STRING "C flags")
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fpermissive -fno-rtti -fno-exceptions -std=gnu++11" CACHE STRING "C++ flags")
+    set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO} ${DEVKITPRO}/devkitA64 ${DEVKITPRO}/portlibs/armv8-a)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+    set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available")
 elseif (BUILD_RPI)
     set(RPISDK "/usr/local/rpi-tools")
     set(CMAKE_SYSTEM_PROCESSOR "armv7-a")
@@ -89,6 +107,17 @@ elseif (BUILD_3DS)
             src/3ds/*.c*
             )
     list(APPEND FLAGS -O3 -DARM11 -D_3DS -D__3DS__
+            -ffunction-sections -fomit-frame-pointer
+            )
+elseif (BUILD_NX)
+    set(PLATFORM_DIRS
+            src/nx
+            ${DEVKITPRO}/libnx/include
+            )
+    file(GLOB PLATFORM_SRC
+            src/nx/*.c*
+            )
+    list(APPEND FLAGS -D_NX -D__NX__
             -ffunction-sections -fomit-frame-pointer
             )
 elseif (BUILD_SDL2)
@@ -171,3 +200,15 @@ target_link_libraries(${PROJECT_NAME}.3ds
         m)
 set_target_properties(${PROJECT_NAME}.3ds PROPERTIES LINK_FLAGS "-specs=3dsx.specs")
 add_dependencies(${PROJECT_NAME}.3ds ${PROJECT_NAME})
+
+#####################
+# NX (SWITCH) target
+#####################
+add_executable(${PROJECT_NAME}.nx src/main.cpp)
+target_compile_options(${PROJECT_NAME}.nx PRIVATE ${FLAGS} -I${DEVKITPRO}/libnx/include)
+target_link_libraries(${PROJECT_NAME}.nx
+        cross2d
+        ${DEVKITPRO}/libnx/lib/libnx.a
+        m)
+set_target_properties(${PROJECT_NAME}.nx PROPERTIES LINK_FLAGS "-specs=switch.specs")
+add_dependencies(${PROJECT_NAME}.nx ${PROJECT_NAME})

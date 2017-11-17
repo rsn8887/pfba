@@ -7,9 +7,10 @@ enable_language(ASM)
 # delete cmake cache folder before changing this options
 set(BUILD_SFML OFF CACHE BOOL "Build with SFML support")
 set(BUILD_SDL2 OFF CACHE BOOL "Build with SDL2 support")
-set(BUILD_PSP2 ON CACHE BOOL "Build with PSP2 support")
+set(BUILD_PSP2 OFF CACHE BOOL "Build with PSP2 support")
 set(BUILD_3DS OFF CACHE BOOL "Build with 3DS support")
 set(BUILD_RPI OFF CACHE BOOL "Build with RPI support")
+set(BUILD_NX ON CACHE BOOL "Build with NX (SWITCH) support")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(BUILD_DEBUG true CACHE BOOL "Debug build")
@@ -43,6 +44,22 @@ elseif (BUILD_3DS)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
     set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
     SET(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available")
+elseif (BUILD_NX)
+    set(DEVKITPRO "/opt/devkitpro")
+    set(CMAKE_SYSTEM_PROCESSOR "armv8-a")
+    set(CMAKE_C_COMPILER "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-gcc")
+    set(CMAKE_CXX_COMPILER "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-g++")
+    set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-as")
+    set(CMAKE_AR "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-gcc-ar" CACHE STRING "")
+    set(CMAKE_RANLIB "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-gcc-ranlib" CACHE STRING "")
+    set(CMAKE_C_FLAGS "-march=armv8-a -mtp=soft -fPIE -g -ffast-math -ffunction-sections -fdata-sections" CACHE STRING "C flags")
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fpermissive -fno-rtti -fno-exceptions -std=gnu++11" CACHE STRING "C++ flags")
+    set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO} ${DEVKITPRO}/devkitA64 ${DEVKITPRO}/portlibs/armv8-a)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+    set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available")
 elseif (BUILD_RPI)
     set(RPISDK "/usr/local/rpi-tools")
     set(CMAKE_SYSTEM_PROCESSOR "armv7-a")
@@ -409,6 +426,26 @@ elseif (BUILD_3DS)
             ${DEVKITPRO}/libctru/lib/libcitro3d.a
             ${DEVKITPRO}/libctru/lib/libctru.a
             m)
+elseif (BUILD_NX)
+    ##############
+    # NX (SWITCH)
+    ##############
+    list(APPEND FLAGS -D_NX -D__NX__
+            -DNO_KEYBOARD -D__PFBA_ARM__ -DUSE_FILE32API
+            -ffunction-sections -fomit-frame-pointer)
+    set(LDFLAGS
+            cross2d
+            #${DEVKITPRO}/libctru/lib/libsfil.a
+            #${DEVKITPRO}/libctru/lib/libsftd.a
+            #${DEVKITPRO}/portlibs/armv6k/lib/libfreetype.a
+            #${DEVKITPRO}/portlibs/armv6k/lib/libpng.a
+            #${DEVKITPRO}/portlibs/armv6k/lib/libjpeg.a
+            #${DEVKITPRO}/portlibs/armv6k/lib/libz.a
+            #${DEVKITPRO}/libctru/lib/libsf2d.a
+            #${DEVKITPRO}/libctru/lib/libcitro3d.a
+            #${DEVKITPRO}/libctru/lib/libctru.a
+            nx
+            m)
 elseif (BUILD_SDL2)
     ##############
     # SDL2
@@ -518,3 +555,16 @@ target_include_directories(${PROJECT_NAME}.3ds PRIVATE
         )
 target_link_libraries(${PROJECT_NAME}.3ds cross2d ${LDFLAGS})
 set_target_properties(${PROJECT_NAME}.3ds PROPERTIES LINK_FLAGS "-specs=3dsx.specs")
+
+#####################
+# NX (SWITCH) target
+#####################
+add_executable(${PROJECT_NAME}.nx ${SRC} ${CMAKE_BINARY_DIR}/deps/m68kops.c)
+target_compile_options(${PROJECT_NAME}.nx PRIVATE ${FLAGS})
+target_include_directories(${PROJECT_NAME}.nx PRIVATE
+        ${INC}
+        ${DEVKITPRO}/libnx/include
+        ${DEVKITPRO}/portlibs/armv8-a/include
+        )
+target_link_libraries(${PROJECT_NAME}.nx cross2d ${LDFLAGS})
+set_target_properties(${PROJECT_NAME}.nx PROPERTIES LINK_FLAGS "-specs=switch.specs")

@@ -14,8 +14,8 @@ public:
 
     virtual ~Font() {};
 
-    virtual int GetWidth(const char *fmt, ...) {};
-    virtual int GetHeight(const char *fmt, ...) {};
+    virtual int GetWidth(const char *fmt, ...) { return 0; };
+    virtual int GetHeight(const char *fmt, ...) { return 0; };
 
     Color color {255, 255, 255, 255};
     int size = 20;

@@ -25,6 +25,11 @@ int main() {
     input = (Input *) new CTRInput();
     font_small = renderer->LoadFont("default.ttf", 20);
     font_large = renderer->LoadFont("default.ttf", 40);
+#elif __NX__
+    renderer = (Renderer *) new NXRenderer();
+    input = (Input *) new Input();
+    font_small = renderer->LoadFont("default.ttf", 20);
+    font_large = renderer->LoadFont("default.ttf", 40);
 #elif __SFML__
     renderer = (Renderer *) new SFMLRenderer(SCRW, SCRH);
     input = (Input *) new SFMLInput((SFMLRenderer*)renderer);
