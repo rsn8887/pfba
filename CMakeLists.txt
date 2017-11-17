@@ -435,16 +435,9 @@ elseif (BUILD_NX)
             -ffunction-sections -fomit-frame-pointer)
     set(LDFLAGS
             cross2d
-            #${DEVKITPRO}/libctru/lib/libsfil.a
-            #${DEVKITPRO}/libctru/lib/libsftd.a
-            #${DEVKITPRO}/portlibs/armv6k/lib/libfreetype.a
-            #${DEVKITPRO}/portlibs/armv6k/lib/libpng.a
-            #${DEVKITPRO}/portlibs/armv6k/lib/libjpeg.a
-            #${DEVKITPRO}/portlibs/armv6k/lib/libz.a
-            #${DEVKITPRO}/libctru/lib/libsf2d.a
-            #${DEVKITPRO}/libctru/lib/libcitro3d.a
-            #${DEVKITPRO}/libctru/lib/libctru.a
-            nx
+            ${DEVKITPRO}/portlibs/armv8-a/lib/libpng.a
+            ${DEVKITPRO}/portlibs/armv8-a/lib/libz.a
+            ${DEVKITPRO}/libnx/lib/libnx.a
             m)
 elseif (BUILD_SDL2)
     ##############
