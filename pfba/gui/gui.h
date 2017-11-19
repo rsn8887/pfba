@@ -7,6 +7,7 @@
 
 #include <skeleton/renderer.h>
 #include <skeleton/input.h>
+#include <skeleton/io.h>
 #include "skin.h"
 #include "romlist.h"
 #include "config.h"
@@ -21,7 +22,7 @@ class Gui {
 
 public:
 
-    Gui(Renderer *rdr, Skin *skin, RomList *rList, Config *cfg, Input *input);
+    Gui(Io* io, Renderer *rdr, Skin *skin, RomList *rList, Config *cfg, Input *input);
 
     ~Gui();
 
@@ -59,6 +60,7 @@ private:
 
     bool IsOptionHidden(Option *option);
 
+    Io *io = NULL;
     Config *config = NULL;
     Renderer *renderer = NULL;
     Skin *skin = NULL;

@@ -15,7 +15,6 @@
 #include "shaders.h"
 #include "rect.h"
 #include "color.h"
-#include "utility.h"
 
 #ifndef MAX_PATH
 #define MAX_PATH 512

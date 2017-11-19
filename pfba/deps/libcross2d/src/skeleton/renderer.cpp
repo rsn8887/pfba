@@ -58,7 +58,7 @@ Renderer::DrawFont(Font *font, const Rect &dst, const Color &c, bool centerX, bo
 
     // cut message "properly" instead of clip
     while (font->GetWidth(msg) > dst.w) {
-        int len = strlen(msg);
+        int len = (int) strlen(msg);
         if (len == 0) {
             break;
         }

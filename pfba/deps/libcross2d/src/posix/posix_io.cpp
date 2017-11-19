@@ -1,22 +1,20 @@
 //
-// Created by cpasjuste on 23/01/17.
+// Created by cpasjuste on 17/11/17.
 //
 
-#ifndef __PSP2__
-
 #include <sys/stat.h>
-#include <dirent.h>
-#include "utility.h"
+#include "posix_io.h"
 
-bool Utility::FileExist(const char *file) {
+bool POSIXIo::Exist(const char *path) {
     struct stat buf;
-    return (stat(file, &buf) == 0);
+    return (stat(path, &buf) == 0);
 }
 
-std::vector<std::string> Utility::GetFileList(const char *path) {
+std::vector<std::string> POSIXIo::GetDirList(const char *path) {
+
     std::vector<std::string> files;
-    DIR *dir;
     struct dirent *ent;
+    DIR *dir;
 
     if ((dir = opendir(path)) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
@@ -26,7 +24,6 @@ std::vector<std::string> Utility::GetFileList(const char *path) {
         }
         closedir(dir);
     }
+
     return files;
 }
-
-#endif //__PSP2__

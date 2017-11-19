@@ -5,7 +5,6 @@
 #ifndef PFBA_PSP2_SHADERS_H
 #define PFBA_PSP2_SHADERS_H
 
-#include "skeleton/utility.h"
 #include "skeleton/shaders.h"
 
 class PSP2Shaders : Shaders {

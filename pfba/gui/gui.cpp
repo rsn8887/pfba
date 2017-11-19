@@ -1,11 +1,11 @@
 //
 // Created by cpasjuste on 22/11/16.
 //
+#include <skeleton/timer.h>
 #include <algorithm>
 #include "run.h"
 #include "video.h"
 #include "menu.h"
-#include <skeleton/timer.h>
 
 #define BORDER_SIZE 16
 
@@ -285,9 +285,9 @@ void Gui::RunStatesMenu() {
         memset(saves[i].sshot, 0, MAX_PATH);
         sprintf(saves[i].path, "%s/%s%i.sav", szAppSavePath, romSelected->zip, i);
         sprintf(saves[i].sshot, "%s/%s%i.png", szAppSavePath, romSelected->zip, i);
-        saves[i].available = Utility::FileExist(saves[i].path);
+        saves[i].available = io->Exist(saves[i].path);
         saves[i].texture = NULL;
-        if (Utility::FileExist(saves[i].sshot)) {
+        if (io->Exist(saves[i].sshot)) {
             saves[i].texture = renderer->LoadTexture(saves[i].sshot);
         }
     }
@@ -736,8 +736,9 @@ void Gui::Run() {
     delete (timer_load);
 }
 
-Gui::Gui(Renderer *rdr, Skin *sk, RomList *rList, Config *cfg, Input *in) {
+Gui::Gui(Io *i, Renderer *rdr, Skin *sk, RomList *rList, Config *cfg, Input *in) {
 
+    io = i;
     renderer = rdr;
     skin = sk;
     romList = rList;
@@ -832,13 +833,13 @@ int Gui::TitleLoad(RomList::Rom *rom) {
 
     char path[MAX_PATH];
     sprintf(path, "%s/%s.png", szAppPreviewPath, rom->zip);
-    if (Utility::FileExist(path)) {
+    if (io->Exist(path)) {
         title = renderer->LoadTexture(path);
         return title != NULL;
     } else if (rom->parent) {
         memset(path, 0, MAX_PATH);
         sprintf(path, "%s/%s.png", szAppPreviewPath, rom->parent);
-        if (Utility::FileExist(path)) {
+        if (io->Exist(path)) {
             title = renderer->LoadTexture(path);
             return title != NULL;
         }
@@ -877,12 +878,12 @@ void Gui::RunRom(RomList::Rom *rom) {
         if (strlen(config->GetRomPath(i)) > 0) {
             sprintf(path, "%s%s.zip", config->GetRomPath(i), rom->zip);
             printf("%s\n", path);
-            if (Utility::FileExist(path))
+            if (io->Exist(path))
                 break;
         }
     }
 
-    if (!Utility::FileExist(path)) {
+    if (!io->Exist(path)) {
         printf("RunRom: rom not found: `%s`\n", rom->zip);
         return;
     }
@@ -1012,7 +1013,7 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
     }
 
     input->Clear(0);
-    
+
 }
 
 int Gui::GetButton() {

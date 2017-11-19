@@ -11,7 +11,7 @@ option(BUILD_SDL2 "Build with SDL2 support" OFF)
 option(BUILD_PSP2 "Build with PSP2 support" OFF)
 option(BUILD_3DS "Build with 3DS support" OFF)
 option(BUILD_RPI "Build with RPI support" OFF)
-option(BUILD_NX "Build with NX (SWITCH) support" ON)
+option(BUILD_NX "Build with NX (SWITCH) support" OFF)
 
 if (BUILD_PSP2)
     set(VITASDK "/usr/local/vitasdk")
@@ -79,6 +79,9 @@ file(GLOB CROSS2D_SRC src/skeleton/*.c*)
 #####################
 # PLATORM SPECIFIC
 #####################
+#####################
+# PSP2 PLATORM
+#####################
 if (BUILD_PSP2)
     set(PLATFORM_DIRS
             src/psp2
@@ -98,17 +101,25 @@ if (BUILD_PSP2)
     if (BUILD_DEBUG)
         list(APPEND FLAGS -D__PSP2_DEBUG__)
     endif (BUILD_DEBUG)
+    #####################
+    # 3DS PLATORM
+    #####################
 elseif (BUILD_3DS)
     set(PLATFORM_DIRS
             src/3ds
+            src/posix
             ${DEVKITPRO}/libctru/include
             )
     file(GLOB PLATFORM_SRC
             src/3ds/*.c*
+            src/posix/*.c*
             )
     list(APPEND FLAGS -O3 -DARM11 -D_3DS -D__3DS__
             -ffunction-sections -fomit-frame-pointer
             )
+    #####################
+    # NX PLATORM
+    #####################
 elseif (BUILD_NX)
     set(PLATFORM_DIRS
             src/nx
@@ -120,14 +131,30 @@ elseif (BUILD_NX)
     list(APPEND FLAGS -D_NX -D__NX__
             -ffunction-sections -fomit-frame-pointer
             )
+    #####################
+    # SDL2 PLATORM
+    #####################
 elseif (BUILD_SDL2)
-    set(PLATFORM_DIRS src/sdl2)
-    file(GLOB PLATFORM_SRC src/sdl2/*.c*)
+    set(PLATFORM_DIRS
+            src/sdl2
+            src/posix
+            )
+    file(GLOB PLATFORM_SRC
+            src/sdl2/*.c*
+            src/posix/*.c*
+            )
     list(APPEND FLAGS -O3 -D__SDL2__)
+    #####################
+    # SFML PLATORM
+    #####################
 elseif (BUILD_SFML)
-    set(PLATFORM_DIRS src/sfml)
+    set(PLATFORM_DIRS
+            src/sfml
+            src/posix
+            )
     file(GLOB PLATFORM_SRC
             src/sfml/*.c*
+            src/posix/*.c*
             src/sdl2/sdl2_audio.cpp # TODO: get rid of sdl2, use sdl2 audio for now
             )
     list(APPEND FLAGS -O3 -D__SFML__)

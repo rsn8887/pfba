@@ -27,6 +27,7 @@ int _newlib_heap_size_user = 192 * 1024 * 1024;
 #include <sdl2/sdl2_input.h>
 #endif
 
+Io *io;
 Renderer *renderer;
 Config *config;
 RomList *romList;
@@ -89,15 +90,19 @@ int main(int argc, char **argv) {
     renderer = (Renderer *) new PSP2Renderer(960, 544);
     inp = (Input *) new SDL2Input();
 #elif __3DS__
+    io = (Io *) new POSIXIo();
     renderer = (Renderer *) new CTRRenderer();
     inp = (Input *) new CTRInput();
 #elif __NX__
+    io = (Io *) new NXIo();
     renderer = (Renderer *) new NXRenderer();
     inp = (Input *) new Input();
 #elif __SDL2__
+    io = (Io *) new POSIXIo();
     renderer = (Renderer *) new SDL2Renderer(960, 544);
      inp = (Input *) new SDL2Input();
 #elif __SFML__
+    io = (Io *) new POSIXIo();
     std::string shaderPath = szAppHomePath;
     shaderPath += "shaders/sfml";
     renderer = (Renderer *) new SFMLRenderer(960, 544, shaderPath);
@@ -110,14 +115,14 @@ int main(int argc, char **argv) {
     config = new Config(cfgPath, renderer);
 
     // build/init roms list
-    romList = new RomList(&config->hardwareList, config->GetRomPaths());
+    romList = new RomList(io, &config->hardwareList, config->GetRomPaths());
 
     // skin
     int size = config->GetGuiValue(Option::Index::SKIN_FONT_SIZE);
     Skin *skin = new Skin(renderer, szAppSkinPath, size, buttons);
 
     // run gui
-    gui = new Gui(renderer, skin, romList, config, inp);
+    gui = new Gui(io, renderer, skin, romList, config, inp);
 #ifdef __PSP2__ // prevent rom list scrolling lag on psp2
     gui->SetTitleLoadDelay(500);
 #endif

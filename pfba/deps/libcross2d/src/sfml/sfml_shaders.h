@@ -5,7 +5,6 @@
 #ifndef PFBA_SFML_SHADERS_H
 #define PFBA_SFML_SHADERS_H
 
-#include "skeleton/utility.h"
 #include "skeleton/shaders.h"
 
 class SFMLShaders : Shaders {

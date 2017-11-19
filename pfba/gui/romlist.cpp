@@ -5,12 +5,12 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-#include "skeleton/utility.h"
+#include <skeleton/io.h>
 
 #include "burner.h"
 #include "romlist.h"
 
-RomList::RomList(std::vector<Hardware> *hwList, const std::vector<std::string> &paths) {
+RomList::RomList(Io *io, std::vector<Hardware> *hwList, const std::vector<std::string> &paths) {
 
     hardwareList = hwList;
 
@@ -20,7 +20,7 @@ RomList::RomList(std::vector<Hardware> *hwList, const std::vector<std::string> &
     std::vector<std::string> files[DIRS_MAX];
     for (unsigned int i = 0; i < paths.size(); i++) {
         if (!paths[i].empty()) {
-            files[i] = Utility::GetFileList(paths[i].c_str());
+            files[i] = io->GetDirList(paths[i].c_str());
             printf("RomList: found %i files in `%s`\n", (int) files[i].size(), paths[i].c_str());
         }
     }

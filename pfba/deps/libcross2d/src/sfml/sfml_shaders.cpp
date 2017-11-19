@@ -3,11 +3,14 @@
 //
 
 #include <SFML/Graphics/Shader.hpp>
+#include <posix/posix_io.h>
 #include "sfml_shaders.h"
 
 SFMLShaders::SFMLShaders(const std::string &shadersPath) : Shaders(shadersPath) {
+
     if (sf::Shader::isAvailable()) {
-        std::vector<std::string> shaderList = Utility::GetFileList(shadersPath.c_str());
+        POSIXIo io;
+        std::vector<std::string> shaderList = io.GetDirList(shadersPath.c_str());
         for (int i = 0; i < shaderList.size(); i++) {
             const std::string name = shaderList[i].substr(0, shaderList[i].find_last_of("."));
             if (shaderList[i].substr(shaderList[i].find_last_of(".") + 1) == "v") { // vertex shader
@@ -23,14 +26,14 @@ SFMLShaders::SFMLShaders(const std::string &shadersPath) : Shaders(shadersPath) 
             }
         }
     }
-    printf("SFMLShaders: found %i shaders\n", Count()-1);
+    printf("SFMLShaders: found %i shaders\n", Count() - 1);
 }
 
 SFMLShaders::~SFMLShaders() {
     if (sf::Shader::isAvailable()) {
         for (int i = 0; i < Count(); i++) {
             if (Get(i)->data != NULL) {
-                delete ((sf::Shader *)Get(i)->data);
+                delete ((sf::Shader *) Get(i)->data);
             }
         }
     }
