@@ -15,7 +15,7 @@ PSP2: fix crash on some games with missing roms (cps2 wrong set, ...) identified
 COMMON: improve shader handling
 COMMON: allow real time ui resizing
 COMMON: new input events (EV_QUIT/EV_RESIZE)
-COMMIN: change functions args to const when applicable
+COMMON: change functions args to const when applicable
 COMMON: simplify utility class (static)
 COMMON: new shader class
 SFML: add shader support

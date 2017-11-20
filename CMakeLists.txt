@@ -36,8 +36,8 @@ elseif (BUILD_3DS)
     set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-vita-eabi-as")
     set(CMAKE_AR "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ar" CACHE STRING "")
     set(CMAKE_RANLIB "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ranlib" CACHE STRING "")
-    set(CMAKE_C_FLAGS "-mword-relocations -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft" CACHE STRING "C flags")
-    set(CMAKE_CXX_FLAGS "-fpermissive -std=gnu++11 -mword-relocations -fno-rtti -fno-exceptions -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft" CACHE STRING "C++ flags")
+    set(CMAKE_C_FLAGS "-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -mword-relocations" CACHE STRING "C flags")
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fpermissive -std=gnu++11 -fno-rtti -fno-exceptions" CACHE STRING "C++ flags")
     set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO} ${DEVKITPRO}/devkitARM ${DEVKITPRO}/portlibs/armv6k)
     set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -52,7 +52,7 @@ elseif (BUILD_NX)
     set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-as")
     set(CMAKE_AR "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-gcc-ar" CACHE STRING "")
     set(CMAKE_RANLIB "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-gcc-ranlib" CACHE STRING "")
-    set(CMAKE_C_FLAGS "-march=armv8-a -mtp=soft -fPIE -g -ffast-math -ffunction-sections -fdata-sections" CACHE STRING "C flags")
+    set(CMAKE_C_FLAGS "-march=armv8-a -mtp=soft -fPIE -ffast-math -ffunction-sections -fdata-sections" CACHE STRING "C flags")
     set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fpermissive -fno-rtti -fno-exceptions -std=gnu++11" CACHE STRING "C++ flags")
     set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO} ${DEVKITPRO}/devkitA64 ${DEVKITPRO}/portlibs/armv8-a)
     set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
@@ -501,23 +501,9 @@ target_compile_options(${PROJECT_NAME}.elf PRIVATE ${FLAGS})
 target_include_directories(${PROJECT_NAME}.elf PRIVATE ${INC})
 target_link_libraries(${PROJECT_NAME}.elf cross2d ${LDFLAGS})
 
-#####################
-# PSP2 (vita) vpk
-#####################
-add_custom_target(${PROJECT_NAME}.vpk
-        DEPENDS ${PROJECT_NAME}.elf
-        COMMAND rm -rf vpk && mkdir -p vpk/sce_sys
-        COMMAND ${VITASDK}/bin/vita-elf-create ${PROJECT_NAME}.elf ${PROJECT_NAME}.velf
-        COMMAND ${VITASDK}/bin/vita-make-fself -s -c ${PROJECT_NAME}.velf vpk/eboot.bin
-        COMMAND ${VITASDK}/bin/vita-mksfoex -s TITLE_ID=${TITLE_ID} "${PROJECT_NAME}" vpk/sce_sys/param.sfo
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/data/skin vpk/
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/data/psp2/* vpk
-        COMMAND cd vpk && zip -r ../${PROJECT_NAME}-${BUILD_DATE}.vpk . && cd ..
-        )
-
-#########
-# Deps
-#########
+############
+# FBA deps
+############
 add_custom_target(${PROJECT_NAME}.deps ALL
         COMMAND rm -rf ${PROJECT_BINARY_DIR}/deps && mkdir ${PROJECT_BINARY_DIR}/deps
         # driverlist.h
@@ -534,6 +520,20 @@ add_custom_target(${PROJECT_NAME}.deps ALL
         COMMAND perl ${CMAKE_SOURCE_DIR}/src/dep/scripts/cave_tile_func.pl -o deps/cave_tile_func.h
         COMMAND perl ${CMAKE_SOURCE_DIR}/src/dep/scripts/cave_sprite_func.pl -o deps/cave_sprite_func.h
         COMMAND perl ${CMAKE_SOURCE_DIR}/src/dep/scripts/psikyo_tile_func.pl -o deps/psikyo_tile_func.h
+        )
+
+#####################
+# PSP2 (vita) vpk
+#####################
+add_custom_target(${PROJECT_NAME}.vpk
+        DEPENDS ${PROJECT_NAME}.elf
+        COMMAND rm -rf vpk && mkdir -p vpk/sce_sys
+        COMMAND ${VITASDK}/bin/vita-elf-create ${PROJECT_NAME}.elf ${PROJECT_NAME}.velf
+        COMMAND ${VITASDK}/bin/vita-make-fself -s -c ${PROJECT_NAME}.velf vpk/eboot.bin
+        COMMAND ${VITASDK}/bin/vita-mksfoex -s TITLE_ID=${TITLE_ID} "${PROJECT_NAME}" vpk/sce_sys/param.sfo
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/data/skin vpk/
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/data/psp2/* vpk
+        COMMAND cd vpk && zip -r ../${PROJECT_NAME}-${BUILD_DATE}.vpk . && cd ..
         )
 
 #####################
@@ -561,7 +561,6 @@ target_include_directories(${PROJECT_NAME}.nx PRIVATE
         )
 target_link_libraries(${PROJECT_NAME}.nx cross2d ${LDFLAGS})
 set_target_properties(${PROJECT_NAME}.nx PROPERTIES LINK_FLAGS "-specs=switch.specs")
-
 add_custom_target(${PROJECT_NAME}.nro
         DEPENDS ${PROJECT_NAME}.nx
         COMMAND ${DEVKITPRO}/devkitA64/bin/elf2nro ${PROJECT_NAME}.nx ${PROJECT_NAME}.nro
