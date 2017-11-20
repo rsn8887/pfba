@@ -335,6 +335,16 @@ void RunEmulator(Gui *g, int drvnum) {
     StartTicks(); // no frameskip
 
     GameLooping = true;
+    
+    // prevent flickering borders by rendering a few frames and
+    // blanking the display afterwards
+    for (int i = 0; i < 9; i++)
+        RunOneFrame(true, 0, 0);
+    for (int i = 0; i < 3; i++) {
+        video->Clear();
+        video->Flip();
+    }
+    
     while (GameLooping) {
 
         int showFps = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHOW_FPS);
