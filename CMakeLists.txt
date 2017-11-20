@@ -402,7 +402,7 @@ if (BUILD_PSP2)
             cross2d SDL2
             SceDisplay_stub SceGxm_stub SceSysmodule_stub
             SceCtrl_stub ScePgf_stub ScePower_stub SceCommonDialog_stub
-            SceAudio_stub
+            SceAudio_stub SceTouch_stub
             freetype png jpeg z m c)
 elseif (BUILD_3DS)
     ##############

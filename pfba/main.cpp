@@ -137,6 +137,7 @@ int main(int argc, char **argv) {
     delete (config);
     delete (inp);
     delete (skin);
+    delete (io);
 
 #ifdef __PSP2__
     scePowerSetArmClockFrequency(266);
