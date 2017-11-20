@@ -3,16 +3,16 @@
 //
 
 #include <sys/stat.h>
-#include "psp2_utility.h"
+#include "psp2_io.h"
 #include "psp2_dirent.h"
 
-bool Utility::FileExist(const char *file) {
+bool PSP2Io::Exist(const char *file) {
 
     struct stat buf;
     return (stat(file, &buf) == 0);
 }
 
-std::vector<std::string> Utility::GetFileList(const char *path) {
+std::vector<std::string> PSP2Io::GetDirList(const char *path) {
 
     std::vector<std::string> files;
 

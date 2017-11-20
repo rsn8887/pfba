@@ -87,6 +87,7 @@ int main(int argc, char **argv) {
     buttons.push_back({10, "SELECT"});
     buttons.push_back({11, "START"});
 
+    io = (Io *) new PSP2Io();
     renderer = (Renderer *) new PSP2Renderer(960, 544);
     inp = (Input *) new SDL2Input();
 #elif __3DS__

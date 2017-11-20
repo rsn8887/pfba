@@ -23,6 +23,7 @@ public:
 };
 
 #ifdef __PSP2__
+#include "psp2/psp2_io.h"
 #elif __3DS__
 #include "posix/posix_io.h"
 #elif __NX__
