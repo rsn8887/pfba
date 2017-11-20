@@ -158,10 +158,6 @@ file(GLOB_RECURSE SRC_DRV
 list(REMOVE_ITEM SRC_DRV
         ${CMAKE_CURRENT_SOURCE_DIR}/src/burn/drv/capcom/ctv_make.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/burn/drv/pgm/pgm_sprite_create.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/burn/drv/midway/d_kinst.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/burn/drv/midway/midwunit.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/burn/drv/midway/d_wunit.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/burn/drv/midway/dcs2k.cpp
         )
 
 ##############
@@ -191,8 +187,8 @@ list(REMOVE_ITEM SRC_INTF
 set(CPU_DIRS
         src/cpu
         #src/cpu/a68k
-        #src/cpu/adsp2100
-        #src/cpu/tms34010
+        src/cpu/adsp2100
+        src/cpu/tms34010
         src/cpu/arm
         src/cpu/arm7
         src/cpu/h6280
@@ -220,8 +216,8 @@ set(CPU_DIRS
 file(GLOB SRC_CPU
         src/cpu/*.c*
         #src/cpu/a68k/*.c*
-        #src/cpu/adsp2100/*.c*
-        #src/cpu/tms34010/*.c*
+        src/cpu/adsp2100/*.c*
+        src/cpu/tms34010/*.c*
         src/cpu/arm/*.c*
         src/cpu/arm7/*.c*
         src/cpu/h6280/*.c*
@@ -247,8 +243,9 @@ file(GLOB SRC_CPU
         src/cpu/z80/*.c*
         )
 list(REMOVE_ITEM SRC_CPU
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/adsp2100_intf.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/tms34010_intf.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/adsp2100/2100ops.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/tms34010/tms34010_dasm.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/tms34010/tms34010_newdasm.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/m68k/m68kmake.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/m68k/m68k_in.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/m68k/m68kfpu.c
