@@ -89,7 +89,7 @@ int DrvInit(int nDrvNum, bool bRestore) {
     BurnExtLoadRom = DrvLoadRom;
 
     char path[MAX_PATH];
-    snprintf(path, MAX_PATH, "%s/%s.nv2", szAppNvPath, BurnDrvGetTextA(DRV_NAME));
+    snprintf(path, MAX_PATH, "%s%s.fs", szAppEEPROMPath, BurnDrvGetTextA(DRV_NAME));
     BurnStateLoad(path, 0, NULL);
 
     bDrvOkay = 1;                    // Okay to use all BurnDrv functions
@@ -109,7 +109,7 @@ int DrvExit() {
     if (bDrvOkay) {
         if (nBurnDrvSelect[0] < nBurnDrvCount) {
             char path[MAX_PATH];
-            snprintf(path, MAX_PATH, "%s/%s.nv2", szAppNvPath, BurnDrvGetTextA(DRV_NAME));
+            snprintf(path, MAX_PATH, "%s%s.fs", szAppEEPROMPath, BurnDrvGetTextA(DRV_NAME));
             BurnStateSave(path, 0);
             BurnDrvExit();                // Exit the driver
         }

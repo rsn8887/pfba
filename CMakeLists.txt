@@ -192,6 +192,7 @@ set(CPU_DIRS
         src/cpu
         #src/cpu/a68k
         #src/cpu/adsp2100
+        #src/cpu/tms34010
         src/cpu/arm
         src/cpu/arm7
         src/cpu/h6280
@@ -208,19 +209,19 @@ set(CPU_DIRS
         src/cpu/nec
         src/cpu/pic16c5x
         src/cpu/s2650
-        src/cpu/sh2
         src/cpu/tlcs90
-        #src/cpu/tms34010
-        src/cpu/z80
+        src/cpu/sh2
         src/cpu/tms32010
         src/cpu/upd7725
         src/cpu/upd7810
         src/cpu/v60
+        src/cpu/z80
         )
 file(GLOB SRC_CPU
         src/cpu/*.c*
         #src/cpu/a68k/*.c*
         #src/cpu/adsp2100/*.c*
+        #src/cpu/tms34010/*.c*
         src/cpu/arm/*.c*
         src/cpu/arm7/*.c*
         src/cpu/h6280/*.c*
@@ -237,14 +238,13 @@ file(GLOB SRC_CPU
         src/cpu/nec/*.c*
         src/cpu/pic16c5x/*.c*
         src/cpu/s2650/*.c*
-        src/cpu/sh2/*.c*
         src/cpu/tlcs90/*.c*
-        #src/cpu/tms34010/*.c*
-        src/cpu/z80/*.c*
+        src/cpu/sh2/*.c*
         src/cpu/tms32010/*.c*
         src/cpu/upd7725/*.c*
         src/cpu/upd7810/*.c*
         src/cpu/v60/*.c*
+        src/cpu/z80/*.c*
         )
 list(REMOVE_ITEM SRC_CPU
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/adsp2100_intf.cpp

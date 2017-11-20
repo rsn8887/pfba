@@ -262,6 +262,15 @@ void KonamiBlendCopy(UINT32 *pPalette)
 		}
 		break;
 
+		case 2:
+		{
+			UINT16 *dst = (UINT16*)pBurnDraw;
+			for (INT32 i = 0; i < nScreenWidth * nScreenHeight; i++, dst++, bmp++) {
+				*dst = palette_lut[*bmp];
+			}
+		}
+		break;
+
 		case 3:
 		{
 			UINT8 *dst = pBurnDraw;
@@ -272,28 +281,25 @@ void KonamiBlendCopy(UINT32 *pPalette)
 			}
 		}
 		break;
-
+#if 0
 		case 2:
 		{
 			UINT16 *dst = (UINT16*)pBurnDraw;
 			for (INT32 i = 0; i < nScreenWidth * nScreenHeight; i++, dst++, bmp++) {
-				*dst = palette_lut[*bmp];
-			}
+				*dst = *bmp / 0x10000;
+				*dst += (*bmp / 0x400) & 0x3f;
+				*dst += (*bmp / 8) & 0x1f;
+			}	
 
-		//	for (INT32 i = 0; i < nScreenWidth * nScreenHeight; i++) {
-		//		PutPix(pBurnDraw + (i * nBurnBpp), BurnHighCol((bmp[i]>>16)&0xff, (bmp[i]>>8)&0xff, bmp[i]&0xff, 0));
-		//	}
 		}
 		break;
-
-		default:
-		{
+#endif
+	    default:
 			for (INT32 i = 0; i < nScreenWidth * nScreenHeight; i++) {
-				PutPix(pBurnDraw + (i * nBurnBpp),
-					   BurnHighCol((bmp[i] >> 16) & 0xff, (bmp[i] >> 8) & 0xff, bmp[i] & 0xff, 0));
+				PutPix(pBurnDraw + (i * nBurnBpp), BurnHighCol((bmp[i]>>16)&0xff, (bmp[i]>>8)&0xff, bmp[i]&0xff, 0));
 			}
-		}
-		break;
+			// bprintf (0, _T("Unsupported KonamiBlendCopy bit depth! %d\n"), nBurnBpp);
+			break;
 	}
 }
 
