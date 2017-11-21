@@ -70,9 +70,9 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
     // main/gui config
     options_gui.push_back(Option("MAIN", {"MAIN"}, 0, Option::Index::MENU_MAIN, Option::Type::MENU));
     options_gui.push_back(Option("SHOW_ALL", {"WORKING", "ALL"}, 1, Option::Index::GUI_SHOW_ALL));
-    options_gui.push_back(Option("SHOW_CLONES", {"NO", "YES"}, 0, Option::Index::GUI_SHOW_CLONES));
+    options_gui.push_back(Option("SHOW_CLONES", {"OFF", "ON"}, 0, Option::Index::GUI_SHOW_CLONES));
     options_gui.push_back(Option("SHOW_HARDWARE", hardware_names, 0, Option::Index::GUI_SHOW_HARDWARE));
-    options_gui.push_back(Option("FULLSCREEN", {"NO", "YES"}, 1, Option::Index::GUI_FULLSCREEN, Option::Type::HIDDEN));
+    options_gui.push_back(Option("FULLSCREEN", {"OFF", "ON"}, 1, Option::Index::GUI_FULLSCREEN, Option::Type::HIDDEN));
 
     // skin config, hidden in gui for now
     options_gui.push_back(
@@ -88,7 +88,7 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
             Option("SHADER", renderer->shaders->GetNames(), 0, Option::Index::ROM_SHADER));
     options_gui.push_back(
             Option("ROTATION", {"OFF", "ON", "OFF+FLIP", "OFF+CAB MODE"}, 0, Option::Index::ROM_ROTATION));
-    options_gui.push_back(Option("SHOW_FPS", {"NO", "YES"}, 0, Option::Index::ROM_SHOW_FPS));
+    options_gui.push_back(Option("SHOW_FPS", {"OFF", "ON"}, 0, Option::Index::ROM_SHOW_FPS));
     options_gui.push_back(Option("FRAMESKIP", {"OFF", "ON"}, 0, Option::Index::ROM_FRAMESKIP));
     //options_gui.push_back(Option("M68K", {"ASM", "C"}, 0, Option::Index::ROM_M68K));
     options_gui.push_back(Option("NEOBIOS", {"UNIBIOS_3_2", "AES_ASIA", "AES_JPN", "DEVKIT", "MVS_ASIA_EUR_V6S1",
