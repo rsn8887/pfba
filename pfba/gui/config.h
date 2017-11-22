@@ -33,6 +33,7 @@ class Gui;
 #define KEY_JOY_AXIS_RX         2
 #define KEY_JOY_AXIS_RY         3
 #elif __3DS__
+// from <3ds/services/hid.h>
 #define KEY_JOY_UP_DEFAULT      6
 #define KEY_JOY_DOWN_DEFAULT    7
 #define KEY_JOY_LEFT_DEFAULT    5

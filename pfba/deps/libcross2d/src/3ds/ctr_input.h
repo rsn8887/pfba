@@ -6,6 +6,7 @@
 #define _CTR_INPUT_H
 
 #include <skeleton/input.h>
+#include <3ds.h>
 
 class CTRInput : Input {
 

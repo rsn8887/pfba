@@ -13,6 +13,8 @@
 //////////
 CTRRenderer::CTRRenderer() : Renderer() {
 
+    osSetSpeedupEnable(true);
+
     sf2d_init();
     sf2d_set_clear_color((u32) RGBA8(color.r, color.g, color.b, color.a));
     sf2d_set_3D(0);
@@ -30,8 +32,7 @@ CTRRenderer::CTRRenderer() : Renderer() {
 //////////
 Font *CTRRenderer::LoadFont(const char *path, int size) {
 
-    Font *font = (Font *)
-            new CTRFont(path, size);
+    Font *font = (Font *) new CTRFont(path, size);
     return font;
 }
 
