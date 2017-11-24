@@ -33,7 +33,7 @@ elseif (BUILD_3DS)
     set(CMAKE_SYSTEM_PROCESSOR "armv6k")
     set(CMAKE_C_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc")
     set(CMAKE_CXX_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-g++")
-    set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-vita-eabi-as")
+    set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-as")
     set(CMAKE_AR "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ar" CACHE STRING "")
     set(CMAKE_RANLIB "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ranlib" CACHE STRING "")
     set(CMAKE_C_FLAGS "-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -mword-relocations" CACHE STRING "C flags")
@@ -419,7 +419,6 @@ elseif (BUILD_3DS)
             ${DEVKITPRO}/portlibs/armv6k/lib/libpng.a
             ${DEVKITPRO}/portlibs/armv6k/lib/libjpeg.a
             ${DEVKITPRO}/portlibs/armv6k/lib/libz.a
-            ${DEVKITPRO}/libctru/lib/libsf2d.a
             ${DEVKITPRO}/libctru/lib/libcitro3d.a
             ${DEVKITPRO}/libctru/lib/libctru.a
             m)
@@ -543,8 +542,13 @@ target_include_directories(${PROJECT_NAME}.3ds PRIVATE
         ${DEVKITPRO}/libctru/include
         ${DEVKITPRO}/portlibs/armv6k/include
         )
-target_link_libraries(${PROJECT_NAME}.3ds cross2d ${LDFLAGS})
+target_link_libraries(${PROJECT_NAME}.3ds
+        cross2d
+        ${DEVKITPRO}/portlibs/3ds/lib/libSDL2.a
+        ${LDFLAGS})
 set_target_properties(${PROJECT_NAME}.3ds PROPERTIES LINK_FLAGS "-specs=3dsx.specs")
+include(pfba/deps/libcross2d/src/3ds/Tools3DS.cmake)
+add_3dsx_target(${PROJECT_NAME}.3ds NO_SMDH)
 
 #####################
 # NX (SWITCH) target

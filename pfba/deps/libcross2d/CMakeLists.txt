@@ -29,12 +29,12 @@ elseif (BUILD_3DS)
     set(CMAKE_SYSTEM_PROCESSOR "armv6k")
     set(CMAKE_C_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc")
     set(CMAKE_CXX_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-g++")
-    set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-vita-eabi-as")
+    set(CMAKE_ASM_COMPILER "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-as")
     set(CMAKE_AR "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ar" CACHE STRING "")
     set(CMAKE_RANLIB "${DEVKITPRO}/devkitARM/bin/arm-none-eabi-gcc-ranlib" CACHE STRING "")
     set(CMAKE_C_FLAGS "-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -mword-relocations" CACHE STRING "C flags")
     set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fpermissive -std=gnu++11 -fno-rtti -fno-exceptions" CACHE STRING "C++ flags")
-    set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO} ${DEVKITPRO}/devkitARM ${DEVKITPRO}/portlibs/armv6k)
+    set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO} ${DEVKITPRO}/devkitARM ${DEVKITPRO}/libctru ${DEVKITPRO}/portlibs/3ds ${DEVKITPRO}/portlibs/armv6k)
     set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
@@ -107,12 +107,17 @@ if (BUILD_PSP2)
 elseif (BUILD_3DS)
     set(PLATFORM_DIRS
             src/3ds
+            src/3ds/libsf2d/include
             src/posix
             ${DEVKITPRO}/libctru/include
+            ${DEVKITPRO}/portlibs/3ds/include
+            ${DEVKITPRO}/portlibs/armv6k/include
             )
     file(GLOB PLATFORM_SRC
             src/3ds/*.c*
+            src/3ds/libsf2d/source/*.c
             src/posix/*.c*
+            src/sdl2/sdl2_audio.cpp #TODO: get rid of sdl2, use sdl2 audio for now
             )
     list(APPEND FLAGS -O3 -DARM11 -D_3DS -D__3DS__
             -ffunction-sections -fomit-frame-pointer
@@ -155,7 +160,7 @@ elseif (BUILD_SFML)
     file(GLOB PLATFORM_SRC
             src/sfml/*.c*
             src/posix/*.c*
-            src/sdl2/sdl2_audio.cpp # TODO: get rid of sdl2, use sdl2 audio for now
+            src/sdl2/sdl2_audio.cpp #TODO: get rid of sdl2, use sdl2 audio for now
             )
     list(APPEND FLAGS -O3 -D__SFML__)
 endif (BUILD_PSP2)
@@ -212,16 +217,18 @@ add_custom_target(${PROJECT_NAME}.vpk
 # CTR (3DS) target
 #####################
 add_executable(${PROJECT_NAME}.3ds src/main.cpp)
-target_compile_options(${PROJECT_NAME}.3ds PRIVATE ${FLAGS} -I${DEVKITPRO}/libctru/include)
+target_compile_options(${PROJECT_NAME}.3ds PRIVATE ${FLAGS})
+target_include_directories(${PROJECT_NAME}.3ds PUBLIC ${CROSS2D_DIR})
+target_include_directories(${PROJECT_NAME}.3ds PRIVATE ${PLATFORM_DIRS})
 target_link_libraries(${PROJECT_NAME}.3ds
         cross2d
+        ${DEVKITPRO}/portlibs/3ds/lib/libSDL2.a
         ${DEVKITPRO}/libctru/lib/libsfil.a
         ${DEVKITPRO}/libctru/lib/libsftd.a
         ${DEVKITPRO}/portlibs/armv6k/lib/libfreetype.a
         ${DEVKITPRO}/portlibs/armv6k/lib/libpng.a
         ${DEVKITPRO}/portlibs/armv6k/lib/libjpeg.a
         ${DEVKITPRO}/portlibs/armv6k/lib/libz.a
-        ${DEVKITPRO}/libctru/lib/libsf2d.a
         ${DEVKITPRO}/libctru/lib/libcitro3d.a
         ${DEVKITPRO}/libctru/lib/libctru.a
         m)

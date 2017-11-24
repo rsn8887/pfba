@@ -4,6 +4,7 @@
 
 #include <cstring>
 #include <sfil.h>
+#include <3ds/libsf2d/include/sf2d.h>
 #include "ctr_texture.h"
 
 CTRTexture::CTRTexture(const char *path) : Texture(path) {
@@ -39,17 +40,18 @@ CTRTexture::CTRTexture(int w, int h) : Texture(w, h) {
 
     width = w;
     height = h;
-    pixels = (u8 *) linearAlloc(width * height * 2);
+    pixels = (u8 *) linearAlloc((size_t) ((width * height) << 2));
 }
 
 void CTRTexture::SetFiltering(int filter) {
 }
 
-void CTRTexture::Tile() {
+#define TILE_FLAGS \
+    (GX_TRANSFER_FLIP_VERT(1) | GX_TRANSFER_OUT_TILED(1) | GX_TRANSFER_RAW_COPY(0) | \
+    GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FMT_RGB565) | GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_FMT_RGB565) | \
+    GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 
-    const u32 flags = (GX_TRANSFER_FLIP_VERT(1) | GX_TRANSFER_OUT_TILED(1) | GX_TRANSFER_RAW_COPY(0) |
-                       GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FMT_RGB565) | GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_FMT_RGB565) |
-                       GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO));
+void CTRTexture::Tile() {
 
     GSPGPU_FlushDataCache(pixels, (u32) ((width * height) << 2));
     GSPGPU_FlushDataCache(tex->tex.data, tex->tex.size);
@@ -58,8 +60,8 @@ void CTRTexture::Tile() {
             (u32 *) pixels,
             (u32) GX_BUFFER_DIM(width, height),
             (u32 *) tex->tex.data,
-            (u32) GX_BUFFER_DIM(width, height),
-            flags
+            (u32) GX_BUFFER_DIM(tex->width, tex->height),
+            TILE_FLAGS
     );
 
     gspWaitForPPF();

@@ -30,7 +30,7 @@ public:
 #include "sdl2/sdl2_audio.h"
 #elif __SDL2__
 #include "sdl2/sdl2_audio.h"
-#elif __SFML__
+#elif (__SFML__ || __3DS__)
 #include "sdl2/sdl2_audio.h"
 #endif
 

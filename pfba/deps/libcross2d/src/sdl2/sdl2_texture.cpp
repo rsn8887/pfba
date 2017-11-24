@@ -2,9 +2,7 @@
 // Created by cpasjuste on 01/12/16.
 //
 
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-
 #include "sdl2_texture.h"
 
 SDL2Texture::SDL2Texture(SDL_Renderer *renderer, const char *path) : Texture(path) {

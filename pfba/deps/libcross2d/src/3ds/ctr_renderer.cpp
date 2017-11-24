@@ -18,6 +18,7 @@ CTRRenderer::CTRRenderer() : Renderer() {
     sf2d_init();
     sf2d_set_clear_color((u32) RGBA8(color.r, color.g, color.b, color.a));
     sf2d_set_3D(0);
+    sf2d_set_vblank_wait(0);
 
     sftd_init();
 
@@ -82,49 +83,34 @@ Texture *CTRRenderer::LoadTexture(const char *file) {
 
 void CTRRenderer::DrawTexture(Texture *texture, int x, int y, int w, int h, float rotation) {
 
-    CTRTexture *ctr_tex = (CTRTexture *) texture;
     sf2d_texture *sf2d_tex = ((CTRTexture *) texture)->tex;
 
     if (sf2d_tex) {
-
-        // tile buffer for 3ds...
-        if (ctr_tex->pixels) {
-            ctr_tex->Tile();
-        }
 
         StartDrawing();
 
         const float sx = (float) w / (float) texture->width;
         const float sy = (float) h / (float) texture->height;
-        const float rad = rotation * 0.0174532925f;
-
-        /*
-        sf2d_draw_texture_part_rotate_scale(sf2d_tex,
-                                            x + (w / 2), y + (h / 2),
-                                            rad,
-                                            0, 0,
-                                            texture->width, texture->height,
-                                            sx, sy);
-        */
-
-        //printf("w: %i, h: %i || sx: %f, sy: %f\n",  texture->width, texture->height, sx, sy);
-        /*
-        sf2d_draw_texture_rotate_scale_hotspot(sf2d_tex,
-                                               x + w / 2, y + h / 2,
-                                               rad,
-                                               sx, sy,
-                                               texture->width / 2, texture->height / 2);
-                                               */
-
         sf2d_draw_texture_scale(sf2d_tex, x, y, sx, sy);
 
     }
 }
 
 int CTRRenderer::LockTexture(Texture *texture, const Rect &rect, void **pixels, int *pitch) {
+
     *pixels = ((CTRTexture *) texture)->pixels;
     *pitch = texture->width * 2;
+
     return 0;
+}
+
+void CTRRenderer::UnlockTexture(Texture *texture) {
+
+    // tile buffer for 3ds...
+    CTRTexture *tex = (CTRTexture *) texture;
+    if (tex->pixels) {
+        tex->Tile();
+    }
 }
 
 /////////////
@@ -183,17 +169,18 @@ void CTRRenderer::Delay(unsigned int ms) {
     svcSleepThread(nano);
 }
 
-CTRRenderer::~CTRRenderer() {
-    sftd_fini();
-    sf2d_fini();
-}
-
 void CTRRenderer::StartDrawing() {
     if (!drawing_started) {
         sf2d_start_frame(GFX_TOP, GFX_LEFT);
         drawing_started = true;
     }
 }
+
+CTRRenderer::~CTRRenderer() {
+    sftd_fini();
+    sf2d_fini();
+}
+
 
 void ctr_printf(const char *msg, ...) {
     char buffer[256];

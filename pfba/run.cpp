@@ -67,14 +67,14 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
     int rotation = gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION);
     int rotate = 0;
     if (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
-      if (rotation == 0) {
-      //rotate controls by 90 degrees
-        rotate = 1;
-      }
-      if (rotation == 2) {
-      //rotate controls by 270 degrees
-        rotate = 3;
-      }
+        if (rotation == 0) {
+            //rotate controls by 90 degrees
+            rotate = 1;
+        }
+        if (rotation == 2) {
+            //rotate controls by 270 degrees
+            rotate = 3;
+        }
     }
     Input::Player *players = gui->GetInput()->Update(rotate);
 
@@ -257,11 +257,13 @@ void AudioInit(Config *cfg) {
     //cfg->GetRomValue(Option::Index::ROM_AUDIO_FMINTERPOLATION) == 0 ? 0 : 3;
 
 #ifdef __3DS__
-    nBurnSoundRate = 0;
-    nBurnSoundLen = 0;
-    pBurnSoundOut = NULL;
-    audio = NULL;
-#elif __NX__
+    //nBurnSoundRate = 0;
+    //nBurnSoundLen = 0;
+    //pBurnSoundOut = NULL;
+    //audio = NULL;
+    nBurnSoundRate = 44100;
+#endif
+#ifdef __NX__
     nBurnSoundRate = 0;
     nBurnSoundLen = 0;
     pBurnSoundOut = NULL;
@@ -292,7 +294,7 @@ void RunEmulator(Gui *g, int drvnum) {
 #endif
     bForce60Hz = true;
     nBurnSoundRate = 0;
-    if(gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO) ) {
+    if (gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO)) {
         nBurnSoundRate = 48000;
     }
 
@@ -335,7 +337,7 @@ void RunEmulator(Gui *g, int drvnum) {
     StartTicks(); // no frameskip
 
     GameLooping = true;
-    
+
     // prevent flickering borders by rendering a few frames and
     // blanking the display afterwards
     for (int i = 0; i < 9; i++)
@@ -344,7 +346,7 @@ void RunEmulator(Gui *g, int drvnum) {
         video->Clear();
         video->Flip();
     }
-    
+
     while (GameLooping) {
 
         int showFps = gui->GetConfig()->GetRomValue(Option::Index::ROM_SHOW_FPS);

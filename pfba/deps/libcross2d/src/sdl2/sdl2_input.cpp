@@ -3,8 +3,11 @@
 //
 
 #include "sdl2_input.h"
-
 #include "math.h" // need square root for radial deadzone
+
+#ifndef printf
+#define printf
+#endif
 
 static int key_id[KEY_COUNT]{
         Input::Key::KEY_UP,
