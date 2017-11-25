@@ -105,9 +105,12 @@ if (BUILD_PSP2)
     # 3DS PLATORM
     #####################
 elseif (BUILD_3DS)
+    # shader
+    #include(src/3ds/cmake/Tools3DS.cmake)
+    #set(SHADER_AS picasso)
+    #add_shbin_library(shaders.3ds src/3ds/vshader.v.pica)
     set(PLATFORM_DIRS
             src/3ds
-            src/3ds/libsf2d/include
             src/posix
             ${DEVKITPRO}/libctru/include
             ${DEVKITPRO}/portlibs/3ds/include
@@ -115,9 +118,10 @@ elseif (BUILD_3DS)
             )
     file(GLOB PLATFORM_SRC
             src/3ds/*.c*
-            src/3ds/libsf2d/source/*.c
             src/posix/*.c*
-            src/sdl2/sdl2_audio.cpp #TODO: get rid of sdl2, use sdl2 audio for now
+            src/sdl2/sdl2_audio.cpp # TODO: get rid of sdl2, use sdl2 audio for now
+            # TODO: fix that crap...
+            src/3ds/vshaders.v.o
             )
     list(APPEND FLAGS -O3 -DARM11 -D_3DS -D__3DS__
             -ffunction-sections -fomit-frame-pointer
@@ -223,11 +227,7 @@ target_include_directories(${PROJECT_NAME}.3ds PRIVATE ${PLATFORM_DIRS})
 target_link_libraries(${PROJECT_NAME}.3ds
         cross2d
         ${DEVKITPRO}/portlibs/3ds/lib/libSDL2.a
-        ${DEVKITPRO}/libctru/lib/libsfil.a
-        ${DEVKITPRO}/libctru/lib/libsftd.a
-        ${DEVKITPRO}/portlibs/armv6k/lib/libfreetype.a
         ${DEVKITPRO}/portlibs/armv6k/lib/libpng.a
-        ${DEVKITPRO}/portlibs/armv6k/lib/libjpeg.a
         ${DEVKITPRO}/portlibs/armv6k/lib/libz.a
         ${DEVKITPRO}/libctru/lib/libcitro3d.a
         ${DEVKITPRO}/libctru/lib/libctru.a

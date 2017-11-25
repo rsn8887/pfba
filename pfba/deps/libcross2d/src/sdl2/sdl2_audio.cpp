@@ -9,9 +9,6 @@
 #ifdef __PSP2_DEBUG__
 #include <psp2/kernel/clib.h>
 #define printf sceClibPrintf
-#elif __3DS__
-extern void ctr_printf(const char *msg, ...);
-#define printf ctr_printf
 #endif
 
 static bool use_mutex = false;

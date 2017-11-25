@@ -413,11 +413,7 @@ elseif (BUILD_3DS)
             -ffunction-sections -fomit-frame-pointer)
     set(LDFLAGS
             cross2d
-            ${DEVKITPRO}/libctru/lib/libsfil.a
-            ${DEVKITPRO}/libctru/lib/libsftd.a
-            ${DEVKITPRO}/portlibs/armv6k/lib/libfreetype.a
             ${DEVKITPRO}/portlibs/armv6k/lib/libpng.a
-            ${DEVKITPRO}/portlibs/armv6k/lib/libjpeg.a
             ${DEVKITPRO}/portlibs/armv6k/lib/libz.a
             ${DEVKITPRO}/libctru/lib/libcitro3d.a
             ${DEVKITPRO}/libctru/lib/libctru.a
@@ -547,7 +543,7 @@ target_link_libraries(${PROJECT_NAME}.3ds
         ${DEVKITPRO}/portlibs/3ds/lib/libSDL2.a
         ${LDFLAGS})
 set_target_properties(${PROJECT_NAME}.3ds PROPERTIES LINK_FLAGS "-specs=3dsx.specs")
-include(pfba/deps/libcross2d/src/3ds/Tools3DS.cmake)
+include(pfba/deps/libcross2d/src/3ds/cmake/Tools3DS.cmake)
 add_3dsx_target(${PROJECT_NAME}.3ds NO_SMDH)
 
 #####################

@@ -21,7 +21,7 @@ int main() {
     font_small = renderer->LoadFont("app0:/default-20.pgf", 20); // 20 = pgf font size
     font_large = renderer->LoadFont("app0:/default-40.pgf", 40); // 40 = pgf font size
 #elif __3DS__
-    renderer = (Renderer*) new CTRRenderer();
+    renderer = (Renderer *) new CTRRenderer();
     input = (Input *) new CTRInput();
     font_small = renderer->LoadFont("default.ttf", 20);
     font_large = renderer->LoadFont("default.ttf", 40);
@@ -65,6 +65,8 @@ int main() {
 
     input->SetKeyboardMapping(sfml_keyboard_keys);
 
+    Texture *tex = renderer->LoadTexture("/pfba/skin/title.png");
+
     Rect rect;
 
     while (true) {
@@ -73,14 +75,14 @@ int main() {
         if (player.state) {
             if (player.state & EV_QUIT)
                 break;
-            printf("state: %i\n", player.state);
+            //printf("state: %i\n", player.state);
             renderer->Delay(100);
         }
 
         renderer->Clear();
 
         // window
-        rect = {0, 0, renderer->GetWindowSize().w, renderer->GetWindowSize().h};
+        rect = {0, 0, renderer->GetWindowSize().w - 1, renderer->GetWindowSize().h - 1};
         renderer->DrawRect(rect, ORANGE, false);
 
         // inside rect
@@ -126,6 +128,8 @@ int main() {
         rect.y = 0;
         rect.w = 100;
         renderer->DrawFont(font_small, rect, WHITE, false, true, "HELLO WORLD");
+
+        renderer->DrawTexture(tex, 64, 64);
 
         renderer->Flip();
     }

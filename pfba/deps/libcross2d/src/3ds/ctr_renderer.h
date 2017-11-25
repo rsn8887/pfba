@@ -6,10 +6,7 @@
 #define _CTR_RENDERER_H_
 
 #include <skeleton/renderer.h>
-
-extern void ctr_printf(const char *msg, ...);
-
-#define printf ctr_printf
+#include <citro3d.h>
 
 class CTRRenderer : Renderer {
 
@@ -49,9 +46,17 @@ public:
     void SetShader(int shader);
 
 private:
-    void StartDrawing();
+    void StartDrawing(bool vertexColor);
 
     bool drawing_started = false;
+    C3D_RenderTarget *target;
+    int uloc_projection;
+    C3D_Mtx mtx_projection;
+    DVLB_s *vshader_dvlb;
+    shaderProgram_s program;
+
+    // fonts
+    std::vector<Font *> fonts;
 };
 
 #endif //_CTR_RENDERER_H_

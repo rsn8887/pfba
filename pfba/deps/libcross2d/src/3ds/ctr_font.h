@@ -7,7 +7,11 @@
 
 #include <skeleton/font.h>
 #include <skeleton/renderer.h>
-#include <sftd.h>
+
+typedef struct {
+    float position[3];
+    float texcoord[2];
+} textVertex_s;
 
 class CTRFont : Font {
 
@@ -16,11 +20,19 @@ public:
 
     ~CTRFont();
 
+    void Draw(float x, float y, float scaleX, float scaleY, bool baseline, const char *text);
+
     int GetWidth(const char *fmt, ...);
 
     int GetHeight(const char *fmt, ...);
 
-    sftd_font *font = NULL;
+    int textVtxArrayPos = 0;
+
+private:
+    void AddTextVertex(float vx, float vy, float tx, float ty);
+
+    C3D_Tex *glyphSheets;
+    textVertex_s *textVtxArray;
 };
 
 #endif //_CTR_FONT_H_

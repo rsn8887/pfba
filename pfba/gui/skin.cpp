@@ -25,7 +25,7 @@ Skin::Skin(Renderer *renderer, char *skinPath, int fontSize, std::vector<Button>
 #elif __3DS__
     snprintf(str, MAX_PATH, "%s/default.ttf", skinPath);
     font_small = renderer->LoadFont(str, fontSize);
-    font_large = renderer->LoadFont(str, (int) ((float) fontSize * 1.5f));
+    //font_large = renderer->LoadFont(str, (int) ((float) fontSize * 1.5f));
 #else
     snprintf(str, MAX_PATH, "%s/default.ttf", skinPath);
     font_small = renderer->LoadFont(str, fontSize);
@@ -58,6 +58,6 @@ Skin::~Skin() {
         delete (tex_title);
     if (font_small)
         delete (font_small);
-    if (font_large)
-        delete (font_large);
+    //if (font_large)
+    //    delete (font_large);
 }
