@@ -12,6 +12,17 @@
 
 #define PNG_SIGSIZE (8)
 
+static u16 pow2(int v) {
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return (u16) (v >= 64 ? v : 64);
+}
+
 static void read_png_file_fn(png_structp png_ptr, png_bytep data, png_size_t length) {
 
     FILE *fp = (FILE *) png_get_io_ptr(png_ptr);
@@ -100,8 +111,8 @@ static u8 *load_PNG_generic(int *width, int *height,
         return NULL;
     }
 
-    u8 *pixels = (u8 *) linearAlloc((size_t) (((*width) * (*height)) * 4));
-    int stride = (*width) * 4;
+    u8 *pixels = (u8 *) linearAlloc((size_t) (((pow2(*width)) * (pow2(*height))) * 4));
+    int stride = (pow2(*width)) * 4;
     for (int i = 0; i < (*height); i++) {
         row_ptrs[i] = (png_bytep) (pixels + i * stride);
     }

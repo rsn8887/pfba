@@ -544,7 +544,10 @@ target_link_libraries(${PROJECT_NAME}.3ds
         ${LDFLAGS})
 set_target_properties(${PROJECT_NAME}.3ds PROPERTIES LINK_FLAGS "-specs=3dsx.specs")
 include(pfba/deps/libcross2d/src/3ds/cmake/Tools3DS.cmake)
-add_3dsx_target(${PROJECT_NAME}.3ds NO_SMDH)
+add_3dsx_target(${PROJECT_NAME}.3ds "pFBA" "FBA 3DS" "Cpasjuste" pfba/data/3ds/icon.png)
+add_cia_target(${PROJECT_NAME}.3ds pfba/data/3ds/app.rsf pfba/data/3ds/banner.png pfba/data/3ds/audio.wav
+        "pFBA" "FBA 3DS" "Cpasjuste" pfba/data/3ds/icon.png
+        )
 
 #####################
 # NX (SWITCH) target

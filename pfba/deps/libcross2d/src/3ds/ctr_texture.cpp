@@ -8,9 +8,9 @@
 #include "ctr_texture.h"
 #include "ctr_png.h"
 
-#define TILE_FLAGS(fmt) \
+#define TILE_FLAGS(inFmt, outFmt) \
     (GX_TRANSFER_FLIP_VERT(1) | GX_TRANSFER_OUT_TILED(1) | GX_TRANSFER_RAW_COPY(0) | \
-    GX_TRANSFER_IN_FORMAT(fmt) | GX_TRANSFER_OUT_FORMAT(fmt) | \
+    GX_TRANSFER_IN_FORMAT(inFmt) | GX_TRANSFER_OUT_FORMAT(outFmt) | \
     GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 
 static u16 pow2(int w) {
@@ -22,31 +22,34 @@ static u16 pow2(int w) {
     return n;
 }
 
+// Grabbed from Citra Emulator (citra/src/video_core/utils.h)
+static inline u32 morton_interleave(u32 x, u32 y) {
+    u32 i = (x & 7) | ((y & 7) << 8); // ---- -210
+    i = (i ^ (i << 2)) & 0x1313;      // ---2 --10
+    i = (i ^ (i << 1)) & 0x1515;      // ---2 -1-0
+    i = (i | (i >> 7)) & 0x3F;
+    return i;
+}
+
+static inline u32 get_morton_offset(u32 x, u32 y, u32 bytes_per_pixel) {
+    u32 i = morton_interleave(x, y);
+    unsigned int offset = (x & ~7) * 8;
+    return (i + offset) * bytes_per_pixel;
+}
+
+
 CTRTexture::CTRTexture(const char *path) : Texture(path) {
 
     fmt = GPU_RGBA8;
     bpp = 4;
 
-    u8 *tmp = CTRPng::Load(&width, &height, path);
-    if (!tmp) {
+    pixels = CTRPng::Load(&width, &height, path);
+    if (!pixels) {
         printf("CTRTexture: couldn't create texture (CTRPng::Load)\n");
         return;
     }
 
-    pixels = (u8 *) linearAlloc((size_t) (width * height * bpp));
-    if (!pixels) {
-        printf("CTRTexture: couldn't create texture (linearAlloc pixels)\n");
-        linearFree(tmp);
-        return;
-    }
-
-    int i, j;
-    for (i = 0; i < height; i++) {
-        for (j = 0; j < width; j++) {
-            ((u32 *) pixels)[i * width + j] = __builtin_bswap32(((u32 *) tmp)[i * width + j]);
-        }
-    }
-    linearFree(tmp);
+    pixels_size = pow2(width) * pow2(height) * bpp;
 
     bool res = C3D_TexInit(&tex, pow2(width), pow2(height), fmt);
     if (!res) {
@@ -56,7 +59,7 @@ CTRTexture::CTRTexture(const char *path) : Texture(path) {
         return;
     }
 
-    Tile();
+    TileSoft();
     SetFiltering(TEXTURE_FILTER_POINT);
 }
 
@@ -64,9 +67,11 @@ CTRTexture::CTRTexture(int w, int h, GPU_TEXCOLOR format) : Texture(w, h) {
 
     width = w;
     height = h;
+    fmt = GPU_RGBA8;
     fmt = format;
-    bpp = fmt == GPU_RGBA8 ? 4 : 2;
-    pixels = (u8 *) linearAlloc((size_t) (width * height * bpp));
+    //bpp = fmt == GPU_RGBA8 ? 4 : 2;
+    pixels_size = width * height * 2;
+    pixels = (u8 *) linearAlloc((size_t) pixels_size);
     if (!pixels) {
         return;
     }
@@ -92,10 +97,11 @@ void CTRTexture::SetFiltering(int filter) {
 
 void CTRTexture::Tile() {
 
-    GSPGPU_FlushDataCache(pixels, (u32) (width * height * bpp));
-    //GSPGPU_FlushDataCache(tex.data, tex.size);
+    GSPGPU_FlushDataCache(pixels, (u32) pixels_size);
+    GSPGPU_FlushDataCache(tex.data, tex.size);
 
-    GX_TRANSFER_FORMAT format =
+
+    GX_TRANSFER_FORMAT outFmt =
             fmt == GPU_RGB565 ? GX_TRANSFER_FMT_RGB565 : GX_TRANSFER_FMT_RGBA8;
 
     C3D_SafeDisplayTransfer(
@@ -103,10 +109,25 @@ void CTRTexture::Tile() {
             (u32) GX_BUFFER_DIM(width, height),
             (u32 *) tex.data,
             (u32) GX_BUFFER_DIM(tex.width, tex.height),
-            (u32) TILE_FLAGS(format)
+            (u32) TILE_FLAGS(GX_TRANSFER_FMT_RGB565, outFmt)
     );
 
     gspWaitForPPF();
+}
+
+void CTRTexture::TileSoft() {
+
+    // TODO: add support for non-RGBA8 textures
+    int i, j;
+    for (j = 0; j < tex.height; j++) {
+        for (i = 0; i < tex.width; i++) {
+
+            u32 coarse_y = static_cast<u32>(j & ~7);
+            u32 dst_offset = get_morton_offset(i, j, bpp) + coarse_y * tex.width * bpp;
+            u32 v = ((u32 *) pixels)[i + (tex.height - 1 - j) * tex.width];
+            *(u32 *) (tex.data + dst_offset) = __builtin_bswap32(v); /* RGBA8 -> ABGR8 */
+        }
+    }
 }
 
 CTRTexture::~CTRTexture() {

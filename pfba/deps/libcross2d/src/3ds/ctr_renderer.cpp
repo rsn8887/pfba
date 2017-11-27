@@ -2,6 +2,7 @@
 // Created by cpasjuste on 21/11/16.
 //
 
+#include <citro3d.h>
 #include "ctr_renderer.h"
 #include "ctr_font.h"
 #include "ctr_texture.h"
@@ -128,7 +129,8 @@ void CTRRenderer::DrawTexture(Texture *texture, int x, int y, int w, int h, floa
 
 int CTRRenderer::LockTexture(Texture *texture, const Rect &rect, void **pixels, int *pitch) {
 
-    *pixels = ((CTRTexture *) texture)->pixels;
+    CTRTexture *tex = (CTRTexture *) texture;
+    *pixels = tex->pixels;
     *pitch = texture->width * 2;
 
     return 0;
