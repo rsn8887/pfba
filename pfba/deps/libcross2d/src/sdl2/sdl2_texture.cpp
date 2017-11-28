@@ -39,8 +39,8 @@ SDL2Texture::SDL2Texture(SDL_Renderer *renderer, int w, int h) : Texture(w, h) {
 }
 
 void SDL2Texture::SetFiltering(int filter) {
-    char f[2];
-    snprintf(f, 2, "%i\n", filter);
+    char f[16];
+    snprintf(f, 16, "%i\n", filter);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, f);
     // SDL2 only set filtering on texture creation :/
     if(tex != NULL) {

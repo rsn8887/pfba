@@ -39,13 +39,24 @@ PFBA: Portable Final Burn Alpha
 
 -----
 
-**Linux compilation**
+**Linux (SDL2) compilation**
+
+>- Dependencies (deb) : libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
 
 >- mkdir cmake-build
 >- cd cmake-build
 >- cmake -DBUILD_SFML=ON -DCMAKE_BUILD_TYPE=Release ..
 >- make pfba.deps
 >- make pfba
+
+**Linux (SFML) compilation**
+
+>- mkdir cmake-build
+>- cd cmake-build
+>- cmake -DBUILD_SFML=ON -DCMAKE_BUILD_TYPE=Release ..
+>- make pfba.deps
+>- make pfba
+
 
 **Ps Vita compilation**
 
