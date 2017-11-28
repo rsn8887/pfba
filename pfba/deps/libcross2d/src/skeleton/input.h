@@ -42,15 +42,15 @@ public:
     };
 
     struct Player {
-        int mapping[KEY_COUNT];
+        int mapping[KEY_COUNT]{};
         Axis lx {0, 0};
         Axis ly {1, 0};
         Axis rx {2, 0};
         Axis ry {3, 0};
-        unsigned int state;
+        unsigned int state{};
         int dead_zone = 8000;
         bool enabled = false;
-        void *data = NULL;
+        void *data = nullptr;
         int id = 0;
     };
 

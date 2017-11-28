@@ -15,7 +15,13 @@
 int main() {
 
     Renderer *renderer = (Renderer *) new RENDERER(SCRW, SCRH);
-    Input *input = (Input *) new INPUT();
+
+    Input *input = nullptr;
+#ifdef __SFML__
+    input = (Input *) new INPUT((SFMLRenderer *) renderer);
+#else
+    input = (Input *) new INPUT();
+#endif
     input->SetKeyboardMapping(KEYS);
 
     Font *font = renderer->LoadFont(FONT_PATH, 30);

@@ -13,7 +13,7 @@
 #define TEX_PATH    "app0:/title.png"
 
 int KEYS[]{
-        // needs to be in this order
+        // UP, DOWN, LEFT, RIGHT, COINS (SELECT), START, ..., // QUIT
         82, 81, 80, 79, 89, 90, 91, 92, 93, 94, 41, 40, 0 // KEY_QUIT
 };
 
@@ -39,21 +39,9 @@ int KEYS[]{
 #define TEX_PATH    "title.png"
 
 int KEYS[]{
-// SFML_Scancode
-// needs to be in this order
-        73, // KEY_UP
-        74, // KEY_DOWN
-        71, // KEY_LEFT
-        72, // KEY_RIGHT
-        36, // KEY_COINS (SELECT)
-        58, // KEY_START
-        91,
-        92,
-        93,
-        94,
-        41,
-        40,
-        0 // KEY_QUIT
+        // SFML_Scancode
+        // UP, DOWN, LEFT, RIGHT, COINS (SELECT), START, ..., // QUIT
+        73, 74, 71, 72, 36, 58, 91, 92, 93, 94, 41, 40, 0
 };
 
 #elif __SDL2__
@@ -64,9 +52,9 @@ int KEYS[]{
 #define TEX_PATH    "title.png"
 
 int KEYS[]{
-// SDL_Scancode
-// needs to be in this order
-        82, 81, 80, 79, 89, 90, 91, 92, 93, 94, 41, 40, 0 // KEY_QUIT
+        // SDL_Scancode
+        // UP, DOWN, LEFT, RIGHT, COINS (SELECT), START, ..., // QUIT
+        82, 81, 80, 79, 89, 90, 91, 92, 93, 94, 41, 40, 0 // QUIT
 };
 #endif
 
