@@ -8,7 +8,8 @@ int bDrvOkay = 0;                        // 1 if the Driver has been initted oka
 
 static int ProgressCreate();
 
-static UINT8 NeoSystemList[] = {0x0f, 0x0c, 0x0b, 0x0d, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0e};
+static UINT8 NeoSystemList[] = {0x0f, 0x0c, 0x0b, 0x0d, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+                                0x0a, 0x0e};
 
 static int DoLibInit()                    // Do Init of Burn library driver
 {
@@ -23,7 +24,7 @@ static int DoLibInit()                    // Do Init of Burn library driver
         return 1;
     }
 
-    NeoSystem &= ~(UINT8)0x1f;
+    NeoSystem &= ~(UINT8) 0x1f;
     NeoSystem |= NeoSystemList[gui->GetConfig()->GetRomValue(Option::Index::ROM_NEOBIOS)];
 
     nRet = BurnDrvInit();
@@ -135,10 +136,10 @@ int ProgressUpdateBurner(double dProgress, const TCHAR *pszText, bool bAbs) {
     gui->DrawRomList();
 
     Rect window{
-            gui->GetRenderer()->GetWindowSize().w / 4,
-            gui->GetRenderer()->GetWindowSize().h / 4,
-            gui->GetRenderer()->GetWindowSize().w / 2,
-            gui->GetRenderer()->GetWindowSize().h / 2
+            gui->GetRenderer()->width / 4,
+            gui->GetRenderer()->height / 4,
+            gui->GetRenderer()->width / 2,
+            gui->GetRenderer()->height / 2
     };
 
     gui->GetRenderer()->DrawRect(window, GRAY);
@@ -148,11 +149,11 @@ int ProgressUpdateBurner(double dProgress, const TCHAR *pszText, bool bAbs) {
         nProgressPosBurn += dProgress;
 
         Rect r = {window.x + 16, window.y + 32, window.w - 32, 32};
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font_small, r, WHITE, false, true, BurnDrvGetTextA(DRV_FULLNAME));
+        gui->GetSkin()->font->Draw(r, WHITE, false, true, BurnDrvGetTextA(DRV_FULLNAME));
         r.y += 64;
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font_small, r, WHITE, false, true, "Please wait...");
+        gui->GetSkin()->font->Draw(r, WHITE, false, true, "Please wait...");
         r.y += 32;
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font_small, r, WHITE, false, true, "%s", pszText);
+        gui->GetSkin()->font->Draw(r, WHITE, false, true, "%s", pszText);
 
         int x = window.x + 16;
         int w = window.w - 32;
@@ -164,7 +165,7 @@ int ProgressUpdateBurner(double dProgress, const TCHAR *pszText, bool bAbs) {
         }
         gui->GetRenderer()->DrawRect(x, window.y + window.h - 64, progress_y, 32, 255, 255, 0, 255);
     } else {
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font_small, window.x + 16, window.y + 96, "Please wait...");
+        gui->GetSkin()->font->Draw(window.x + 16, window.y + 96, "Please wait...");
     }
     gui->Flip();
 
@@ -176,13 +177,13 @@ int AppError(TCHAR *szText, int bWarning) {
     gui->GetRenderer()->Delay(500);
 
     Rect window{
-            gui->GetRenderer()->GetWindowSize().w / 4,
-            gui->GetRenderer()->GetWindowSize().h / 4,
-            gui->GetRenderer()->GetWindowSize().w / 2,
-            gui->GetRenderer()->GetWindowSize().h / 2
+            gui->GetRenderer()->width / 4,
+            gui->GetRenderer()->height / 4,
+            gui->GetRenderer()->width / 2,
+            gui->GetRenderer()->height / 2
     };
 
-    while (!gui->GetInput()->Update()[0].state) {
+    while (!gui->GetInput()->Update(0)[0].state) {
 
         gui->DrawRomList();
 
@@ -193,16 +194,15 @@ int AppError(TCHAR *szText, int bWarning) {
         int height = window.h / 3;
         dst.h = height;
 
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font_small, dst, WHITE, true, true, "WARNING");
+        gui->GetSkin()->font->Draw(dst, WHITE, true, true, "WARNING");
         dst.y += height;
 
         if (szText) {
-            gui->GetRenderer()->DrawFont(gui->GetSkin()->font_small, dst, WHITE, true, true, "%s", szText);
+            gui->GetSkin()->font->Draw(dst, WHITE, true, true, "%s", szText);
             dst.y += height;
         }
 
-        gui->GetRenderer()->DrawFont(gui->GetSkin()->font_small, dst, WHITE, true, true, "PRESS A KEY TO CONTINUE",
-                                     szText);
+        gui->GetSkin()->font->Draw(dst, WHITE, true, true, "PRESS A KEY TO CONTINUE", szText);
 
         gui->Flip();
     }

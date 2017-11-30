@@ -27,16 +27,16 @@ struct SaveState {
 
 void Gui::DrawBg() {
 
-    if (skin->tex_bg) {
-        renderer->DrawTexture(skin->tex_bg, 0, 0);
+    if (skin->tex_bg->available) {
+        skin->tex_bg->Draw(0, 0);
     } else {
 
-        Rect window{0, 0, renderer->GetWindowSize().w, renderer->GetWindowSize().h};
+        Rect window{0, 0, renderer->width, renderer->height};
         renderer->DrawRect(window, GRAY);
         renderer->DrawBorder(window, ORANGE);
 
-        if (skin->tex_title) {
-            renderer->DrawTexture(skin->tex_title, GetRectTitle(), true);
+        if (skin->tex_title->available) {
+            skin->tex_title->Draw(GetRectTitle(), true);
         }
 
         renderer->DrawRect(GetRectRomList(), GRAY_LIGHT);
@@ -64,9 +64,9 @@ void Gui::DrawRomInfo(RomList::Rom *rom) {
     sprintf(str, "ROMS: %i / %i", available, (int) roms.size());
 
     Rect r = GetRectRomInfo();
-    r.x = (r.x + r.w) - skin->font_small->GetWidth(str) - 16;
-    r.y = r.y + r.h - skin->font_small->GetHeight(str) - 16;
-    renderer->DrawFont(skin->font_small, r, WHITE, str, available, roms.size());
+    r.x = (r.x + r.w) - skin->font->GetWidth(str) - 16;
+    r.y = r.y + r.h - skin->font->GetHeight(str) - 16;
+    skin->font->Draw(r, WHITE, str, available, roms.size());
 
     r = GetRectRomInfo();
     r.x += 16;
@@ -75,48 +75,47 @@ void Gui::DrawRomInfo(RomList::Rom *rom) {
 
     switch (rom->state) {
         case RomList::RomState::MISSING:
-            renderer->DrawFont(skin->font_small, r, WHITE, "STATUS: MISSING");
+            skin->font->Draw(r, WHITE, "STATUS: MISSING");
             break;
         case RomList::RomState::NOT_WORKING:
-            renderer->DrawFont(skin->font_small, r, WHITE, "STATUS: NOT WORKING");
+            skin->font->Draw(r, WHITE, "STATUS: NOT WORKING");
             break;
         case RomList::RomState::WORKING:
-            renderer->DrawFont(skin->font_small, r, WHITE, "STATUS: WORKING");
+            skin->font->Draw(r, WHITE, "STATUS: WORKING");
             break;
         default:
             break;
     }
-    r.y += skin->font_small->size;
+    r.y += skin->font->size;
 
-    renderer->DrawFont(skin->font_small, r, WHITE, "SYSTEM: %s", rom->system);
-    r.y += skin->font_small->size;
+    skin->font->Draw(r, WHITE, "SYSTEM: %s", rom->system);
+    r.y += skin->font->size;
 
-    renderer->DrawFont(skin->font_small, r, WHITE, "MANUFACTURER: %s", rom->manufacturer);
-    r.y += skin->font_small->size;
+    skin->font->Draw(r, WHITE, "MANUFACTURER: %s", rom->manufacturer);
+    r.y += skin->font->size;
 
-    renderer->DrawFont(skin->font_small, r, WHITE, "YEAR: %s", rom->year);
-    r.y += skin->font_small->size;
+    skin->font->Draw(r, WHITE, "YEAR: %s", rom->year);
+    r.y += skin->font->size;
 
-    renderer->DrawFont(skin->font_small, r, WHITE, "ZIP: %s.ZIP", rom->zip);
-    r.y += skin->font_small->size;
+    skin->font->Draw(r, WHITE, "ZIP: %s.ZIP", rom->zip);
+    r.y += skin->font->size;
 
     if (rom->parent) {
-        renderer->DrawFont(skin->font_small, r.x, r.y, "PARENT: %s.ZIP", rom->parent);
-        r.y += skin->font_small->size;
+        skin->font->Draw(r.x, r.y, "PARENT: %s.ZIP", rom->parent);
+        r.y += skin->font->size;
     }
 
     if (rom->flags & BDF_ORIENTATION_VERTICAL) {
-        renderer->DrawFont(skin->font_small, r.x, r.y, "ORIENTATION: VERTICAL");
+        skin->font->Draw(r.x, r.y, "ORIENTATION: VERTICAL");
         if (rom->flags & BDF_ORIENTATION_FLIPPED) {
-            renderer->DrawFont(skin->font_small, r.x + skin->font_small->GetWidth("ORIENTATION: VERTICAL"), r.y,
-                               " / FLIPPED");
+            skin->font->Draw(r.x + skin->font->GetWidth("ORIENTATION: VERTICAL"), r.y, " / FLIPPED");
         }
     }
 }
 
 void Gui::DrawRomList() {
 
-    int font_height = skin->font_small->size + 4;
+    int font_height = skin->font->size + 4;
     max_lines = GetRectRomList().h / font_height;
     int page = rom_index / max_lines;
 
@@ -155,7 +154,7 @@ void Gui::DrawRomList() {
             romSelected = new RomList::Rom(rom);
             DrawRomInfo(romSelected);
             if (title != NULL) {
-                Rect dst = renderer->DrawTexture(title, GetRectRomPreview(), true);
+                Rect dst = title->Draw(GetRectRomPreview(), true);
                 renderer->DrawBorder(dst, RED, false);
             }
         }
@@ -164,7 +163,7 @@ void Gui::DrawRomList() {
         Rect r = rectText;
         r.x += 6;
         r.w -= 6;
-        renderer->DrawFont(skin->font_small, r, color, false, true, rom.name);
+        skin->font->Draw(r, color, false, true, rom.name);
         rectText.y += font_height;
     }
 }
@@ -179,8 +178,8 @@ bool Gui::IsOptionHidden(Option *option) {
 void Gui::DrawOptions(bool isRomCfg, Menu *m) {
 
     Rect rect{32, 32,
-              renderer->GetWindowSize().w - 64,
-              renderer->GetWindowSize().h - 64
+              renderer->width - 64,
+              renderer->height - 64
     };
 
     // window
@@ -192,9 +191,9 @@ void Gui::DrawOptions(bool isRomCfg, Menu *m) {
     r.x += 16;
     r.y += 16;
     r.w = rect.w / 2;
-    renderer->DrawFont(skin->font_small, r, ORANGE, m->title.c_str());
+    skin->font->Draw(r, ORANGE, m->title.c_str());
     renderer->color = ORANGE;
-    renderer->DrawLine(r.x, r.y + skin->font_small->size, r.x + r.w, r.y + skin->font_small->size);
+    renderer->DrawLine(r.x, r.y + skin->font->size, r.x + r.w, r.y + skin->font->size);
     renderer->color = BLACK;
     rect.y += 16;
 
@@ -217,37 +216,37 @@ void Gui::DrawOptions(bool isRomCfg, Menu *m) {
         }
 
         // option "title"
-        renderer->DrawFont(skin->font_small, rect.x + 16, rect.y + 32, option->GetName());
+        skin->font->Draw(rect.x + 16, rect.y + 32, option->GetName());
 
         // draw selection
         if (i == option_index) {
             int width = rect.w / 6;
-            Rect sel{rect.x + rect.w / 3, rect.y + 25, width, skin->font_small->size + 6};
+            Rect sel{rect.x + rect.w / 3, rect.y + 25, width, skin->font->size + 6};
             renderer->DrawRect(sel, GRAY_LIGHT);
             renderer->DrawBorder(sel, GREEN);
         }
 
         // option value
-        Rect pos{rect.x + (rect.w / 3) + 8, rect.y + 25, rect.w / 3, skin->font_small->size + 6};
+        Rect pos{rect.x + (rect.w / 3) + 8, rect.y + 25, rect.w / 3, skin->font->size + 6};
 
         if (option->flags == Option::Type::INPUT) {
             Skin::Button *button = skin->GetButton(option->value);
             if (button) {
                 if (button->texture) {
                     Rect r = pos;
-                    r.w = r.h = skin->font_small->size;
+                    r.w = r.h = skin->font->size;
                     r.y += 3; // TODO: fix DrawTexture ?
-                    renderer->DrawTexture(button->texture, r);
+                    button->texture->Draw(r);
                 } else {
-                    renderer->DrawFont(skin->font_small, pos, WHITE, false, true, "%s", button->name.c_str());
+                    skin->font->Draw(pos, WHITE, false, true, "%s", button->name.c_str());
                 }
             } else {
-                renderer->DrawFont(skin->font_small, pos, WHITE, false, true, "%i", option->value);
+                skin->font->Draw(pos, WHITE, false, true, "%i", option->value);
             }
-            rect.y += skin->font_small->size + 4;
+            rect.y += skin->font->size + 4;
         } else {
-            renderer->DrawFont(skin->font_small, pos, WHITE, false, true, option->GetValue());
-            rect.y += skin->font_small->size + 2;
+            skin->font->Draw(pos, WHITE, false, true, option->GetValue());
+            rect.y += skin->font->size + 2;
         }
     }
 
@@ -260,14 +259,16 @@ void Gui::DrawOptions(bool isRomCfg, Menu *m) {
         // draw selection
         if (i + m->option_ids.size() == option_index) {
             int width = rect.w / 6;
-            Rect sel{rect.x + rect.w / 3, rect.y + 25, width, skin->font_small->size + 6};
+            Rect sel{rect.x + rect.w / 3, rect.y + 25, width, skin->font->size + 6};
             renderer->DrawRect(sel, GRAY_LIGHT);
             renderer->DrawBorder(sel, GREEN);
         }
-        renderer->DrawFont(skin->font_small, rect.x + 16, rect.y + 32, m->childs[i]->title.c_str());
-        Rect pos{rect.x + (rect.w / 3) + 8, rect.y + 25, rect.w / 3, skin->font_small->size + 6};
-        renderer->DrawFont(skin->font_small, pos, WHITE, false, true, "GO");
-        rect.y += skin->font_small->size + 2;
+
+        skin->font->Draw(rect.x + 16, rect.y + 32, m->childs[i]->title.c_str());
+        skin->font->Draw(rect.x + 16, rect.y + 32, m->childs[i]->title.c_str());
+        Rect pos{rect.x + (rect.w / 3) + 8, rect.y + 25, rect.w / 3, skin->font->size + 6};
+        skin->font->Draw(pos, WHITE, false, true, "GO");
+        rect.y += skin->font->size + 2;
     }
 }
 
@@ -288,7 +289,7 @@ void Gui::RunStatesMenu() {
         saves[i].available = io->Exist(saves[i].path);
         saves[i].texture = NULL;
         if (io->Exist(saves[i].sshot)) {
-            saves[i].texture = renderer->LoadTexture(saves[i].sshot);
+            saves[i].texture = (Texture *) new C2DTexture(renderer, saves[i].sshot);
         }
     }
 
@@ -307,7 +308,7 @@ void Gui::RunStatesMenu() {
 
     while (true) {
 
-        int key = input->Update()[0].state;
+        int key = input->Update(0)[0].state;
         if (key > 0 || first) {
 
             first = 0;
@@ -336,7 +337,7 @@ void Gui::RunStatesMenu() {
                             if (saves[save_index].texture) {
                                 delete (saves[save_index].texture);
                             }
-                            saves[save_index].texture = renderer->LoadTexture(saves[save_index].sshot);
+                            saves[save_index].texture = (Texture *) new C2DTexture(renderer, saves[save_index].sshot);
                         } else {
                             printf("ERROR: MakeScreenShot = %i\n", res);
                         }
@@ -350,7 +351,7 @@ void Gui::RunStatesMenu() {
                         if (saves[save_index].texture) {
                             delete (saves[save_index].texture);
                         }
-                        saves[save_index].texture = renderer->LoadTexture(saves[save_index].sshot);
+                        saves[save_index].texture = (Texture *) new C2DTexture(renderer, saves[save_index].sshot);
                     } else {
                         printf("ERROR: MakeScreenShot = %i\n", res);
                     }
@@ -363,8 +364,7 @@ void Gui::RunStatesMenu() {
             Clear();
             video->Render();
 
-            Rect win = renderer->GetWindowSize();
-            int r_width = win.w / 4;
+            int r_width = renderer->width / 4;
 
             for (int i = 0; i < 4; i++) {
                 saves[i].rect.x = (r_width * i) + 16;
@@ -374,15 +374,15 @@ void Gui::RunStatesMenu() {
                 renderer->DrawRect(saves[i].rect, GRAY);
                 if (saves[i].available) {
                     if (saves[i].texture) {
-                        renderer->DrawTexture(saves[i].texture, saves[i].rect);
+                        saves[i].texture->Draw(saves[i].rect);
                     } else {
-                        renderer->DrawFont(skin->font_small, saves[i].rect, WHITE, true, true, "NO IMAGE");
+                        skin->font->Draw(saves[i].rect, WHITE, true, true, "NO IMAGE");
                     }
                     Rect r = saves[i].rect;
-                    r.y = saves[i].rect.y + saves[i].rect.h - skin->font_small->size;
-                    renderer->DrawFont(skin->font_small, r, ORANGE, true, false, "STATE %i", i);
+                    r.y = saves[i].rect.y + saves[i].rect.h - skin->font->size;
+                    skin->font->Draw(r, ORANGE, true, false, "STATE %i", i);
                 } else {
-                    renderer->DrawFont(skin->font_small, saves[i].rect, WHITE, true, true, "FIRE1 TO SAVE");
+                    skin->font->Draw(saves[i].rect, WHITE, true, true, "FIRE1 TO SAVE");
                 }
                 if (i == save_index) {
                     renderer->DrawBorder(saves[i].rect, GREEN);
@@ -441,7 +441,7 @@ void Gui::RunOptionMenu(bool isRomConfig) {
 
     while (true) {
 
-        int key = input->Update()[0].state;
+        int key = input->Update(0)[0].state;
         if (key > 0 || first) {
 
             first = 0;
@@ -648,7 +648,7 @@ void Gui::Run() {
 
     while (!quit) {
 
-        int key = input->Update()[0].state;
+        int key = input->Update(0)[0].state;
         if (key > 0) {
             if (key & Input::Key::KEY_UP) {
                 rom_index--;
@@ -681,7 +681,7 @@ void Gui::Run() {
                     // refresh preview/title image
                     DrawBg();
                     DrawRomList();
-                    renderer->DrawTexture(title, GetRectRomPreview(), true);
+                    title->Draw(GetRectRomPreview(), true);
                     Flip();
                 }
             } else if (key & Input::Key::KEY_MENU2) {
@@ -692,7 +692,7 @@ void Gui::Run() {
                         // refresh preview/title image
                         DrawBg();
                         DrawRomList();
-                        renderer->DrawTexture(title, GetRectRomPreview(), true);
+                        title->Draw(GetRectRomPreview(), true);
                         Flip();
                     }
                 }
@@ -741,7 +741,7 @@ Gui::Gui(Io *i, Renderer *rdr, Skin *sk, RomList *rList, Config *cfg, Input *in)
     config = cfg;
     input = in;
 
-    skin->font_small->color = WHITE;
+    skin->font->color = WHITE;
 
     // build menus from options
     menu_gui = new Menu(NULL, cfg->GetGuiOptions());
@@ -754,14 +754,13 @@ Gui::Gui(Io *i, Renderer *rdr, Skin *sk, RomList *rList, Config *cfg, Input *in)
 
 const Rect Gui::GetRectTitle() {
 
-    Rect size = renderer->GetWindowSize();
     Rect rect;
 
     rect.x = BORDER_SIZE;
     rect.y = BORDER_SIZE;
-    rect.w = size.w / 2;
+    rect.w = renderer->width / 2;
     rect.w -= BORDER_SIZE + BORDER_SIZE / 2;
-    rect.h = size.h / 4;
+    rect.h = renderer->height / 4;
     rect.h -= BORDER_SIZE;
 
     return rect;
@@ -769,15 +768,14 @@ const Rect Gui::GetRectTitle() {
 
 const Rect Gui::GetRectRomList() {
 
-    Rect size = renderer->GetWindowSize();
     Rect rect;
 
     rect.x = BORDER_SIZE;
-    rect.y = size.h / 4;
+    rect.y = renderer->height / 4;
     rect.y += BORDER_SIZE;
-    rect.w = size.w / 2;
+    rect.w = renderer->width / 2;
     rect.w -= BORDER_SIZE + BORDER_SIZE / 2;
-    rect.h = (size.h / 4) * 3;
+    rect.h = (renderer->height / 4) * 3;
     rect.h -= BORDER_SIZE * 2;
 
     return rect;
@@ -785,15 +783,14 @@ const Rect Gui::GetRectRomList() {
 
 const Rect Gui::GetRectRomPreview() {
 
-    Rect size = renderer->GetWindowSize();
     Rect rect;
 
-    rect.x = (size.w / 2);
+    rect.x = (renderer->width / 2);
     rect.x += BORDER_SIZE / 2;
     rect.y = BORDER_SIZE;
-    rect.w = (size.w / 2);
+    rect.w = (renderer->width / 2);
     rect.w -= BORDER_SIZE + BORDER_SIZE / 2;
-    rect.h = (size.h / 2);
+    rect.h = (renderer->height / 2);
     rect.h -= BORDER_SIZE + BORDER_SIZE / 2;
 
     return rect;
@@ -801,15 +798,14 @@ const Rect Gui::GetRectRomPreview() {
 
 const Rect Gui::GetRectRomInfo() {
 
-    Rect size = renderer->GetWindowSize();
     Rect rect;
 
-    rect.x = (size.w / 2);
+    rect.x = (renderer->width / 2);
     rect.x += BORDER_SIZE / 2;
-    rect.y = (size.h / 2) + BORDER_SIZE / 2;
-    rect.w = (size.w / 2);
+    rect.y = (renderer->height / 2) + BORDER_SIZE / 2;
+    rect.w = (renderer->width / 2);
     rect.w -= BORDER_SIZE + BORDER_SIZE / 2;
-    rect.h = (size.h / 2);
+    rect.h = (renderer->height / 2);
     rect.h -= BORDER_SIZE + BORDER_SIZE / 2;
 
     return rect;
@@ -830,13 +826,13 @@ int Gui::TitleLoad(RomList::Rom *rom) {
     char path[MAX_PATH];
     sprintf(path, "%s/%s.png", szAppPreviewPath, rom->zip);
     if (io->Exist(path)) {
-        title = renderer->LoadTexture(path);
+        title = new Texture(renderer, path);
         return title != NULL;
     } else if (rom->parent) {
         memset(path, 0, MAX_PATH);
         sprintf(path, "%s/%s.png", szAppPreviewPath, rom->parent);
         if (io->Exist(path)) {
-            title = renderer->LoadTexture(path);
+            title = new Texture(renderer, path);
             return title != NULL;
         }
     }
@@ -939,10 +935,10 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
     int max_choice = choice2 == NULL ? 1 : 2;
 
     Rect win{
-            renderer->GetWindowSize().w / 4,
-            renderer->GetWindowSize().h / 4,
-            renderer->GetWindowSize().w / 2,
-            renderer->GetWindowSize().h / 2
+            renderer->width / 4,
+            renderer->height / 4,
+            renderer->width / 2,
+            renderer->height / 2
     };
 
     Rect buttons[2]{
@@ -958,7 +954,7 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
 
     while (true) {
 
-        int key = input->Update()[0].state;
+        int key = input->Update(0)[0].state;
         if (key > 0 || first) {
 
             first = 0;
@@ -988,17 +984,17 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
             renderer->DrawBorder(win, GREEN);
 
             Rect r_msg = win;
-            r_msg.y -= skin->font_small->GetHeight(message);
-            renderer->DrawFont(skin->font_small, r_msg, WHITE, true, true, message);
+            r_msg.y -= skin->font->GetHeight(message);
+            skin->font->Draw(r_msg, WHITE, true, true, message);
 
             renderer->DrawRect(buttons[0], GRAY_LIGHT);
             renderer->DrawBorder(buttons[0], BLACK, false);
-            renderer->DrawFont(skin->font_small, buttons[0], WHITE, true, true, choice1);
+            skin->font->Draw(buttons[0], WHITE, true, true, choice1);
 
             if (max_choice > 1) {
                 renderer->DrawRect(buttons[1], GRAY_LIGHT);
                 renderer->DrawBorder(buttons[1], BLACK, false);
-                renderer->DrawFont(skin->font_small, buttons[1], WHITE, true, true, choice2);
+                skin->font->Draw(buttons[1], WHITE, true, true, choice2);
             }
 
             renderer->DrawBorder(buttons[index], ORANGE);
@@ -1015,10 +1011,10 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
 int Gui::GetButton() {
 
     Rect box{
-            renderer->GetWindowSize().w / 4,
-            renderer->GetWindowSize().h / 4,
-            renderer->GetWindowSize().w / 2,
-            renderer->GetWindowSize().h / 2
+            renderer->width / 4,
+            renderer->height / 4,
+            renderer->width / 2,
+            renderer->height / 2
     };
 
     Timer *timer = new Timer();
@@ -1035,7 +1031,7 @@ int Gui::GetButton() {
         renderer->Clear();
         renderer->DrawRect(box, GRAY);
         renderer->DrawBorder(box, GREEN);
-        renderer->DrawFont(skin->font_small, box, WHITE, true, true, "PRESS A BUTTON (%i)", 3 - timer->GetSeconds());
+        skin->font->Draw(box, WHITE, true, true, "PRESS A BUTTON (%i)", 3 - timer->GetSeconds());
         Flip();
     }
 }

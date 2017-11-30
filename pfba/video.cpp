@@ -31,14 +31,14 @@ Video::Video(Renderer *renderer) {
     }
 
     if (screen == NULL) {
-        screen = renderer->CreateTexture(VideoBufferWidth, VideoBufferHeight);
+        screen = (Texture *) new C2DTexture(renderer, VideoBufferWidth, VideoBufferHeight);
     }
 
     nBurnBpp = 2;
     BurnHighCol = myHighCol16;
     BurnRecalcPal();
-    renderer->LockTexture(screen, Rect(), (void **) &pBurnDraw, &nBurnPitch);
-    renderer->UnlockTexture(screen);
+    screen->Lock(Rect(), (void **) &pBurnDraw, &nBurnPitch);
+    screen->Unlock();
 
     renderer->SetShader(gui->GetConfig()->GetRomValue(Option::Index::ROM_SHADER));
     Filter(gui->GetConfig()->GetRomValue(Option::Index::ROM_FILTER));
@@ -48,14 +48,13 @@ Video::Video(Renderer *renderer) {
 void Video::Filter(int filter) {
     screen->SetFiltering(filter);
     // SDL2 needs to regenerate a texture, so update burn buffer
-    renderer->LockTexture(screen, Rect(), (void **) &pBurnDraw, &nBurnPitch);
-    renderer->UnlockTexture(screen);
+    screen->Lock(Rect(), (void **) &pBurnDraw, &nBurnPitch);
+    screen->Unlock();
 }
 
 void Video::Scale() {
 
-    Rect window = renderer->GetWindowSize();
-    //printf("window: %ix%i\n", window.w, window.h);
+    Rect window = {0, 0, renderer->width, renderer->height};
 
     int scaling = gui->GetConfig()->GetRomValue(Option::Index::ROM_SCALING);
     rotation = 0;
@@ -64,13 +63,13 @@ void Video::Scale() {
     // should add platform specific code
 
     if ((gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION) == 0
-          || gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION) == 3)
+         || gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION) == 3)
         && BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
         if (!(BurnDrvGetFlags() & BDF_ORIENTATION_FLIPPED)) {
             rotation = 180;
         }
     } else if (gui->GetConfig()->GetRomValue(Option::Index::ROM_ROTATION) == 2
-        && BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
+               && BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
         if ((BurnDrvGetFlags() & BDF_ORIENTATION_FLIPPED)) {
             rotation = 180;
         }
@@ -144,7 +143,7 @@ void Video::Scale() {
     scale.y = (window.h - scale.h) / 2;
 
     //printf("scale: x=%i y=%i %ix%i\n", scale.x, scale.y, scale.w, scale.h);
-    for(int i=0; i<3; i++) {
+    for (int i = 0; i < 3; i++) {
         Clear();
         Flip();
     }
@@ -155,16 +154,16 @@ void Video::Clear() {
 }
 
 void Video::Lock() {
-    renderer->LockTexture(screen, Rect(), (void **) &pBurnDraw, &nBurnPitch);
+    screen->Lock(Rect(), (void **) &pBurnDraw, &nBurnPitch);
 }
 
 void Video::Unlock() {
-    renderer->UnlockTexture(screen);
+    screen->Unlock();
 }
 
 void Video::Render() {
     if (pBurnDraw != NULL) {
-        renderer->DrawTexture(screen, scale.x, scale.y, scale.w, scale.h, rotation);
+        screen->Draw(scale.x, scale.y, scale.w, scale.h, rotation);
     }
 }
 

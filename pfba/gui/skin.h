@@ -5,7 +5,7 @@
 #ifndef _SKIN_H_
 #define _SKIN_H_
 
-#include <skeleton/renderer.h>
+#include <C2D.h>
 
 class Skin {
 
@@ -30,8 +30,7 @@ public:
 
     Texture *tex_bg;
     Texture *tex_title;
-    Font *font_small;
-    Font *font_large;
+    Font *font;
     std::vector<Button> buttons;
 };
 

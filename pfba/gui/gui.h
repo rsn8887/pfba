@@ -5,9 +5,8 @@
 #ifndef _GUI_H_
 #define _GUI_H_
 
-#include <skeleton/renderer.h>
-#include <skeleton/input.h>
-#include <skeleton/io.h>
+#include <C2D.h>
+
 #include "skin.h"
 #include "romlist.h"
 #include "config.h"
