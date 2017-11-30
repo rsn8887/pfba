@@ -73,6 +73,40 @@ class Gui;
 #define KEY_JOY_AXIS_RY         5
 #endif
 
+#ifndef NO_KEYBOARD
+#ifdef __SDL2__
+#define KEY_KB_UP_DEFAULT      82
+#define KEY_KB_DOWN_DEFAULT    81
+#define KEY_KB_LEFT_DEFAULT    80
+#define KEY_KB_RIGHT_DEFAULT   79
+#define KEY_KB_FIRE1_DEFAULT   89
+#define KEY_KB_FIRE2_DEFAULT   90
+#define KEY_KB_FIRE3_DEFAULT   91
+#define KEY_KB_FIRE4_DEFAULT   92
+#define KEY_KB_FIRE5_DEFAULT   93
+#define KEY_KB_FIRE6_DEFAULT   94
+#define KEY_KB_COIN1_DEFAULT   44
+#define KEY_KB_START1_DEFAULT  40
+#define KEY_KB_MENU1_DEFAULT   40
+#define KEY_KB_MENU2_DEFAULT   44
+#elif __SFML__
+#define KEY_KB_UP_DEFAULT      73
+#define KEY_KB_DOWN_DEFAULT    74
+#define KEY_KB_LEFT_DEFAULT    71
+#define KEY_KB_RIGHT_DEFAULT   72
+#define KEY_KB_FIRE1_DEFAULT   76
+#define KEY_KB_FIRE2_DEFAULT   77
+#define KEY_KB_FIRE3_DEFAULT   78
+#define KEY_KB_FIRE4_DEFAULT   79
+#define KEY_KB_FIRE5_DEFAULT   80
+#define KEY_KB_FIRE6_DEFAULT   81
+#define KEY_KB_COIN1_DEFAULT   36
+#define KEY_KB_START1_DEFAULT  58
+#define KEY_KB_MENU1_DEFAULT   58
+#define KEY_KB_MENU2_DEFAULT   36
+#endif
+#endif
+
 class Config {
 
 public:
