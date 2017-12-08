@@ -19,6 +19,8 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
     roms_paths.push_back("ux0:/data/pfba/roms/");
 #elif __3DS__
     roms_paths.push_back("/pfba/roms/");
+#elif __PS3__
+    roms_paths.push_back("/dev_hdd0/pfba/roms/");
 #else
     roms_paths.push_back("./roms/");
 #endif

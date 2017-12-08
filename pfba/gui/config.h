@@ -52,6 +52,25 @@ class Gui;
 #define KEY_JOY_AXIS_LY         0
 #define KEY_JOY_AXIS_RX         0
 #define KEY_JOY_AXIS_RY         0
+#elif __PS3__
+#define KEY_JOY_UP_DEFAULT      3  // use hat
+#define KEY_JOY_DOWN_DEFAULT    1  // use hat
+#define KEY_JOY_LEFT_DEFAULT    0  // use hat
+#define KEY_JOY_RIGHT_DEFAULT   2  // use hat
+#define KEY_JOY_FIRE1_DEFAULT   9
+#define KEY_JOY_FIRE2_DEFAULT   10
+#define KEY_JOY_FIRE3_DEFAULT   8
+#define KEY_JOY_FIRE4_DEFAULT   11
+#define KEY_JOY_FIRE5_DEFAULT   13
+#define KEY_JOY_FIRE6_DEFAULT   12
+#define KEY_JOY_COIN1_DEFAULT   7
+#define KEY_JOY_START1_DEFAULT  4
+#define KEY_JOY_MENU1_DEFAULT   4
+#define KEY_JOY_MENU2_DEFAULT   7
+#define KEY_JOY_AXIS_LX         0
+#define KEY_JOY_AXIS_LY         1
+#define KEY_JOY_AXIS_RX         2
+#define KEY_JOY_AXIS_RY         3
 #else
 #define KEY_JOY_UP_DEFAULT      -1  // use hat
 #define KEY_JOY_DOWN_DEFAULT    -1  // use hat

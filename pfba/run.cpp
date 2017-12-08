@@ -269,7 +269,7 @@ void AudioInit(Config *cfg) {
     pBurnSoundOut = NULL;
     audio = NULL;
 #else
-    audio = (Audio *) new SDL2Audio(nBurnSoundRate, nBurnFPS);
+    audio = (Audio *) new C2DAudio(nBurnSoundRate, nBurnFPS);
     if (audio->available) {
         nBurnSoundRate = audio->frequency;
         nBurnSoundLen = audio->buffer_len;

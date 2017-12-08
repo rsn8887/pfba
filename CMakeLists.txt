@@ -301,13 +301,14 @@ set(INC ${PFBA_DIRS}
 set(FLAGS
         #-DUNICODE
         -DINCLUDE_7Z_SUPPORT
-        -DLSB_FIRST -DUSE_SPEEDHACKS
+        -DUSE_SPEEDHACKS
         -DBUILD_SDL -DBUILD_M68K
         -DTOAPLAN_SOUND_SAMPLES_HACK
         -Wno-write-strings -Wno-narrowing
-        -fforce-addr -fcheck-new -finline-limit=1200
+        -fforce-addr -finline-limit=1200
         -DFASTCALL -U__fastcall -D_fastcall= -D__fastcall= -D__fastcall__=
         "-DINLINE=static inline" "-DSH2_INLINE=static inline"
+        #-fcheck-new
         )
 if (BUILD_DEBUG)
     list(APPEND FLAGS -g -O0 -DDEBUG)
@@ -330,7 +331,7 @@ if (BUILD_PSP2)
     list(APPEND SRC_PFBA ${SRC_PSP2})
     list(APPEND FLAGS
             -Wl,-q -D__PSP2__ -D__PFBA_ARM__
-            -DNO_KEYBOARD -DBUILD_C68K -DUSE_FILE32API)
+            -DNO_KEYBOARD -DBUILD_C68K -DUSE_FILE32API -DLSB_FIRST)
     if (BUILD_DEBUG)
         list(APPEND FLAGS
                 -D__PSP2_DEBUG__ # TODO: cyclone arm asm core not working without O2/O3
@@ -351,12 +352,35 @@ if (BUILD_PSP2)
             SceCtrl_stub ScePgf_stub ScePower_stub SceCommonDialog_stub
             SceAudio_stub SceTouch_stub
             freetype png jpeg z m c)
+elseif (BUILD_PS3)
+    ##############
+    # PS3
+    ##############
+    list(APPEND FLAGS
+            -D__PS3__ -D__SDL1__ -DNO_KEYBOARD -D__CELLOS_LV2__ -DUSE_FILE32API
+            -mhard-float -fmodulo-sched -ffunction-sections -fdata-sections)
+    set(LDFLAGS
+            cross2d
+            ${PSL1GHT}/portlibs/ppu/lib/libSDL_image.a
+            ${PSL1GHT}/portlibs/ppu/lib/libSDL.a
+            ${PSL1GHT}/portlibs/ppu/lib/libSDL_gfx.a
+            ${PSL1GHT}/portlibs/ppu/lib/libSDL_ttf.a
+            ${PSL1GHT}/portlibs/ppu/lib/libfreetype.a
+            ${PSL1GHT}/portlibs/ppu/lib/libpng.a
+            ${PSL1GHT}/portlibs/ppu/lib/libtiff.a
+            ${PSL1GHT}/portlibs/ppu/lib/libjpeg.a
+            ${PSL1GHT}/ppu/lib/libgcm_sys.a
+            ${PSL1GHT}/ppu/lib/librsx.a
+            ${PSL1GHT}/ppu/lib/libsysutil.a
+            ${PSL1GHT}/ppu/lib/libio.a
+            ${PSL1GHT}/ppu/lib/libaudio.a
+            ${PSL1GHT}/portlibs/ppu/lib/libz.a)
 elseif (BUILD_3DS)
     ##############
     # 3DS
     ##############
     list(APPEND FLAGS -DARM11 -D_3DS -D__3DS__
-            -DNO_KEYBOARD -D__PFBA_ARM__ -DUSE_FILE32API
+            -DNO_KEYBOARD -D__PFBA_ARM__ -DUSE_FILE32API -DLSB_FIRST
             -ffunction-sections -fomit-frame-pointer)
     set(LDFLAGS
             cross2d
@@ -370,7 +394,7 @@ elseif (BUILD_NX)
     # NX (SWITCH)
     ##############
     list(APPEND FLAGS -D_NX -D__NX__
-            -DNO_KEYBOARD -D__PFBA_ARM__ -DUSE_FILE32API
+            -DNO_KEYBOARD -D__PFBA_ARM__ -DUSE_FILE32API -DLSB_FIRST
             -ffunction-sections -fomit-frame-pointer)
     set(LDFLAGS
             cross2d
@@ -382,13 +406,13 @@ elseif (BUILD_SDL2)
     ##############
     # SDL2
     ##############
-    list(APPEND FLAGS -D__SDL2__)
+    list(APPEND FLAGS -D__SDL2__ -DLSB_FIRST)
     set(LDFLAGS cross2d SDL2 SDL2_image SDL2_ttf png z)
 elseif (BUILD_SFML)
     ##############
     # SFML
     ##############
-    list(APPEND FLAGS -D__SFML__)
+    list(APPEND FLAGS -D__SFML__ -DLSB_FIRST)
     list(APPEND LDFLAGS cross2d SDL2 sfml-graphics sfml-window sfml-system GL png z)
     ##############
     # RPI
@@ -406,7 +430,7 @@ elseif (BUILD_RPI)
     list(APPEND SRC_PFBA ${SRC_RPI})
     # rpi3 compile flags
     list(APPEND FLAGS
-            -D__RPI__ -D__PFBA_ARM__ -DBUILD_C68K -DUSE_FILE32API
+            -D__RPI__ -D__PFBA_ARM__ -DBUILD_C68K -DUSE_FILE32API -DLSB_FIRST
             -march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53 -mfpu=neon-fp-armv8
             -mfloat-abi=hard -mvectorize-with-neon-quad -funsafe-math-optimizations
             -ffast-math -mlittle-endian -munaligned-access
@@ -432,14 +456,6 @@ endif (BUILD_PSP2)
 # source files
 set(SRC ${SRC_PFBA} ${SRC_CPU} ${SRC_DRV} ${SRC_BURN} ${SRC_BURNER} ${SRC_INTF} ${SRC_7Z} ${SRC_LIBCONFIG})
 
-##########################
-# main target
-##########################
-add_executable(${PROJECT_NAME}.elf ${SRC} ${CMAKE_BINARY_DIR}/deps/m68kops.c)
-target_compile_options(${PROJECT_NAME}.elf PRIVATE ${FLAGS})
-target_include_directories(${PROJECT_NAME}.elf PRIVATE ${INC})
-target_link_libraries(${PROJECT_NAME}.elf cross2d ${LDFLAGS})
-
 ############
 # FBA deps
 ############
@@ -461,6 +477,14 @@ add_custom_target(${PROJECT_NAME}.deps ALL
         COMMAND perl ${CMAKE_SOURCE_DIR}/src/dep/scripts/psikyo_tile_func.pl -o deps/psikyo_tile_func.h
         )
 
+##########################
+# main target
+##########################
+add_executable(${PROJECT_NAME}.elf ${SRC} ${CMAKE_BINARY_DIR}/deps/m68kops.c)
+target_compile_options(${PROJECT_NAME}.elf PRIVATE ${FLAGS})
+target_include_directories(${PROJECT_NAME}.elf PRIVATE ${INC})
+target_link_libraries(${PROJECT_NAME}.elf ${LDFLAGS})
+
 #####################
 # PSP2 (vita) vpk
 #####################
@@ -473,6 +497,14 @@ add_custom_target(${PROJECT_NAME}.vpk
         COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/data/skin vpk/
         COMMAND cp -r ${CMAKE_SOURCE_DIR}/pfba/data/psp2/* vpk
         COMMAND cd vpk && zip -r ../${PROJECT_NAME}-${BUILD_DATE}.vpk . && cd ..
+        )
+
+#####################
+# PS3
+#####################
+add_custom_target(${PROJECT_NAME}.ps3
+        DEPENDS ${PROJECT_NAME}.elf
+        COMMAND ${PSL1GHT}/bin/sprxlinker ${PROJECT_NAME}.elf
         )
 
 #####################

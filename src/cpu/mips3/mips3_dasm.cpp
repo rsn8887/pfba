@@ -4,6 +4,7 @@
  */
 #include <string>
 #include <cstring>
+#include <cstdio>
 #include "mips3.h"
 #include "mipsdef.h"
 
