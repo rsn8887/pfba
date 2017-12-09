@@ -8,7 +8,7 @@ enable_language(ASM)
 set(BUILD_SFML OFF CACHE BOOL "Build with SFML support")
 set(BUILD_SDL2 OFF CACHE BOOL "Build with SDL2 support")
 set(BUILD_PSP2 OFF CACHE BOOL "Build with PSP2 support")
-set(BUILD_PS3 OFF CACHE BOOL "Build with PS3 support")
+set(BUILD_PS3 ON CACHE BOOL "Build with PS3 support")
 set(BUILD_3DS OFF CACHE BOOL "Build with 3DS support")
 set(BUILD_RPI OFF CACHE BOOL "Build with RPI support")
 set(BUILD_NX OFF CACHE BOOL "Build with NX (SWITCH) support")
@@ -505,6 +505,7 @@ add_custom_target(${PROJECT_NAME}.vpk
 add_custom_target(${PROJECT_NAME}.ps3
         DEPENDS ${PROJECT_NAME}.elf
         COMMAND ${PSL1GHT}/bin/sprxlinker ${PROJECT_NAME}.elf
+        COMMAND ${PSL1GHT}/bin/make_self ${PROJECT_NAME}.elf ${PROJECT_NAME}.ps3
         )
 
 #####################
