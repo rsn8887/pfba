@@ -179,9 +179,9 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
             video->Unlock();
             video->Render();
             if (bDrawFps) {
-                gui->GetSkin()->font->color = YELLOW;
+                gui->GetSkin()->font->color = C2D_COL_YELLOW;
                 gui->GetSkin()->font->Draw(8, 8, "FPS: %2d/%2d", fps, (nBurnFPS / 100));
-                gui->GetSkin()->font->color = WHITE;
+                gui->GetSkin()->font->color = C2D_COL_WHITE;
             }
             video->Flip();
         }

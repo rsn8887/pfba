@@ -142,18 +142,18 @@ int ProgressUpdateBurner(double dProgress, const TCHAR *pszText, bool bAbs) {
             gui->GetRenderer()->height / 2
     };
 
-    gui->GetRenderer()->DrawRect(window, GRAY);
-    gui->GetRenderer()->DrawBorder(window, GREEN);
+    gui->GetRenderer()->DrawRect(window, C2D_COL_GRAY);
+    gui->GetRenderer()->DrawRect(window, C2D_COL_GREEN, false);
 
     if (pszText) {
         nProgressPosBurn += dProgress;
 
         Rect r = {window.x + 16, window.y + 32, window.w - 32, 32};
-        gui->GetSkin()->font->Draw(r, WHITE, false, true, BurnDrvGetTextA(DRV_FULLNAME));
+        gui->GetSkin()->font->Draw(r, C2D_COL_WHITE, false, true, BurnDrvGetTextA(DRV_FULLNAME));
         r.y += 64;
-        gui->GetSkin()->font->Draw(r, WHITE, false, true, "Please wait...");
+        gui->GetSkin()->font->Draw(r, C2D_COL_WHITE, false, true, "Please wait...");
         r.y += 32;
-        gui->GetSkin()->font->Draw(r, WHITE, false, true, "%s", pszText);
+        gui->GetSkin()->font->Draw(r, C2D_COL_WHITE, false, true, "%s", pszText);
 
         int x = window.x + 16;
         int w = window.w - 32;
@@ -187,22 +187,22 @@ int AppError(TCHAR *szText, int bWarning) {
 
         gui->DrawRomList();
 
-        gui->GetRenderer()->DrawRect(window, GRAY);
-        gui->GetRenderer()->DrawBorder(window, GREEN);
+        gui->GetRenderer()->DrawRect(window, C2D_COL_GRAY);
+        gui->GetRenderer()->DrawRect(window, C2D_COL_GREEN, false);
 
         Rect dst = window;
         int height = window.h / 3;
         dst.h = height;
 
-        gui->GetSkin()->font->Draw(dst, WHITE, true, true, "WARNING");
+        gui->GetSkin()->font->Draw(dst, C2D_COL_WHITE, true, true, "WARNING");
         dst.y += height;
 
         if (szText) {
-            gui->GetSkin()->font->Draw(dst, WHITE, true, true, "%s", szText);
+            gui->GetSkin()->font->Draw(dst, C2D_COL_WHITE, true, true, "%s", szText);
             dst.y += height;
         }
 
-        gui->GetSkin()->font->Draw(dst, WHITE, true, true, "PRESS A KEY TO CONTINUE", szText);
+        gui->GetSkin()->font->Draw(dst, C2D_COL_WHITE, true, true, "PRESS A KEY TO CONTINUE", szText);
 
         gui->Flip();
     }

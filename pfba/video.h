@@ -6,7 +6,7 @@
 #define _VIDEO_H_
 
 #include <cstring>
-#include <skeleton/renderer.h>
+#include <C2D.h>
 
 class Video {
 

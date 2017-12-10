@@ -8,7 +8,8 @@ enable_language(ASM)
 set(BUILD_SFML OFF CACHE BOOL "Build with SFML support")
 set(BUILD_SDL2 OFF CACHE BOOL "Build with SDL2 support")
 set(BUILD_PSP2 OFF CACHE BOOL "Build with PSP2 support")
-set(BUILD_PS3 ON CACHE BOOL "Build with PS3 support")
+set(BUILD_PS3 OFF CACHE BOOL "Build with PS3 support")
+set(BUILD_PS3_TINY3D OFF CACHE BOOL "Build with PS3 (TINY3D) support")
 set(BUILD_3DS OFF CACHE BOOL "Build with 3DS support")
 set(BUILD_RPI OFF CACHE BOOL "Build with RPI support")
 set(BUILD_NX OFF CACHE BOOL "Build with NX (SWITCH) support")
@@ -352,19 +353,29 @@ if (BUILD_PSP2)
             SceCtrl_stub ScePgf_stub ScePower_stub SceCommonDialog_stub
             SceAudio_stub SceTouch_stub
             freetype png jpeg z m c)
-elseif (BUILD_PS3)
+elseif (BUILD_PS3 OR BUILD_PS3_TINY3D)
     ##############
     # PS3
     ##############
     list(APPEND FLAGS
-            -D__PS3__ -D__SDL1__ -DNO_KEYBOARD -D__CELLOS_LV2__ -DUSE_FILE32API
+            -D__PS3__ -DNO_KEYBOARD -D__CELLOS_LV2__ -DUSE_FILE32API
             -mhard-float -fmodulo-sched -ffunction-sections -fdata-sections)
-    set(LDFLAGS
-            cross2d
-            ${PSL1GHT}/portlibs/ppu/lib/libSDL_image.a
-            ${PSL1GHT}/portlibs/ppu/lib/libSDL.a
-            ${PSL1GHT}/portlibs/ppu/lib/libSDL_gfx.a
-            ${PSL1GHT}/portlibs/ppu/lib/libSDL_ttf.a
+    if (BUILD_PS3)
+        list(APPEND FLAGS -D__SDL1__)
+        set(LDFLAGS
+                cross2d
+                ${PSL1GHT}/portlibs/ppu/lib/libSDL_image.a
+                ${PSL1GHT}/portlibs/ppu/lib/libSDL.a
+                ${PSL1GHT}/portlibs/ppu/lib/libSDL_gfx.a
+                ${PSL1GHT}/portlibs/ppu/lib/libSDL_ttf.a)
+    else ()
+        list(APPEND FLAGS -D__TINY3D__)
+        set(LDFLAGS
+                cross2d
+                ${PSL1GHT}/ppu/lib/libpngdec.a
+                ${PSL1GHT}/portlibs/ppu/lib/libtiny3d.a)
+    endif (BUILD_PS3)
+    list(APPEND LDFLAGS
             ${PSL1GHT}/portlibs/ppu/lib/libfreetype.a
             ${PSL1GHT}/portlibs/ppu/lib/libpng.a
             ${PSL1GHT}/portlibs/ppu/lib/libtiff.a
@@ -372,6 +383,7 @@ elseif (BUILD_PS3)
             ${PSL1GHT}/ppu/lib/libgcm_sys.a
             ${PSL1GHT}/ppu/lib/librsx.a
             ${PSL1GHT}/ppu/lib/libsysutil.a
+            ${PSL1GHT}/ppu/lib/libsysmodule.a
             ${PSL1GHT}/ppu/lib/libio.a
             ${PSL1GHT}/ppu/lib/libaudio.a
             ${PSL1GHT}/portlibs/ppu/lib/libz.a)
