@@ -385,7 +385,7 @@ void Gui::RunStatesMenu() {
                     skin->font->Draw(saves[i].rect, C2D_COL_WHITE, true, true, "FIRE1 TO SAVE");
                 }
                 if (i == save_index) {
-                    renderer->DrawRect(saves[i].rect, C2D_COL_GREEN);
+                    renderer->DrawRect(saves[i].rect, C2D_COL_GREEN, false);
                     saves[i].rect.Scale(1);
                     renderer->DrawRect(saves[i].rect, C2D_COL_ORANGE, false);
                 }
