@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.0)
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(CMAKE_SYSTEM_NAME "Generic")
-enable_language(ASM)
 
 # delete cmake cache folder before changing this option
 set(BUILD_SFML OFF CACHE BOOL "Build with SFML support")
@@ -19,6 +18,7 @@ endif ()
 
 # setup toolchain
 include(pfba/deps/libcross2d/Toolchain.cmake)
+enable_language(ASM)
 
 execute_process(COMMAND "date" "+%Y.%m.%d" OUTPUT_VARIABLE BUILD_DATE OUTPUT_STRIP_TRAILING_WHITESPACE)
 
@@ -310,11 +310,6 @@ set(FLAGS
         "-DINLINE=static inline" "-DSH2_INLINE=static inline"
         #-fcheck-new
         )
-if (BUILD_DEBUG)
-    list(APPEND FLAGS -g -O0 -DDEBUG)
-else ()
-    list(APPEND FLAGS -O3 -DNDEBUG)
-endif (BUILD_DEBUG)
 
 #################
 # PSP2 (ps vita)
@@ -359,7 +354,7 @@ elseif (BUILD_PS3)
     list(APPEND FLAGS
             -D__PS3__
             -DNO_KEYBOARD -D__CELLOS_LV2__ -DUSE_FILE32API
-            -mhard-float -fmodulo-sched -ffunction-sections -fdata-sections)
+            -mhard-float -ffunction-sections -fdata-sections)
     set(LDFLAGS
             cross2d
             ${PSL1GHT}/ppu/lib/libpngdec.a
