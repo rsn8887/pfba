@@ -42,6 +42,8 @@ static struct BurnInputInfo Sg1000InputList[] = {
 
 	{"Console Pause",		BIT_DIGITAL,	&DrvNMI,	"consolepause"	},
 	{"Reset",		BIT_DIGITAL,	&DrvReset,	"reset"		},
+	/// www.SoftechSoftware.it
+	{"Dip A",		BIT_DIPSWITCH,	DrvDips + 0,	"dip"},
 };
 
 STDINPUTINFO(Sg1000)
