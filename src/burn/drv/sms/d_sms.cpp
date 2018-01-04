@@ -453,9 +453,13 @@ INT32 GGGetZipName(char** pszName, UINT32 i)
 		*pszName = NULL;
 		return 1;
 	}
-   // remove sms_
+	// remove gg_
+	/// www.SoftechSoftware.it
+	memset(szFilename, 0, sizeof(szFilename));
+
 	for (UINT32 j = 0; j < strlen(pszGameName); j++) {
-		szFilename[j] = pszGameName[j+3];
+		/// www.SoftechSoftware.it
+		szFilename[j] = pszGameName[j/*+3*/];
 	}
 
 	*pszName = szFilename;
