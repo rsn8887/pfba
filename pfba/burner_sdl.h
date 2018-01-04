@@ -45,7 +45,12 @@
 
 #define BZIP_MAX (20)                                // Maximum zip files to search through
 #undef DIRS_MAX
+#ifdef __PSP2__
+/// www.SoftechSoftware.it
+#define DIRS_MAX (20)                                // Maximum number of directories to search
+#else
 #define DIRS_MAX (4)                                // Maximum number of directories to search
+#endif
 
 // Define macros for appliction title and description
 #ifdef FBA_DEBUG
