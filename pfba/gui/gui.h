@@ -17,6 +17,9 @@ class Option;
 
 #define INPUT_DELAY 150
 
+/// www.SoftechSoftware.it
+#define STANDARD_LAYOUT
+
 class Gui {
 
 public:
@@ -42,7 +45,12 @@ public:
 
     const Rect GetRectTitle();
     const Rect GetRectRomList();
+/// www.SoftechSoftware.it
+#ifdef STANDARD_LAYOUT
     const Rect GetRectRomPreview();
+#else
+    const Rect GetRectRomTitle();
+#endif
     const Rect GetRectRomInfo();
 
     void UpdateInputMapping(bool isRomCfg);
@@ -68,6 +76,10 @@ private:
     Menu *menu_rom = NULL;
     Menu *menu_current = NULL;
 
+/// www.SoftechSoftware.it
+#ifndef STANDARD_LAYOUT
+    Texture *preview = NULL;
+#endif
     Texture *title = NULL;
     int title_loaded = 0;
     int title_delay = 0;
