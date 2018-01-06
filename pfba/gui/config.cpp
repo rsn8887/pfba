@@ -29,22 +29,10 @@ Config::Config(const std::string &cfgPath, Renderer *renderer) {
     roms_paths.push_back("");
 /// www.SoftechSoftware.it
 #ifdef __PSP2__
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
-    roms_paths.push_back("");
+	for (int i = roms_paths.size(); i <= DIRS_MAX; i++)
+	{
+		roms_paths.push_back("");
+	} // for
 #endif
 
     // build hardware list configuration

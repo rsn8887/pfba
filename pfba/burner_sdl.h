@@ -47,7 +47,7 @@
 #undef DIRS_MAX
 #ifdef __PSP2__
 /// www.SoftechSoftware.it
-#define DIRS_MAX (20)                                // Maximum number of directories to search
+#define DIRS_MAX (40)                                // Maximum number of directories to search
 #else
 #define DIRS_MAX (4)                                // Maximum number of directories to search
 #endif
