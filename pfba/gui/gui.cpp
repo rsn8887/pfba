@@ -921,13 +921,13 @@ int Gui::TitleLoad(RomList::Rom *rom) {
 #ifdef STANDARD_LAYOUT
     sprintf(path, "%s/%s.png", szAppPreviewPath, rom->zip);
     if (io->Exist(path)) {
-        title = new Texture(renderer, path);
+        title = (Texture*)new C2DTexture(renderer, path);
         return title != NULL;
     } else if (rom->parent) {
         memset(path, 0, MAX_PATH);
         sprintf(path, "%s/%s.png", szAppPreviewPath, rom->parent);
         if (io->Exist(path)) {
-            title = new Texture(renderer, path);
+            title = (Texture*)new C2DTexture(renderer, path);
             return title != NULL;
         }
     }
@@ -937,7 +937,7 @@ int Gui::TitleLoad(RomList::Rom *rom) {
     sprintf(path, "%s/%s.png", szAppTitlePath, rom->zip);
     if (io->Exist(path)) 
 	{
-        title = new Texture(renderer, path);
+        title = (Texture*)new C2DTexture(renderer, path);
         //return title != NULL;
     } 
 	else 
@@ -947,7 +947,7 @@ int Gui::TitleLoad(RomList::Rom *rom) {
 			sprintf(path, "%s/%s.png", szAppTitlePath, rom->parent);
 			if (io->Exist(path)) 
 			{
-				title = new Texture(renderer, path);
+				title = (Texture*)new C2DTexture(renderer, path);
 				//return title != NULL;
 			}
 		}
@@ -956,7 +956,7 @@ int Gui::TitleLoad(RomList::Rom *rom) {
     sprintf(path, "%s/%s.png", szAppPreviewPath, rom->zip);
     if (io->Exist(path)) 
 	{
-        preview = new Texture(renderer, path);
+        preview = (Texture*)new C2DTexture(renderer, path);
     } 
 	else 
 		if (rom->parent)
@@ -965,7 +965,7 @@ int Gui::TitleLoad(RomList::Rom *rom) {
 			sprintf(path, "%s/%s.png", szAppPreviewPath, rom->parent);
 			if (io->Exist(path)) 
 			{
-				preview = new Texture(renderer, path);
+				preview = (Texture*)new C2DTexture(renderer, path);
 			}
 		}
 
