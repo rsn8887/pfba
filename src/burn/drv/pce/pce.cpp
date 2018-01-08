@@ -84,8 +84,12 @@ INT32 PceGetZipName(char** pszName, UINT32 i)
 	}
 
 	// remove the "pce_"
+	/// www.SoftechSoftware.it
+	memset(szFilename, 0, sizeof(szFilename));
+
 	for (UINT32 j = 0; j < strlen(pszGameName); j++) {
-		szFilename[j] = pszGameName[j + 4];
+		/// www.SoftechSoftware.it
+		szFilename[j] = pszGameName[j /*+ 4*/];
 	}
 
 	*pszName = szFilename;
