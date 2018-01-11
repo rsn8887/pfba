@@ -6,6 +6,9 @@ unsigned char inputP1P2Switch;
 
 #define MAX_INPUT_inp (17)
 
+/// www.SoftechSoftware.it
+#define MAX_GAME_INPUT (6)
+
 struct GameInput {
     //unsigned char *pVal;  // Destination for the Input Value
     union {
@@ -24,7 +27,8 @@ struct DIPInfo {
     struct GameInput *DIPData;
 } DIPInfo;
 // Mapping of PC inputs to game inputs
-struct GameInput GameInput[4][MAX_INPUT_inp];
+/// www.SoftechSoftware.it
+struct GameInput GameInput[MAX_GAME_INPUT/*4*/][MAX_INPUT_inp];
 unsigned int nGameInpCount = 0;
 static bool bInputOk = false;
 unsigned char *ServiceDip = 0;
@@ -63,7 +67,11 @@ int DoInputBlank(int /*bDipSwitch*/) {
         }
 
         if ((bii.szInfo[0] == 'p') || (bii.szInfo[0] == 'm'))
+		{
             if (bii.szInfo[0] == 'm') iJoyNum = 0; else iJoyNum = bii.szInfo[1] - '1';
+			/// www.SoftechSoftware.it
+			///if (iJoyNum > 3)	iJoyNum = 3;	// Sperimental fix
+		}
         else {
             if (strcmp(bii.szInfo, "diag") == 0 || strcmp(bii.szInfo, "test") == 0) {
                 ServiceDip = bii.pVal;
@@ -253,7 +261,8 @@ int InpInit() {
         }
     }
 
-    memset(GameInput, 0, MAX_INPUT_inp * 4 * sizeof(struct GameInput));
+	/// www.SoftechSoftware.it
+    memset(GameInput, 0, MAX_INPUT_inp * MAX_GAME_INPUT/*4*/ * sizeof(struct GameInput));
     DoInputBlank(1);
 
     bInputOk = true;
