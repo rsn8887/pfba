@@ -827,13 +827,13 @@ int Gui::TitleLoad(RomList::Rom *rom) {
     char path[MAX_PATH];
     sprintf(path, "%s/%s.png", szAppPreviewPath, rom->zip);
     if (io->Exist(path)) {
-        title = new Texture(renderer, path);
+        title = (Texture *) new C2DTexture(renderer, path);
         return title != NULL;
     } else if (rom->parent) {
         memset(path, 0, MAX_PATH);
         sprintf(path, "%s/%s.png", szAppPreviewPath, rom->parent);
         if (io->Exist(path)) {
-            title = new Texture(renderer, path);
+            title = (Texture *) new C2DTexture(renderer, path);
             return title != NULL;
         }
     }
