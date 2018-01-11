@@ -921,13 +921,13 @@ int Gui::TitleLoad(RomList::Rom *rom) {
 #ifdef STANDARD_LAYOUT
     sprintf(path, "%s/%s.png", szAppPreviewPath, rom->zip);
     if (io->Exist(path)) {
-        title = (Texture*)new C2DTexture(renderer, path);
+        title = (Texture *) new C2DTexture(renderer, path);
         return title != NULL;
     } else if (rom->parent) {
         memset(path, 0, MAX_PATH);
         sprintf(path, "%s/%s.png", szAppPreviewPath, rom->parent);
         if (io->Exist(path)) {
-            title = (Texture*)new C2DTexture(renderer, path);
+            title = (Texture *) new C2DTexture(renderer, path);
             return title != NULL;
         }
     }
