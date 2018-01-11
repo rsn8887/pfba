@@ -84,11 +84,9 @@ INT32 PceGetZipName(char** pszName, UINT32 i)
 	}
 
 	// remove the "pce_"
-	/// www.SoftechSoftware.it
 	memset(szFilename, 0, sizeof(szFilename));
 
 	for (UINT32 j = 0; j < strlen(pszGameName); j++) {
-		/// www.SoftechSoftware.it
 		szFilename[j] = pszGameName[j /*+ 4*/];
 	}
 
@@ -118,11 +116,9 @@ INT32 TgGetZipName(char** pszName, UINT32 i)
 	}
 
 	// remove the "tg_"
-	/// www.SoftechSoftware.it
 	memset(szFilename, 0, sizeof(szFilename));
 
 	for (UINT32 j = 0; j < strlen(pszGameName); j++) {
-		/// www.SoftechSoftware.it
 		szFilename[j] = pszGameName[j /*+ 3*/];
 	}
 
@@ -152,11 +148,9 @@ INT32 SgxGetZipName(char** pszName, UINT32 i)
 	}
 
 	// remove the "sgx_"
-	/// www.SoftechSoftware.it
 	memset(szFilename, 0, sizeof(szFilename));
 
 	for (UINT32 j = 0; j < strlen(pszGameName); j++) {
-		/// www.SoftechSoftware.it
 		szFilename[j] = pszGameName[j /*+ 4*/];
 	}
 

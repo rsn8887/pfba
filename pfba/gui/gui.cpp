@@ -13,7 +13,6 @@ extern Video *video;
 
 extern INT32 MakeScreenShot(const char *dest);
 
-/// www.SoftechSoftware.it
 #ifdef STANDARD_LAYOUT
 static int max_lines = 16;
 #else
@@ -40,7 +39,6 @@ void Gui::DrawBg() {
         renderer->DrawRect(window, C2D_COL_GRAY);
         renderer->DrawRect(window, C2D_COL_ORANGE, false);
 
-/// www.SoftechSoftware.it
 #ifdef STANDARD_LAYOUT
         if (skin->tex_title->available) {
             skin->tex_title->Draw(GetRectTitle(), true);
@@ -49,7 +47,6 @@ void Gui::DrawBg() {
         renderer->DrawRect(GetRectRomList(), C2D_COL_GRAY_LIGHT);
         renderer->DrawRect(GetRectRomList(), C2D_COL_ORANGE, false);
 
-/// www.SoftechSoftware.it
 #ifdef STANDARD_LAYOUT
         renderer->DrawRect(GetRectRomInfo(), C2D_COL_GRAY_LIGHT);
         renderer->DrawRect(GetRectRomInfo(), C2D_COL_GREEN, false);
@@ -162,7 +159,6 @@ void Gui::DrawRomList() {
             renderer->DrawRect(rectText, c);
             renderer->DrawRect(rectText, color, false);
             romSelected = new RomList::Rom(rom);
-/// www.SoftechSoftware.it
 #ifdef STANDARD_LAYOUT
             DrawRomInfo(romSelected);
             if (title != NULL) {
@@ -170,28 +166,24 @@ void Gui::DrawRomList() {
                 renderer->DrawRect(dst, C2D_COL_RED, false);
             }
 #else
-            if (title != NULL) 
-			{
+            if (title != NULL) {
                 Rect dst = title->Draw(GetRectRomTitle(), true);
                 renderer->DrawRect(dst, C2D_COL_ORANGE, false);
-            } // if
-			else
-			{
-				Rect dst = GetRectRomTitle();
-				renderer->DrawRect(dst, C2D_COL_GRAY_LIGHT);
+            }
+            else {
+                Rect dst = GetRectRomTitle();
+                renderer->DrawRect(dst, C2D_COL_GRAY_LIGHT);
                 renderer->DrawRect(dst, C2D_COL_ORANGE, false);
-            } // else
-            if (preview != NULL) 
-			{
+            }
+            if (preview != NULL) {
                 Rect dst = preview->Draw(GetRectRomInfo(), true);
                 renderer->DrawRect(dst, C2D_COL_ORANGE, false);
-            } // if
-			else
-			{
-				Rect dst = GetRectRomInfo();
-				renderer->DrawRect(dst, C2D_COL_GRAY_LIGHT);
+            }
+            else {
+                Rect dst = GetRectRomInfo();
+                renderer->DrawRect(dst, C2D_COL_GRAY_LIGHT);
                 renderer->DrawRect(dst, C2D_COL_ORANGE, false);
-            } // else
+            }
 #endif
         }
 
@@ -673,7 +665,6 @@ void Gui::Run() {
     RunRom(&r);
     */
 
-	/// www.SoftechSoftware.it
 #ifndef STANDARD_LAYOUT
     char sStr[MAX_PATH];
 #endif
@@ -717,23 +708,19 @@ void Gui::Run() {
                     && romSelected->state != RomList::RomState::MISSING) {
                     RunRom(romSelected);
                 }
-/// www.SoftechSoftware.it
 #ifndef STANDARD_LAYOUT
             } else if (key & Input::Key::KEY_FIRE4) {
-                if (romSelected != NULL) 
-				{
-					int hw_cfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
-					RomList::Hardware hw = config->hardwareList[hw_cfg];
-					int show_clones = config->GetGuiValue(Option::Index::GUI_SHOW_CLONES);
-					int available = (int) roms.size();
-					if (config->GetGuiValue(Option::Index::GUI_SHOW_ALL))
-					{
-						available = show_clones ? hw.available_count : hw.available_count - hw.available_clone_count;
-					} // if
-
-					sprintf(sStr, "%s\n\n%s.zip\n\nROMS: %i / %i", romSelected->name, romSelected->zip, available, (int) roms.size());
+                if (romSelected != NULL) {
+                    int hw_cfg = config->GetGuiValue(Option::Index::GUI_SHOW_HARDWARE);
+                    RomList::Hardware hw = config->hardwareList[hw_cfg];
+                    int show_clones = config->GetGuiValue(Option::Index::GUI_SHOW_CLONES);
+                    int available = (int) roms.size();
+                    if (config->GetGuiValue(Option::Index::GUI_SHOW_ALL)) {
+                    	available = show_clones ? hw.available_count : hw.available_count - hw.available_clone_count;
+                    }
+                    sprintf(sStr, "%s\n\n%s.zip\n\nROMS: %i / %i", romSelected->name, romSelected->zip, available, (int) roms.size());
                     MessageBox(sStr, "Ok", NULL);
-					input->Clear(0);
+                    input->Clear(0);
                 }
 #endif
             } else if (key & Input::Key::KEY_MENU1) {
@@ -742,7 +729,6 @@ void Gui::Run() {
                     // refresh preview/title image
                     DrawBg();
                     DrawRomList();
-/// www.SoftechSoftware.it
 #ifdef STANDARD_LAYOUT
                     title->Draw(GetRectRomPreview(), true);
 #else
@@ -758,7 +744,6 @@ void Gui::Run() {
                         // refresh preview/title image
                         DrawBg();
                         DrawRomList();
-/// www.SoftechSoftware.it
 #ifdef STANDARD_LAYOUT
                         title->Draw(GetRectRomPreview(), true);
 #else
@@ -841,7 +826,6 @@ const Rect Gui::GetRectRomList() {
 
     Rect rect;
 
-/// www.SoftechSoftware.it
 #ifdef STANDARD_LAYOUT
     rect.x = BORDER_SIZE;
     rect.y = renderer->height / 4;
@@ -860,7 +844,6 @@ const Rect Gui::GetRectRomList() {
     return rect;
 }
 
-/// www.SoftechSoftware.it
 #ifdef STANDARD_LAYOUT
 const Rect Gui::GetRectRomPreview() {
 #else
@@ -900,10 +883,8 @@ void Gui::TitleFree() {
         title = NULL;
     }
 
-/// www.SoftechSoftware.it
 #ifndef STANDARD_LAYOUT
-    if (preview)
-	{
+    if (preview) {
         delete (preview);
         preview = NULL;
     }
@@ -917,57 +898,51 @@ int Gui::TitleLoad(RomList::Rom *rom) {
 
     char path[MAX_PATH];
 
-/// www.SoftechSoftware.it
 #ifdef STANDARD_LAYOUT
     sprintf(path, "%s/%s.png", szAppPreviewPath, rom->zip);
     if (io->Exist(path)) {
-        title = (Texture*)new C2DTexture(renderer, path);
+        title = (Texture *) new C2DTexture(renderer, path);
         return title != NULL;
     } else if (rom->parent) {
         memset(path, 0, MAX_PATH);
         sprintf(path, "%s/%s.png", szAppPreviewPath, rom->parent);
         if (io->Exist(path)) {
-            title = (Texture*)new C2DTexture(renderer, path);
+            title = (Texture *) new C2DTexture(renderer, path);
             return title != NULL;
         }
     }
     return 0;
 #else
-	// Load title picture
+    // Load title picture
     sprintf(path, "%s/%s.png", szAppTitlePath, rom->zip);
-    if (io->Exist(path)) 
-	{
-        title = (Texture*)new C2DTexture(renderer, path);
+    if (io->Exist(path)) {
+        title = (Texture *) new C2DTexture(renderer, path);
         //return title != NULL;
     } 
-	else 
-		if (rom->parent)
-		{
-			memset(path, 0, MAX_PATH);
-			sprintf(path, "%s/%s.png", szAppTitlePath, rom->parent);
-			if (io->Exist(path)) 
-			{
-				title = (Texture*)new C2DTexture(renderer, path);
-				//return title != NULL;
-			}
-		}
+    else 
+    if (rom->parent) {
+        memset(path, 0, MAX_PATH);
+        sprintf(path, "%s/%s.png", szAppTitlePath, rom->parent);
+        if (io->Exist(path)) 
+        {
+            title = (Texture *) new C2DTexture(renderer, path);
+            //return title != NULL;
+        }
+    }
 
-	// Load preview picture
+    // Load preview picture
     sprintf(path, "%s/%s.png", szAppPreviewPath, rom->zip);
-    if (io->Exist(path)) 
-	{
-        preview = (Texture*)new C2DTexture(renderer, path);
+    if (io->Exist(path)) {
+        preview = (Texture *) new C2DTexture(renderer, path);
     } 
-	else 
-		if (rom->parent)
-		{
-			memset(path, 0, MAX_PATH);
-			sprintf(path, "%s/%s.png", szAppPreviewPath, rom->parent);
-			if (io->Exist(path)) 
-			{
-				preview = (Texture*)new C2DTexture(renderer, path);
-			}
-		}
+    else 
+    if (rom->parent) {
+        memset(path, 0, MAX_PATH);
+        sprintf(path, "%s/%s.png", szAppPreviewPath, rom->parent);
+        if (io->Exist(path)) {
+            preview = (Texture *) new C2DTexture(renderer, path);
+        }
+    }
 
     return ((title != NULL) || (preview != NULL));
 #endif
@@ -1138,7 +1113,6 @@ int Gui::MessageBox(const char *message, const char *choice1, const char *choice
         }
     }
 
-	/// www.SoftechSoftware.it
     input->Clear(0);
 
 }

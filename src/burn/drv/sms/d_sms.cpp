@@ -420,12 +420,10 @@ INT32 SMSGetZipName(char** pszName, UINT32 i)
 		*pszName = NULL;
 		return 1;
 	}
-   // remove sms_
-	/// www.SoftechSoftware.it
+	// remove sms_
 	memset(szFilename, 0, sizeof(szFilename));
 
 	for (UINT32 j = 0; j < strlen(pszGameName); j++) {
-		/// www.SoftechSoftware.it
 		szFilename[j] = pszGameName[j/*+4*/];
 	}
 
@@ -454,11 +452,9 @@ INT32 GGGetZipName(char** pszName, UINT32 i)
 		return 1;
 	}
 	// remove gg_
-	/// www.SoftechSoftware.it
 	memset(szFilename, 0, sizeof(szFilename));
 
 	for (UINT32 j = 0; j < strlen(pszGameName); j++) {
-		/// www.SoftechSoftware.it
 		szFilename[j] = pszGameName[j/*+3*/];
 	}
 
@@ -12386,7 +12382,7 @@ struct BurnDriver BurnDrvgg_alexkidd = {
 };
 
 
-// Alien³ (Euro, USA)
+// Alienï¿½ (Euro, USA)
 
 static struct BurnRomInfo gg_alien3RomDesc[] = {
 	{ "alien 3 (usa, europe).bin",	0x40000, 0x11a68c08, BRF_PRG | BRF_ESS },
@@ -12406,7 +12402,7 @@ struct BurnDriver BurnDrvgg_alien3 = {
 };
 
 
-// Alien³ (Jpn)
+// Alienï¿½ (Jpn)
 
 static struct BurnRomInfo gg_alien3jRomDesc[] = {
 	{ "alien 3 (jp).bin",	0x40000, 0x06f6eebb, BRF_PRG | BRF_ESS },

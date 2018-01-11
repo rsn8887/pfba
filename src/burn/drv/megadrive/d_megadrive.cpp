@@ -179,11 +179,9 @@ INT32 MegadriveGetZipName(char** pszName, UINT32 i)
 	}
 
 	// remove the "md_"
-	/// www.SoftechSoftware.it
 	memset(szFilename, 0, sizeof(szFilename));
 
 	for (UINT32 j = 0; j < strlen(pszGameName); j++) {
-		/// www.SoftechSoftware.it
 		szFilename[j] = pszGameName[j /*+ 3*/];
 	}
 
@@ -1502,7 +1500,7 @@ struct BurnDriver BurnDrvmd_herzog = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Landstalker - Le Trésor du Roi Nole (Fra)
+// Landstalker - Le Trï¿½sor du Roi Nole (Fra)
 static struct BurnRomInfo md_landstlkfRomDesc[] = {
 	{ "mpr-15976.ic1", 0x200000, 0x5de7d917, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -2799,7 +2797,7 @@ struct BurnDriver BurnDrvmd_alexkiddu = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Alien³ (Euro, USA, Rev. A)
+// Alienï¿½ (Euro, USA, Rev. A)
 static struct BurnRomInfo md_alien3RomDesc[] = {
 	{ "mpr-15061a.bin", 0x080000, 0xb327fd1b, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -2817,7 +2815,7 @@ struct BurnDriver BurnDrvmd_alien3 = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Alien³ (Euro, USA)
+// Alienï¿½ (Euro, USA)
 static struct BurnRomInfo md_alien3aRomDesc[] = {
 	{ "mpr-15061.bin", 0x080000, 0xa3b00d6e, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -3357,7 +3355,7 @@ struct BurnDriver BurnDrvmd_ryukoken = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Astérix and the Great Rescue (Euro)
+// Astï¿½rix and the Great Rescue (Euro)
 static struct BurnRomInfo md_astergreRomDesc[] = {
 	{ "mpr-15961+mpr-15962.bin", 0x200000, 0x4735fee6, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -3375,7 +3373,7 @@ struct BurnDriver BurnDrvmd_astergre = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Astérix and the Great Rescue (USA)
+// Astï¿½rix and the Great Rescue (USA)
 static struct BurnRomInfo md_astergreuRomDesc[] = {
 	{ "asterix and the great rescue (usa).bin", 0x200000, 0x7f112cd8, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -3393,7 +3391,7 @@ struct BurnDriver BurnDrvmd_astergreu = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Astérix and the Power of the Gods (Euro)
+// Astï¿½rix and the Power of the Gods (Euro)
 static struct BurnRomInfo md_asterpgRomDesc[] = {
 	{ "mpr-17719.bin", 0x200000, 0x4ff1d83f, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -3411,7 +3409,7 @@ struct BurnDriver BurnDrvmd_asterpg = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Astérix and the Power of the Gods (Euro, Prototype)
+// Astï¿½rix and the Power of the Gods (Euro, Prototype)
 static struct BurnRomInfo md_asterpgpRomDesc[] = {
 	{ "asterix and the power of the gods (euro) (beta).bin", 0x200000, 0x45c8b5b7, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -12141,7 +12139,7 @@ struct BurnDriver BurnDrvmd_fengshena = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Férias Frustradas do Pica-Pau (Bra)
+// Fï¿½rias Frustradas do Pica-Pau (Bra)
 static struct BurnRomInfo md_feriasRomDesc[] = {
 	{ "ferias frustradas do pica-pau (bra).bin", 0x100000, 0x7b2e416d, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -16569,7 +16567,7 @@ struct BurnDriver BurnDrvmd_landstlk = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Landstalker - Die Schätze von König Nolo (Ger)
+// Landstalker - Die Schï¿½tze von Kï¿½nig Nolo (Ger)
 static struct BurnRomInfo md_landstlkgRomDesc[] = {
 	{ "landstalker - die schatze von konig nolo (germany).bin", 0x200000, 0x10fedb8f, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -23034,7 +23032,7 @@ struct BurnDriver BurnDrvmd_n3dgpebb = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Pelé's World Tournament Soccer (Euro, USA)
+// Pelï¿½'s World Tournament Soccer (Euro, USA)
 static struct BurnRomInfo md_pele2RomDesc[] = {
 	{ "pele ii - world tournament soccer (euro, usa).bin", 0x200000, 0x05a486e9, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -23052,7 +23050,7 @@ struct BurnDriver BurnDrvmd_pele2 = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Pelé! (Euro, USA)
+// Pelï¿½! (Euro, USA)
 static struct BurnRomInfo md_peleRomDesc[] = {
 	{ "pele! (euro, usa).bin", 0x100000, 0x5a8abe51, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -25284,7 +25282,7 @@ struct BurnDriver BurnDrvmd_redzone = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Stimpy's Invention Starring Starring Ren Hoëk & Stimpy (Euro)
+// Stimpy's Invention Starring Starring Ren Hoï¿½k & Stimpy (Euro)
 static struct BurnRomInfo md_renstimRomDesc[] = {
 	{ "ren & stimpy show presents stimpy's invention, the (euro).bin", 0x100000, 0xc276c220, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -25302,7 +25300,7 @@ struct BurnDriver BurnDrvmd_renstim = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Stimpy's Invention Starring Starring Ren Hoëk & Stimpy (USA)
+// Stimpy's Invention Starring Starring Ren Hoï¿½k & Stimpy (USA)
 static struct BurnRomInfo md_renstimuRomDesc[] = {
 	{ "ren & stimpy show presents stimpy's invention, the (usa).bin", 0x100000, 0xd9503ba5, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -25320,7 +25318,7 @@ struct BurnDriver BurnDrvmd_renstimu = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Stimpy's Invention Starring Starring Ren Hoëk & Stimpy (USA, Prototype)
+// Stimpy's Invention Starring Starring Ren Hoï¿½k & Stimpy (USA, Prototype)
 static struct BurnRomInfo md_renstimupRomDesc[] = {
 	{ "ren & stimpy show presents stimpy's invention, the (usa) (beta).bin", 0x100000, 0xfcb86336, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -27570,7 +27568,7 @@ struct BurnDriver BurnDrvmd_sokoban = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Show do Milhão (Bra)
+// Show do Milhï¿½o (Bra)
 static struct BurnRomInfo md_sdmilhaoRomDesc[] = {
 	{ "show do milhao (bra).bin", 0x200000, 0x0a22df04, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -27588,7 +27586,7 @@ struct BurnDriver BurnDrvmd_sdmilhao = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Show do Milhão Volume 2 (Bra)
+// Show do Milhï¿½o Volume 2 (Bra)
 static struct BurnRomInfo md_sdmilha2RomDesc[] = {
 	{ "show do milhao volume 2 (bra).bin", 0x200000, 0x48ee66cb, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -27606,7 +27604,7 @@ struct BurnDriver BurnDrvmd_sdmilha2 = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Show do Milhão Volume 2 (Bra, Alt)
+// Show do Milhï¿½o Volume 2 (Bra, Alt)
 static struct BurnRomInfo md_sdmilha2aRomDesc[] = {
 	{ "show do milhao volume 2 (bra) (alt).bin", 0x200000, 0xd8c9ac6d, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
@@ -35509,7 +35507,7 @@ struct BurnDriver BurnDrvmd_wboy5 = {
 	&bMegadriveRecalcPalette, 0x100, 320, 224, 4, 3
 };
 
-// Turma da Mônica na Terra dos Monstros (Bra)
+// Turma da Mï¿½nica na Terra dos Monstros (Bra)
 static struct BurnRomInfo md_turmamonRomDesc[] = {
 	{ "turma da monica na terra dos monstros (bra).bin", 0x100000, 0xf8288de1, BRF_PRG | SEGA_MD_ROM_LOAD16_WORD_SWAP | SEGA_MD_ROM_OFFS_000000  },
 };
