@@ -26,6 +26,7 @@ RomList::RomList(Io *io, std::vector<Hardware> *hwList, const std::vector<std::s
     }
 
     char path[MAX_PATH];
+    char pathUppercase[MAX_PATH]; // sometimes on FAT32 short files appear as all uppercase
     // TODO: fix sorting speed so we don't skip first 24 roms
     for (UINT32 i = 24; i < nBurnDrvCount; i++) {
 
@@ -63,7 +64,11 @@ RomList::RomList(Io *io, std::vector<Hardware> *hwList, const std::vector<std::s
                 continue;
             }
             sprintf(path, "%s.zip", rom.zip);
-            if (std::find(files[j].begin(), files[j].end(), path) != files[j].end()) {
+            for (int k=0; k<MAX_PATH; k++) {
+                pathUppercase[k] = toupper(path[k]);
+            }
+            if (std::find(files[j].begin(), files[j].end(), path) != files[j].end() || 
+                std::find(files[j].begin(), files[j].end(), pathUppercase) != files[j].end()) {
                 rom.state = BurnDrvIsWorking() ? RomState::WORKING : RomState::NOT_WORKING;
                 hardwareList->at(0).available_count++;
                 if (rom.parent) {
