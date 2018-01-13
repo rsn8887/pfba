@@ -6,10 +6,7 @@ unsigned char inputP1P2Switch;
 
 #define MAX_INPUT_inp (17)
 
-<<<<<<< HEAD
 /// www.SoftechSoftware.it
-=======
->>>>>>> 4a6bb8f3ad3ed65809dd5b66925413038876d94b
 #define MAX_GAME_INPUT (6)
 
 struct GameInput {
@@ -30,10 +27,7 @@ struct DIPInfo {
     struct GameInput *DIPData;
 } DIPInfo;
 // Mapping of PC inputs to game inputs
-<<<<<<< HEAD
 /// www.SoftechSoftware.it
-=======
->>>>>>> 4a6bb8f3ad3ed65809dd5b66925413038876d94b
 struct GameInput GameInput[MAX_GAME_INPUT/*4*/][MAX_INPUT_inp];
 unsigned int nGameInpCount = 0;
 static bool bInputOk = false;
@@ -72,19 +66,12 @@ int DoInputBlank(int /*bDipSwitch*/) {
             DIPInfo.DIPData[i - DIPInfo.nFirstDIP].nBit = 0;
         }
 
-<<<<<<< HEAD
         if ((bii.szInfo[0] == 'p') || (bii.szInfo[0] == 'm'))
 		{
             if (bii.szInfo[0] == 'm') iJoyNum = 0; else iJoyNum = bii.szInfo[1] - '1';
 			/// www.SoftechSoftware.it
 			///if (iJoyNum > 3)	iJoyNum = 3;	// Sperimental fix
 		}
-=======
-        if ((bii.szInfo[0] == 'p') || (bii.szInfo[0] == 'm')) {
-            if (bii.szInfo[0] == 'm') iJoyNum = 0; else iJoyNum = bii.szInfo[1] - '1';
-            ///if (iJoyNum > 3)	iJoyNum = 3;	// Sperimental fix
-        }
->>>>>>> 4a6bb8f3ad3ed65809dd5b66925413038876d94b
         else {
             if (strcmp(bii.szInfo, "diag") == 0 || strcmp(bii.szInfo, "test") == 0) {
                 ServiceDip = bii.pVal;
@@ -274,10 +261,7 @@ int InpInit() {
         }
     }
 
-<<<<<<< HEAD
 	/// www.SoftechSoftware.it
-=======
->>>>>>> 4a6bb8f3ad3ed65809dd5b66925413038876d94b
     memset(GameInput, 0, MAX_INPUT_inp * MAX_GAME_INPUT/*4*/ * sizeof(struct GameInput));
     DoInputBlank(1);
 

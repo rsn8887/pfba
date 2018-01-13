@@ -17,7 +17,7 @@ class Option;
 
 #define INPUT_DELAY 150
 
-#define STANDARD_LAYOUT
+//#define STANDARD_LAYOUT
 
 class Gui {
 
