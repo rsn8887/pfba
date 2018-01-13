@@ -80,12 +80,10 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
 
     // process menu
     if ((players[0].state & Input::Key::KEY_MENU1)
-        && (players[0].state & Input::Key::KEY_MENU2)) 
-	{
-/// www.SoftechSoftware.it
+        && (players[0].state & Input::Key::KEY_MENU2)) {
 #ifdef	FAST_EXIT
-		gui->GetInput()->Clear(0);
-		GameLooping = false;
+        gui->GetInput()->Clear(0);
+        GameLooping = false;
 #else
         bPauseOn = true;
         if (audio) {
@@ -100,7 +98,6 @@ int RunOneFrame(bool bDraw, int bDrawFps, int fps) {
             audio->Pause(0);
         }
         bPauseOn = false;
-/// www.SoftechSoftware.it
 #endif
     } else if ((players[0].state & Input::Key::KEY_MENU2)
                && (players[0].state & Input::Key::KEY_FIRE5)) {

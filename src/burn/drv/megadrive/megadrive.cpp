@@ -3924,7 +3924,6 @@ static void PrepareSprites(INT32 full)
 	INT32 table=0;
 	INT32 *pd = HighPreSpr;
 
-	/// www.SoftechSoftware.it
 	UINT32 *sprite = NULL;
 	
 	table=RamVReg->reg[5]&0x7f;
@@ -3935,9 +3934,6 @@ static void PrepareSprites(INT32 full)
 		INT32 pack;
 		// updates: tilecode, sx
 		for (u=0; u < 80 && (pack = *pd); u++, pd+=2) {
-
-			/// www.SoftechSoftware.it
-			///UINT32 *sprite;
 
 			INT32 code, code2, sx, sy, skip=0;
 			
@@ -3965,13 +3961,10 @@ static void PrepareSprites(INT32 full)
 		}
 		SpriteBlocks |= sblocks;
 
-		/// www.SoftechSoftware.it
 		*pd = 0; // terminate
 	} else {
 		for (; u < 80; u++) {
 
-			/// www.SoftechSoftware.it
-			///UINT32 *sprite;
 			INT32 code, code2, sx, sy, hv, height, width, skip=0, sx_min;
 			
 			sprite=(UINT32 *)(RamVid+((table+(link<<2))&0x7ffc)); // Find sprite
@@ -4221,14 +4214,11 @@ static INT32 PicoLine(INT32 /*scan*/)
 
 static void MegadriveDraw()
 {
-	/// www.SoftechSoftware.it
 	UINT8 *pDest = (UINT8 *)pBurnDraw;
 	UINT8 *pSrc = NULL;
 
 	if ((RamVReg->reg[12]&1) || !(MegadriveDIP[1] & 0x03))
 	{
-		/// www.SoftechSoftware.it
-		///memcpy(pDest, LineBuf, 320 * 224 * sizeof(UINT16));
 		for (INT32 j=0; j < 224*2; j++) 
 		{
 			pSrc = (UINT8 *)LineBuf + (j * 320);
@@ -4239,14 +4229,13 @@ static void MegadriveDraw()
 			}
 
 			pDest += 320;
-		} // for
-	} // if
+		}
+	}
 	else 
 	{
 		if (( MegadriveDIP[1] & 0x03 ) == 0x01 ) 
 		{
 			// Center 
-			/// www.SoftechSoftware.it
 			for (INT32 j = 0; j < 224; j++) 
 			{
 				pSrc = (UINT8 *)LineBuf + (j * 320 *2);
@@ -4256,8 +4245,8 @@ static void MegadriveDraw()
 				memset(pDest+((320*2)-32-32), 0, 32+32);
 
 				pDest += 320*2;
-			} // for
-		} // if
+			}
+		}
 		else 
 		{
 			// Zoom
@@ -4273,7 +4262,7 @@ static void MegadriveDraw()
 				pDest += 320;
 			}
 		}
-	} // else
+	}
 
 	memset(LineBuf, 0, 320 * 320 * sizeof(UINT16));
 }

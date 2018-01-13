@@ -12,7 +12,6 @@ char szAppHiscorePath[MAX_PATH] = "ux0:/data/pfba/hiscore";
 char szAppSamplesPath[MAX_PATH] = "ux0:/data/pfba/samples";
 char szAppPreviewPath[MAX_PATH] = "ux0:/data/pfba/previews";
 
-/// www.SoftechSoftware.it
 char szAppTitlePath[MAX_PATH] = "ux0:/data/pfba/titles";
 
 char szAppBlendPath[MAX_PATH] = "ux0:/data/pfba/blend/";
@@ -26,7 +25,6 @@ char szAppHiscorePath[MAX_PATH];
 char szAppSamplesPath[MAX_PATH];
 char szAppPreviewPath[MAX_PATH];
 
-/// www.SoftechSoftware.it
 char szAppTitlePath[MAX_PATH];
 
 char szAppBlendPath[MAX_PATH];
@@ -67,7 +65,6 @@ void BurnPathsInit() {
     mkdir(szAppPreviewPath, 0777);
     //printf("szAppPreviewPath: %s\n", szAppPreviewPath);
 
-	/// www.SoftechSoftware.it
     snprintf(szAppTitlePath, MAX_PATH, "%s%s", szAppHomePath, "titles");
     mkdir(szAppTitlePath, 0777);
     //printf("szAppTitlePath: %s\n", szAppTitlePath);
