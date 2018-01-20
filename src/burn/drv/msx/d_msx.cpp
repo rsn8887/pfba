@@ -1342,9 +1342,9 @@ static INT32 MemIndex()
 
 	RamEnd			= Next;
 
-	pAY8910Buffer[0]	= (INT16*)Next; Next += nBurnSoundLen * sizeof(INT16);
-	pAY8910Buffer[1]	= (INT16*)Next; Next += nBurnSoundLen * sizeof(INT16);
-	pAY8910Buffer[2]	= (INT16*)Next; Next += nBurnSoundLen * sizeof(INT16);
+	pAY8910Buffer[0]	= (INT16*)Next; Next += (nBurnSoundLen+256) * sizeof(INT16);
+	pAY8910Buffer[1]	= (INT16*)Next; Next += (nBurnSoundLen+256) * sizeof(INT16);
+	pAY8910Buffer[2]	= (INT16*)Next; Next += (nBurnSoundLen+256) * sizeof(INT16);
 
 	MemEnd			= Next;
 
