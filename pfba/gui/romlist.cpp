@@ -10,25 +10,41 @@
 #include "burner.h"
 #include "romlist.h"
 
-RomList::RomList(Io *io, std::vector<Hardware> *hwList, const std::vector<std::string> &paths) {
+RomList::RomList(Io *io, std::vector<Hardware> *hwList, const std::vector<std::string> &paths, Renderer *rdr, Skin *skin) {
 
     hardwareList = hwList;
 
     printf("RomList: building list...\n");
     clock_t begin = clock();
 
+	char szText[512];
+	Rect rcText;
+	
+	memset(szText, 0, sizeof(szText));
+
+	rcText.x = 20;
+	rcText.w = rdr->width - 20 - 10;
+	rcText.y = rdr->height - 10 - skin->font->size;
+	rcText.h = skin->font->size;
+
     std::vector<std::string> files[DIRS_MAX];
     for (unsigned int i = 0; i < paths.size(); i++) {
         if (!paths[i].empty()) {
             files[i] = io->GetDirList(paths[i].c_str());
             printf("RomList: found %i files in `%s`\n", (int) files[i].size(), paths[i].c_str());
+
+			sprintf(szText, "Found %i files in %s", (int) files[i].size(), paths[i].c_str());
+			rdr->Clear();
+			DrawSplashScreen(rdr, skin);
+			skin->font->Draw(rcText, C2D_COL_WHITE, szText);
+			rdr->Flip();
         }
     }
 
     char path[MAX_PATH];
     char pathUppercase[MAX_PATH]; // sometimes on FAT32 short files appear as all uppercase
     // TODO: fix sorting speed so we don't skip first 24 roms
-    for (UINT32 i = 24; i < nBurnDrvCount; i++) {
+    for (UINT32 i = 0/*24*/; i < nBurnDrvCount; i++) {
 
         nBurnDrvActive = i;
 
@@ -98,6 +114,17 @@ RomList::RomList(Io *io, std::vector<Hardware> *hwList, const std::vector<std::s
         }
 
         list.push_back(rom);
+
+		if (hardwareList->at(0).supported_count % 250 == 0)
+		{
+			sprintf(szText, "Roms: %i/%i | Clones: %i/%i", 
+							hardwareList->at(0).available_count, hardwareList->at(0).supported_count,
+							hardwareList->at(0).available_clone_count, hardwareList->at(0).clone_count);
+			rdr->Clear();
+			DrawSplashScreen(rdr, skin);
+			skin->font->Draw(rcText, C2D_COL_WHITE, szText);
+			rdr->Flip();
+		} // if
     }
 
     /*
@@ -113,6 +140,15 @@ RomList::RomList(Io *io, std::vector<Hardware> *hwList, const std::vector<std::s
         files[i].clear();
     }
 
+	sprintf(szText, "Roms: %i/%i | Clones: %i/%i", 
+					hardwareList->at(0).available_count, hardwareList->at(0).supported_count,
+					hardwareList->at(0).available_clone_count, hardwareList->at(0).clone_count);
+	rdr->Clear();
+	DrawSplashScreen(rdr, skin);
+	skin->font->Draw(rcText, C2D_COL_WHITE, szText);
+	rdr->Flip();
+	rdr->Delay(2000);
+
     clock_t end = clock();
     double time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
     printf("RomList: list built in %f\n", time_spent);
@@ -121,3 +157,17 @@ RomList::RomList(Io *io, std::vector<Hardware> *hwList, const std::vector<std::s
 RomList::~RomList() {
     list.clear();
 }
+
+void RomList::DrawSplashScreen(Renderer *rdr, Skin *skin)
+{
+	Rect rcScreen{0, 0, rdr->width, rdr->height};
+
+	rdr->DrawRect(rcScreen, C2D_COL_GRAY);
+	rdr->DrawRect(rcScreen, C2D_COL_ORANGE, false);
+	if (skin->tex_title->available)
+	{
+		rcScreen.h -= 32;
+		skin->tex_title->Draw(rcScreen, true);
+	} // if
+} // End of DrawSplashScreen
+
