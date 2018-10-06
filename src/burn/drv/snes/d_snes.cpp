@@ -1,6 +1,7 @@
 #include "snes.h"
 
 unsigned char DoSnesReset = 0;
+UINT8 DrvDips[1];
 
 unsigned char SnesJoy1[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 static struct BurnInputInfo SnesInputList[] =
@@ -18,6 +19,7 @@ static struct BurnInputInfo SnesInputList[] =
 	{"P1 Button Z",	  BIT_DIGITAL,   SnesJoy1 +  8, "p1 fire 6" },
 	{"P1 Mode",	 	  BIT_DIGITAL,   SnesJoy1 + 11, "p1 select" },
 	{"Reset"             , BIT_DIGITAL  , &DoSnesReset        , "reset"     },
+	{"Dip A",		BIT_DIPSWITCH,	DrvDips + 0,	"dip"},
 };
 
 STDINPUTINFO(Snes)
@@ -38,7 +40,7 @@ static struct BurnRomInfo rSuperMarioWorldEuropeRev1RomDesc[] = {
 STD_ROM_PICK(rSuperMarioWorldEuropeRev1)
 STD_ROM_FN(rSuperMarioWorldEuropeRev1)
 
-struct BurnDriverD BurnDrvrSMW = {
+struct BurnDriver BurnDrvrSMW = {
 	"smw", NULL, NULL, NULL, "1986",
 	"Super Mario World (Europe) (Rev 1)\0", NULL, "Nintendo", "Miscellaneous",
 	L"Super Mario World (Europe) (Rev 1)", NULL, NULL, NULL,
@@ -56,7 +58,7 @@ static struct BurnRomInfo rSuperMarioWorldEuropeRomDesc[] = {
 STD_ROM_PICK(rSuperMarioWorldEurope)
 STD_ROM_FN(rSuperMarioWorldEurope)
 
-struct BurnDriverD BurnDrvrSuperMarioWorldEurope = {
+struct BurnDriver BurnDrvrSuperMarioWorldEurope = {
 	"smwa", NULL, NULL, NULL, "1986",
 	"Super Mario World (Europe)\0", NULL, "Nintendo", "Miscellaneous",
 	L"Super Mario World (Europe)", NULL, NULL, NULL,
@@ -74,7 +76,7 @@ static struct BurnRomInfo rSuperMarioWorldJapanRomDesc[] = {
 STD_ROM_PICK(rSuperMarioWorldJapan)
 STD_ROM_FN(rSuperMarioWorldJapan)
 
-struct BurnDriverD BurnDrvrSuperMarioWorldJapan = {
+struct BurnDriver BurnDrvrSuperMarioWorldJapan = {
 	"smwj", NULL, NULL, NULL, "1986",
 	"Super Mario World (Japan)\0", NULL, "Nintendo", "Miscellaneous",
 	L"Super Mario World (Japan)", NULL, NULL, NULL,
@@ -92,7 +94,7 @@ static struct BurnRomInfo rSuperMarioWorldUSARomDesc[] = {
 STD_ROM_PICK(rSuperMarioWorldUSA)
 STD_ROM_FN(rSuperMarioWorldUSA)
 
-struct BurnDriverD BurnDrvrSuperMarioWorldUSA = {
+struct BurnDriver BurnDrvrSuperMarioWorldUSA = {
 	"smwu", NULL, NULL, NULL, "1986",
 	"Super Mario World (USA)\0", NULL, "Nintendo", "Miscellaneous",
 	L"Super Mario World (USA)", NULL, NULL, NULL,
