@@ -6,6 +6,7 @@ unsigned char inputP1P2Switch;
 
 #define MAX_INPUT_inp (17)
 
+/// www.SoftechSoftware.it
 #define MAX_GAME_INPUT (6)
 
 struct GameInput {
@@ -26,12 +27,24 @@ struct DIPInfo {
     struct GameInput *DIPData;
 } DIPInfo;
 // Mapping of PC inputs to game inputs
+/// www.SoftechSoftware.it
 struct GameInput GameInput[MAX_GAME_INPUT/*4*/][MAX_INPUT_inp];
 unsigned int nGameInpCount = 0;
 static bool bInputOk = false;
 unsigned char *ServiceDip = 0;
 unsigned char *P1Start = 0;
 unsigned char *P2Start = 0;
+
+void WriteToLog2(char *lpszText)
+{
+	FILE *stream = fopen("ux0:/ROMs/a.txt", "at");
+	
+	if(stream != NULL)
+	{
+		fprintf(stream, lpszText);
+		fclose(stream);
+	} // if
+} // End of WriteToLog
 
 int DoInputBlank(int /*bDipSwitch*/) {
     int iJoyNum = 0;
@@ -52,6 +65,7 @@ int DoInputBlank(int /*bDipSwitch*/) {
         //if (bDipSwitch==0 && bii.nType==2) continue; // Don't blank the dip switches
 
         if (bii.nType == BIT_DIPSWITCH) {
+WriteToLog2("BIT_DIPSWITCH\r\n");
             if (DIPInfo.nDIP == 0) {
                 DIPInfo.nFirstDIP = i;
                 DIPInfo.nDIP = nGameInpCount - i;
@@ -64,10 +78,12 @@ int DoInputBlank(int /*bDipSwitch*/) {
             DIPInfo.DIPData[i - DIPInfo.nFirstDIP].nBit = 0;
         }
 
-        if ((bii.szInfo[0] == 'p') || (bii.szInfo[0] == 'm')) {
+        if ((bii.szInfo[0] == 'p') || (bii.szInfo[0] == 'm'))
+		{
             if (bii.szInfo[0] == 'm') iJoyNum = 0; else iJoyNum = bii.szInfo[1] - '1';
-            ///if (iJoyNum > 3)	iJoyNum = 3;	// Sperimental fix
-        }
+			/// www.SoftechSoftware.it
+			///if (iJoyNum > 3)	iJoyNum = 3;	// Sperimental fix
+		}
         else {
             if (strcmp(bii.szInfo, "diag") == 0 || strcmp(bii.szInfo, "test") == 0) {
                 ServiceDip = bii.pVal;
@@ -257,6 +273,7 @@ int InpInit() {
         }
     }
 
+	/// www.SoftechSoftware.it
     memset(GameInput, 0, MAX_INPUT_inp * MAX_GAME_INPUT/*4*/ * sizeof(struct GameInput));
     DoInputBlank(1);
 
@@ -351,6 +368,7 @@ void InpDIP() {
     struct GameInput *pgi;
     int i, j;
     int nDIPOffset = 0;
+WriteToLog2("Step 1.0\r\n");
 
     // get dip switch offset
     for (i = 0; BurnDrvGetDIPInfo(&bdi, i) == 0; i++)
@@ -358,15 +376,18 @@ void InpDIP() {
             nDIPOffset = bdi.nInput;
             break;
         }
+WriteToLog2("Step 1.1\r\n");
 
     // set DIP to default
     i = 0;
     bool bDifficultyFound = false;
     while (BurnDrvGetDIPInfo(&bdi, i) == 0) {
+WriteToLog2("Step 1.2\r\n");
 
         //printf("%2d. %02x '%s'\n", bdi.nInput, bdi.nFlags, bdi.szText);
 
         if (bdi.nFlags == 0xFF) {
+WriteToLog2("Step 1.3\r\n");
             pgi = DIPInfo.DIPData + (bdi.nInput + nDIPOffset - DIPInfo.nFirstDIP);
             pgi->nConst = (pgi->nConst & ~bdi.nMask) | (bdi.nSetting & bdi.nMask);
         } else if (bdi.nFlags == 0xFE) {
@@ -379,6 +400,7 @@ void InpDIP() {
         } else {
             if (bDifficultyFound) {
                 if (bdi.nFlags == 0x01) {
+WriteToLog2("Step 1.4\r\n");
 
                     // use GameScreenMode store
                     pgi = DIPInfo.DIPData + (bdi.nInput + nDIPOffset - DIPInfo.nFirstDIP);
@@ -394,9 +416,11 @@ void InpDIP() {
         }
         i++;
     }
+WriteToLog2("Step 1.5\r\n");
     for (i = 0, pgi = DIPInfo.DIPData; i < (int) DIPInfo.nDIP; i++, pgi++) {
         if (pgi->pVal == NULL)
             continue;
         *(pgi->pVal) = pgi->nConst;
     }
+WriteToLog2("Step 1.6\r\n");
 }

@@ -3898,6 +3898,20 @@ static void DrawSpritesFromCache(INT32 *hc, INT32 sh)
 	}
 }
 
+/*
+/// www.SoftechSoftware.it
+void WriteToLog(char *lpszText)
+{
+	FILE *stream = fopen("ux0:/ROMs/a.txt", "at");
+	
+	if(stream != NULL)
+	{
+		fprintf(stream, lpszText);
+		fclose(stream);
+	} // if
+} // End of WriteToLog
+*/
+
 // Index + 0  :    ----hhvv -lllllll -------y yyyyyyyy
 // Index + 4  :    -------x xxxxxxxx pccvhnnn nnnnnnnn
 // v

@@ -115,12 +115,12 @@ int main(int argc, char **argv) {
     cfgPath += "pfba.cfg";
     config = new Config(cfgPath, renderer);
 
-    // build/init roms list
-    romList = new RomList(io, &config->hardwareList, config->GetRomPaths());
-
     // skin
     int size = config->GetGuiValue(Option::Index::SKIN_FONT_SIZE);
     Skin *skin = new Skin(renderer, szAppSkinPath, size, buttons);
+
+    // build/init roms list
+    romList = new RomList(io, &config->hardwareList, config->GetRomPaths(), renderer, skin);
 
     // run gui
     gui = new Gui(io, renderer, skin, romList, config, inp);

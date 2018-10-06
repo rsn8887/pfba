@@ -40,6 +40,17 @@ int InpMake(Input::Player *players);
 
 struct timeval start;
 
+void WriteToLog(char *lpszText)
+{
+	FILE *stream = fopen("ux0:/ROMs/a.txt", "at");
+	
+	if(stream != NULL)
+	{
+		fprintf(stream, lpszText);
+		fclose(stream);
+	} // if
+} // End of WriteToLog
+
 void StartTicks(void) {
     gettimeofday(&start, NULL);
 }
@@ -302,9 +313,12 @@ void RunEmulator(Gui *g, int drvnum) {
     if (gui->GetConfig()->GetRomValue(Option::Index::ROM_AUDIO)) {
         nBurnSoundRate = 48000;
     }
+WriteToLog("Step 1\r\n");
 
     InpInit();
+WriteToLog("Step 2\r\n");
     InpDIP();
+WriteToLog("Step 3\r\n");
 
     printf("Initialize rom driver\n");
     if (DrvInit(drvnum, false) != 0) {
@@ -316,6 +330,7 @@ void RunEmulator(Gui *g, int drvnum) {
         InpExit();
         return;
     }
+WriteToLog("Step 4\r\n");
 
     printf("bForce60Hz = %i, nBurnFPS = %d\n", bForce60Hz, nBurnFPS);
 
